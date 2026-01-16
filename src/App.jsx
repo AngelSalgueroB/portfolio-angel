@@ -1,0 +1,217 @@
+import { useState, useEffect, useRef } from 'react';
+
+// --- DATOS ---
+const PROJECTS = [
+  {
+    title: "FinanceHub",
+    desc: "Billetera virtual con autenticación segura y dashboards.",
+    tech: ["Supabase", "React", "JS"],
+    icon: "💳"
+  },
+  {
+    title: "DataCleaner Bot",
+    desc: "Pipeline de automatización de datos corporativos.",
+    tech: ["Python", "Pandas", "ETL"],
+    icon: "🤖"
+  },
+  {
+    title: "SQL vs NoSQL",
+    desc: "Benchmark de rendimiento de bases de datos.",
+    tech: ["PostgreSQL", "Mongo", "DB"],
+    icon: "⚡"
+  },
+   {
+    title: "Gastro-App",
+    desc: "Plataforma de reservas y gestión para restaurantes.",
+    tech: ["Django", "React", "Docker"],
+    icon: "🍽️"
+  }
+  
+];
+
+const SERVICES = [
+  { id: "01", title: "Desarrollo Full Stack", desc: "Apps web modernas y escalables." },
+  { id: "02", title: "Automatización de Datos", desc: "Pipelines ETL y limpieza de datos." },
+  { id: "03", title: "Consultoría Cloud", desc: "Migración y optimización en la nube." }
+];
+
+function App() {
+  const [activeSection, setActiveSection] = useState('home');
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+  // Estado del tema (inicia en dark)
+  const [theme, setTheme] = useState('dark');
+  
+  const cursorRef = useRef(null);
+
+  // Efecto: Aplicar tema al HTML
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  // Función para alternar tema
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  // Efecto Cursor
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.left = e.clientX + 'px';
+        cursorRef.current.style.top = e.clientY + 'px';
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'home':
+        return (
+          <div className="section-wrapper fade-in">
+            <div className="hero-content">
+              <div className="badge">Disponible para proyectos</div>
+              <h1>Construyo aplicaciones <span className="muted">que escalan negocios</span></h1>
+              <p className="hero-desc">
+                Ingeniero de Sistemas especializado en <strong>desarrollo full stack</strong> y <strong>automatización</strong>.
+              </p>
+              <div className="hero-buttons">
+                <button onClick={() => setActiveSection('projects')} className="btn btn-primary">Ver proyectos →</button>
+                <button onClick={() => setActiveSection('contact')} className="btn btn-ghost">Hablemos</button>
+              </div>
+              <div className="stats">
+                <div className="stat-item"><h3>3<span>+</span></h3><p>Años exp.</p></div>
+                <div className="stat-item"><h3>15<span>+</span></h3><p>Proyectos</p></div>
+                <div className="stat-item"><h3>100<span>%</span></h3><p>Clientes</p></div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'projects':
+        return (
+          <div className="section-wrapper fade-in">
+            <div className="section-header">
+              <p className="section-label">01 — PROYECTOS</p>
+              <h2 className="section-title">Trabajo seleccionado</h2>
+            </div>
+            <div className="projects-grid">
+              {PROJECTS.map((p, i) => (
+                <div key={i} className="project-card">
+                  <div className="project-icon">{p.icon}</div>
+                  <h3>{p.title}</h3>
+                  <p>{p.desc}</p>
+                  <div className="tech-stack">
+                    {p.tech.map((t, j) => <span key={j} className="tech-tag">{t}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'services':
+        return (
+          <div className="section-wrapper fade-in">
+            <div className="section-header">
+              <p className="section-label">02 — SERVICIOS</p>
+              <h2 className="section-title">Cómo puedo ayudarte</h2>
+            </div>
+            <div className="services-grid">
+              {SERVICES.map((s, i) => (
+                <div key={i} className="service-item">
+                  <p className="service-num">{s.id}</p>
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'contact':
+        return (
+          <div className="section-wrapper fade-in">
+             <div className="cta-container">
+                <p className="section-label">03 — CONTACTO</p>
+                <h2 className="cta-title">¿Tienes un proyecto?</h2>
+                <p className="hero-desc" style={{margin: '0 auto 30px'}}>
+                  Estoy listo para nuevos desafíos freelance.
+                </p>
+                <a href="mailto:angel@ejemplo.com" className="btn btn-primary">Envíame un correo →</a>
+             </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="app-container">
+      <div className="cursor-glow" ref={cursorRef}></div>
+
+      {/* Navbar */}
+      <nav>
+        <div className="logo" onClick={() => setActiveSection('home')}>as<span className="dot">_</span></div>
+        
+        {/* Contenedor derecho: Links + Toggle + Menu Movil */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          
+          {/* Links Escritorio */}
+          <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
+            <button 
+              className={`nav-btn ${activeSection === 'home' ? 'active' : ''}`} 
+              onClick={() => { setActiveSection('home'); setMenuOpen(false); }}
+            >Inicio</button>
+            
+            <button 
+              className={`nav-btn ${activeSection === 'projects' ? 'active' : ''}`} 
+              onClick={() => { setActiveSection('projects'); setMenuOpen(false); }}
+            >Proyectos</button>
+            
+            <button 
+              className={`nav-btn ${activeSection === 'services' ? 'active' : ''}`} 
+              onClick={() => { setActiveSection('services'); setMenuOpen(false); }}
+            >Servicios</button>
+            
+            <button 
+              className="btn btn-primary" 
+              onClick={() => { setActiveSection('contact'); setMenuOpen(false); }}
+            >Contacto</button>
+          </div>
+
+         {/* --- AQUÍ ESTÁ EL NUEVO SWITCH --- */}
+          <label className="switch">
+            <input 
+              type="checkbox" 
+              onChange={toggleTheme} 
+              checked={theme === 'light'} 
+            />
+            <span className="slider"></span>
+          </label>
+
+          {/* Botón Menú Móvil */}
+          <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
+        </div>
+      </nav>
+
+      <main className="main-content">
+        {renderContent()}
+      </main>
+
+      <div className="footer-simple">
+        <span>© 2026 Angel Salguero</span>
+        <div style={{display:'flex', gap:'15px'}}>
+          <a href="#" style={{color:'inherit', textDecoration:'none'}}>GitHub</a>
+          <a href="#" style={{color:'inherit', textDecoration:'none'}}>LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
