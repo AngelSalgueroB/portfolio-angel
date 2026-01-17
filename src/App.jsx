@@ -181,20 +181,6 @@ function App() {
                   Envíame un correo →
                 </a>
 
-                {/* BOTONES SOCIALES ROJOS */}
-                <div className="social-container">
-                  {SOCIAL_LINKS.map((link) => (
-                    <a 
-                      key={link.name}
-                      href={link.url}
-                      className="social-btn"
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      {link.name}
-                    </a>
-                  ))}
-                </div>
              </div>
           </div>
         );
