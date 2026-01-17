@@ -64,8 +64,8 @@ const SERVICES = [
 ];
 
 const SOCIAL_LINKS = [
-  { name: "GitHub", url: "https://github.com/TU_USUARIO" },
-  { name: "LinkedIn", url: "https://linkedin.com/in/TU_USUARIO" },
+  { name: "GitHub", url: "https://github.com/AngelSalgueroB" },
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
   { name: "Facebook", url: "#" },
   { name: "Instagram", url: "#" },
   { name: "Twitter", url: "#" },

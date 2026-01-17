@@ -212,4 +212,16 @@ p { font-size: 1.1rem; line-height: 1.6; }
     text-align: center;
     border-bottom: 1px solid #333;
   }
+
+  .main-content {
+    /* Aumentamos de 100px a 140px para que el título baje y se vea completo */
+    padding-top: 140px !important; 
+    
+    /* Mantenemos el espacio abajo para que no se pegue al footer */
+    padding-bottom: 40px;
+    
+    /* Aseguramos que el contenido empiece desde arriba y no intente centrarse */
+    justify-content: flex-start; 
+  }
+
 }
