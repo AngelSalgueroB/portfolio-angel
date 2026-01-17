@@ -1,0 +1,3 @@
+git add .
+git commit -m "Fix: Scroll movil nativo y diseño final de botones"
+git push origin main

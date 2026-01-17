@@ -211,4 +211,14 @@ p { font-size: 1.1rem; line-height: 1.6; }
     text-align: center;
     border-bottom: 1px solid #333;
   }
+
+  /* Aumentamos el espacio al final para que el footer no tape nada */
+.main-content {
+  padding-bottom: 200px; /* Antes era 50px, ahora le damos mucho más espacio */
+}
+
+/* Opcional: Ajustamos un poco el footer en móvil */
+.footer-simple {
+  padding: 2rem 1rem; /* Un poco menos de relleno vertical */
+}
 }
