@@ -1,42 +1,214 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* --- APP.CSS FINAL & OPTIMIZADO --- */
+
+/* 1. RESET & SCROLL NATIVO (CRÍTICO PARA MÓVIL) */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Habilitar scroll nativo y gestos */
+  overflow-y: auto; 
+  overscroll-behavior-y: auto; /* Permite "Pull-to-Refresh" en Android */
+  -webkit-overflow-scrolling: touch; /* Suavidad en iOS */
+  overflow-x: hidden;
+}
+
+:root {
+  --bg-color: #0a0a0a;
+  --text-color: #ffffff;
+  --text-muted: #888;
+  --nav-bg: #111;
+  --border: #333;
+  --accent-color: #ff3333;
+}
+
+[data-theme="light"] {
+  --bg-color: #ffffff;
+  --text-color: #111111;
+  --text-muted: #555;
+  --nav-bg: #f0f0f0;
+  --border: #ccc;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  display: block; /* Corrige el display flex por defecto de Vite */
+}
+
+/* Navbar Fijo */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 70px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 1000;
+}
+
+/* Espacio para el contenido */
+.main-content {
+  padding-top: 100px; 
+  padding-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.section-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  padding: 1rem;
+}
+
+/* Tipografía y Botones Generales */
+h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 800; }
+p { font-size: 1.1rem; line-height: 1.6; }
+
+.btn { 
+  padding: 10px 20px; 
+  cursor: pointer; 
+  margin-right: 10px; 
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.btn-primary {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  border: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-color);
+}
+
+/* Grid de Proyectos */
+.projects-grid, .services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.project-card, .service-item {
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+}
+
+/* --- BOTONES SOCIALES ESTILO "TECH SYSTEM" --- */
+
+.social-container {
+  display: flex;
+  /* 'center' se ve mejor en footer. Usa 'flex-end' si los quieres a la derecha */
+  justify-content: center; 
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.social-btn {
+  position: relative;
+  text-decoration: none;
+  /* Fuente monoespaciada segura para navegadores */
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  
+  font-size: 0.75rem;        
+  padding: 0.5rem 1rem;      
+  
+  text-transform: none;      
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  
+  color: #a0a0a0;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid #333;
+  border-left: 3px solid var(--accent-color);
+  
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.social-btn:hover {
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 12px rgba(255, 51, 51, 0.5);
+  transform: translateY(-2px);
+}
+
+.social-btn:active {
+  transform: scale(0.98);
+}
+
+/* Footer Container */
+.footer-simple {
   text-align: center;
+  padding: 3rem 1rem;
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-color);
+  margin-top: auto; /* Empuja el footer al fondo si hay poco contenido */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
+/* --- RESPONSIVE / MODO MÓVIL --- */
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.menu-toggle { display: none; }
+
+@media (max-width: 768px) {
+  
+  h1 { font-size: 2.5rem; }
+  .hero-content { padding: 2rem 0; }
+  
+  /* Botón Hamburguesa */
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0.5rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  /* Menú Desplegable Móvil */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-color); 
+    border-bottom: 2px solid var(--accent-color);
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    gap: 1.5rem;
+    z-index: 999;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .nav-links.active { display: flex; }
+
+  .nav-btn {
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #333;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

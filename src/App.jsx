@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import './App.css'; 
 
-// --- DATOS ---
+// --- 1. DATOS DEL PORTAFOLIO ---
 const PROJECTS = [
   {
     title: "FinanceHub",
@@ -25,23 +26,58 @@ const PROJECTS = [
     desc: "Plataforma de reservas y gestión para restaurantes.",
     tech: ["Django", "React", "Docker"],
     icon: "🍽️"
+  },
+   {
+    title: "Automation-Tools",
+    desc: "Conjunto de scripts para automatizar tareas repetitivas.",
+    tech: ["Next.js", "Node.js", "APIs"],
+    icon: "🛠️"
   }
-  
 ];
 
 const SERVICES = [
-  { id: "01", title: "Desarrollo Full Stack", desc: "Apps web modernas y escalables." },
-  { id: "02", title: "Automatización de Datos", desc: "Pipelines ETL y limpieza de datos." },
-  { id: "03", title: "Consultoría Cloud", desc: "Migración y optimización en la nube." }
+  { 
+    id: "01", 
+    title: "Desarrollo Full Stack", 
+    desc: "Apps web modernas y escalables." 
+  },
+  { 
+    id: "02", 
+    title: "Automatización de Datos", 
+    desc: "Pipelines ETL y limpieza de datos." 
+  },
+  { 
+    id: "03", 
+    title: "Consultoría Cloud", 
+    desc: "Migración y optimización en la nube." 
+  },
+  { 
+    id: "04", 
+    title: "Herramientas de Productividad", 
+    desc: "Automatización de Excel, reportes y trazabilidad operativa." 
+  },
+  { 
+    id: "05", 
+    title: "Scripting de Sistema", 
+    desc: "Gestión masiva de archivos y automatización de flujos locales." 
+  }
+];
+
+const SOCIAL_LINKS = [
+  { name: "GitHub", url: "https://github.com/TU_USUARIO" },
+  { name: "LinkedIn", url: "https://linkedin.com/in/TU_USUARIO" },
+  { name: "Facebook", url: "#" },
+  { name: "Instagram", url: "#" },
+  { name: "Twitter", url: "#" },
+  { name: "YouTube", url: "#" },
 ];
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
-  
-  // Estado del tema (inicia en dark)
   const [theme, setTheme] = useState('dark');
   
+  // Referencia para el efecto del cursor
   const cursorRef = useRef(null);
 
   // Efecto: Aplicar tema al HTML
@@ -54,7 +90,7 @@ function App() {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Efecto Cursor
+  // Efecto Cursor (Seguimiento del mouse)
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (cursorRef.current) {
@@ -138,9 +174,27 @@ function App() {
                 <p className="section-label">03 — CONTACTO</p>
                 <h2 className="cta-title">¿Tienes un proyecto?</h2>
                 <p className="hero-desc" style={{margin: '0 auto 30px'}}>
-                  Estoy listo para nuevos desafíos freelance.
+                  Estoy listo para nuevos desafíos freelance. Envíame un correo o conecta en redes.
                 </p>
-                <a href="mailto:angel@ejemplo.com" className="btn btn-primary">Envíame un correo →</a>
+                
+                <a href="mailto:tuemail@ejemplo.com" className="btn btn-primary" style={{marginBottom: '2rem'}}>
+                  Envíame un correo →
+                </a>
+
+                {/* BOTONES SOCIALES ROJOS */}
+                <div className="social-container">
+                  {SOCIAL_LINKS.map((link) => (
+                    <a 
+                      key={link.name}
+                      href={link.url}
+                      className="social-btn"
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                </div>
              </div>
           </div>
         );
@@ -152,49 +206,29 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Efecto de luz de fondo */}
       <div className="cursor-glow" ref={cursorRef}></div>
 
       {/* Navbar */}
       <nav>
         <div className="logo" onClick={() => setActiveSection('home')}>as<span className="dot">_</span></div>
         
-        {/* Contenedor derecho: Links + Toggle + Menu Movil */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          
-          {/* Links Escritorio */}
+          {/* Menú Escritorio */}
           <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
-            <button 
-              className={`nav-btn ${activeSection === 'home' ? 'active' : ''}`} 
-              onClick={() => { setActiveSection('home'); setMenuOpen(false); }}
-            >Inicio</button>
-            
-            <button 
-              className={`nav-btn ${activeSection === 'projects' ? 'active' : ''}`} 
-              onClick={() => { setActiveSection('projects'); setMenuOpen(false); }}
-            >Proyectos</button>
-            
-            <button 
-              className={`nav-btn ${activeSection === 'services' ? 'active' : ''}`} 
-              onClick={() => { setActiveSection('services'); setMenuOpen(false); }}
-            >Servicios</button>
-            
-            <button 
-              className="btn btn-primary" 
-              onClick={() => { setActiveSection('contact'); setMenuOpen(false); }}
-            >Contacto</button>
+            <button className={`nav-btn ${activeSection === 'home' ? 'active' : ''}`} onClick={() => {setActiveSection('home'); setMenuOpen(false);}}>Inicio</button>
+            <button className={`nav-btn ${activeSection === 'projects' ? 'active' : ''}`} onClick={() => {setActiveSection('projects'); setMenuOpen(false);}}>Proyectos</button>
+            <button className={`nav-btn ${activeSection === 'services' ? 'active' : ''}`} onClick={() => {setActiveSection('services'); setMenuOpen(false);}}>Servicios</button>
+            <button className="btn btn-primary" onClick={() => {setActiveSection('contact'); setMenuOpen(false);}}>Contacto</button>
           </div>
 
-         {/* --- AQUÍ ESTÁ EL NUEVO SWITCH --- */}
+          {/* Switch Tema */}
           <label className="switch">
-            <input 
-              type="checkbox" 
-              onChange={toggleTheme} 
-              checked={theme === 'light'} 
-            />
+            <input type="checkbox" onChange={toggleTheme} checked={theme === 'light'} />
             <span className="slider"></span>
           </label>
 
-          {/* Botón Menú Móvil */}
+          {/* Botón Móvil */}
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>☰</button>
         </div>
       </nav>
@@ -203,14 +237,28 @@ function App() {
         {renderContent()}
       </main>
 
+      {/* ... código anterior ... */}
+
       <div className="footer-simple">
-        <span>© 2026 Angel Salguero</span>
-        <div style={{display:'flex', gap:'15px'}}>
-          <a href="#" style={{color:'inherit', textDecoration:'none'}}>GitHub</a>
-          <a href="#" style={{color:'inherit', textDecoration:'none'}}>LinkedIn</a>
+        <p style={{marginBottom: '1rem'}}>© 2026 Angel Salguero | Systems Engineer</p>
+        
+        {/* --- AQUÍ INSERTAMOS LOS BOTONES --- */}
+        <div className="social-container" style={{justifyContent: 'center'}}>
+          {SOCIAL_LINKS.map((link) => (
+            <a 
+              key={link.name}
+              href={link.url}
+              className="social-btn"
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              {link.name}
+            </a>
+          ))}
         </div>
       </div>
-    </div>
+      
+    </div> // Cierre del div app-container
   );
 }
 
