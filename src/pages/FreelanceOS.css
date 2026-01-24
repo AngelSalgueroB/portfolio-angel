@@ -120,7 +120,16 @@ html, body {
   margin-bottom: 25px; 
   font-size: 1rem; 
 }
-
+/*--- Flechas de navegación atraz ---*/
+.btn-nav.btn-back { 
+  background: black; 
+  color: white; 
+  border: 1px solid var(--border-color); 
+}
+.btn-nav.btn-next { 
+  background: var(--text-color); 
+  color: var(--bg-color); 
+}
 /* --- COLUMNA DERECHA: CHAT --- */
 .os-chat-sidebar {
   width: 380px;
@@ -227,6 +236,7 @@ html, body {
   align-items: center; 
   justify-content: center;
   transition: all 0.2s;
+  position: relative;
 }
 .os-card:hover { 
   transform: translateY(-2px); 
@@ -461,4 +471,45 @@ html, body {
 .login-options label {
   cursor: pointer;
   user-select: none; /* Evita que se seleccione el texto al hacer clic */
+}
+
+.tech-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 110%; /* Aparece justo encima de la tarjeta */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px; /* Ancho del globo */
+  background-color: #222;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  z-index: 10;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none; /* Para que el mouse no choque con el tooltip */
+  border: 1px solid var(--border-color);
+}
+
+/* El triangulito (flecha) abajo del tooltip */
+.tech-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Al final del tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #222 transparent transparent transparent;
+}
+
+/* Mostrar al hacer Hover */
+.os-card:hover .tech-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px); /* Pequeña animación hacia arriba */
 }

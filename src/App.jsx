@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Portfolio from './Portfolio';      // Tu portafolio original
 import FreelanceOS from './pages/FreelanceOS'; // Tu nueva herramienta
 
+
+
 function App() {
   return (
     <BrowserRouter>
