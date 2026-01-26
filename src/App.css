@@ -68,8 +68,8 @@ nav {
 .main-content {
   flex: 1; /* Esto hace que el contenido crezca y empuje el footer */
   width: 100%;
-  padding-top: 100px; /* Espacio para que el Navbar no tape el título */
-  padding-bottom: 40px;
+  padding-top: 75px; /* Espacio para que el Navbar no tape el título */
+  padding-bottom: 10px;
   display: flex;
   flex-direction: column; /* Asegura orden vertical */
   align-items: center;    /* Centra el contenido */
@@ -502,15 +502,6 @@ p { font-size: 1.1rem; line-height: 1.6; }
   color: transparent; /* Fallback */
 }
 
-/* 3. Decoración Derecha (Estadísticas + Iconos Flotantes) */
-.hero-visuals {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 /* Contenedor de las Stats para que parezca una tarjeta de cristal */
 .stats-card {
   background: rgba(255, 255, 255, 0.03);
@@ -540,27 +531,4 @@ p { font-size: 1.1rem; line-height: 1.6; }
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-}
-
-/* Iconos Flotantes (Orbitando) */
-.floating-icon {
-  position: absolute;
-  background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px;
-  border-radius: 12px;
-  color: #ccc;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  z-index: 3;
-  animation: floatIcon 6s ease-in-out infinite;
-}
-
-/* Posiciones específicas para los iconos alrededor de la tarjeta */
-.icon-react { top: -20px; right: -20px; color: #61DAFB; animation-delay: 0s; }
-.icon-node { bottom: -10px; left: -30px; color: #68A063; animation-delay: 2s; }
-.icon-db { top: 40%; right: -50px; color: #336791; animation-delay: 4s; }
-
-@keyframes floatIcon {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(5deg); }
 }

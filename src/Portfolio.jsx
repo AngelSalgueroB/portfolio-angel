@@ -176,7 +176,7 @@ function App() {
                    Disponible para proyectos
                 </div>
                 
-                <h1 style={{ fontSize: '3.5rem', lineHeight: '1.1', marginBottom: '20px' }}>
+                <h1 style={{ fontSize: '3.5rem', lineHeight: '1.3', marginBottom: '20px' }}>
                   Construyo <span className="text-gradient">experiencias digitales</span> que impactan.
                 </h1>
                 
@@ -340,19 +340,7 @@ function App() {
                   Envíame un correo →
                 </a>
 
-                <div className="social-container">
-                  {SOCIAL_LINKS.map((link) => (
-                    <a 
-                      key={link.name}
-                      href={link.url}
-                      className="social-btn"
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      {link.name}
-                    </a>
-                  ))}
-                </div>
+              
              </div>
           </div>
         );

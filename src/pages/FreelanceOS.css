@@ -513,3 +513,7 @@ html, body {
   opacity: 1;
   transform: translateX(-50%) translateY(-5px); /* Pequeña animación hacia arriba */
 }
+
+.bulb{
+  animation: blink 1s infinite;
+}

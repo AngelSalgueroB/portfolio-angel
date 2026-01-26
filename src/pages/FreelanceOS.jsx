@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase' 
 import { 
-  ArrowRight, ArrowLeft, Save, Sun, Moon, Plus, Download, List, Trash2, 
+  ArrowRight, ArrowLeft, Save, Sun, Moon, Plus, Download, List,
   Home, Send, Star, Lock, Mail, LogOut, Webhook, PenTool,
   TrendingDown, CreditCard, PackageX, Mountain, BarChart3, FileSpreadsheet, 
   Megaphone, Globe, AlertTriangle, Target, ShieldCheck, CheckCircle, XCircle,
-  Database, Cloud, Code, Wrench, Smartphone
+  Database, Cloud, Code, Wrench, Smartphone, Lightbulb, Clock, Trash2, Edit2, Check, X
 } from 'lucide-react'
 import { jsPDF } from "jspdf"
 import Groq from "groq-sdk" 
@@ -38,6 +38,87 @@ export default function FreelanceOS() {
   const [customText, setCustomText] = useState('')
   const [currency, setCurrency] = useState('PEN') 
   const today = new Date().toISOString().split('T')[0]
+
+  // --- 5. ESTADOS DE IDEAS (NUEVO) ---
+  const [ideaModal, setIdeaModal] = useState(false)
+  const [ideaText, setIdeaText] = useState('')
+  const [ideasList, setIdeasList] = useState([])
+  const [showIdeaHistory, setShowIdeaHistory] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [editText, setEditText] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
+
+  // Función para guardar la idea
+  const guardarIdea = async () => {
+    if (!ideaText.trim()) return
+    setLoading(true)
+    const { error } = await supabase.from('ideas').insert([{ content: ideaText }])
+    
+    if (error) {
+      setNotification({ type: 'error', msg: 'Error al guardar idea' })
+    } else {
+      setNotification({ type: 'success', msg: 'Idea successfully saved!' })
+      setIdeaText('')
+      if (showIdeaHistory) cargarIdeas() // Recargar si estamos viendo la lista
+    }
+    setLoading(false)
+  }
+  
+  // 1. Esta función ahora solo ABRE el modal de advertencia
+  const solicitarBorrado = (id) => {
+    setDeleteTarget(id) 
+  }
+
+  // 2. Esta es la que realmente BORRA en Supabase (se ejecuta al dar "Sí")
+  const confirmarBorrado = async () => {
+    if (!deleteTarget) return
+
+    const { error } = await supabase.from('ideas').delete().eq('id', deleteTarget)
+    
+    if (error) {
+      setNotification({ type: 'error', msg: 'Error al eliminar.' })
+    } else {
+      setNotification({ type: 'success', msg: 'Idea eliminada correctamente.' })
+      cargarIdeas() // Refrescar lista
+    }
+    setDeleteTarget(null) // Cerrar modal y limpiar
+  }
+
+  // Función: Iniciar Edición
+  const empezarEdicion = (idea) => {
+    setEditingId(idea.id)
+    setEditText(idea.content)
+  }
+
+  // Función: Guardar Cambios (Update)
+  const guardarEdicion = async (id) => {
+    const { error } = await supabase.from('ideas').update({ content: editText }).eq('id', id)
+    
+    if (error) {
+      setNotification({ type: 'error', msg: 'Error al actualizar.' })
+    } else {
+      setNotification({ type: 'success', msg: 'Idea actualizada.' })
+      setEditingId(null) // Salir modo edición
+      cargarIdeas() // Refrescar lista
+    }
+  }
+
+  // Función para cargar el historial
+  const cargarIdeas = async () => {
+    const { data, error } = await supabase
+      .from('ideas')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (data) setIdeasList(data)
+  }
+
+  // Efecto para cargar ideas cuando abrimos el historial
+  useEffect(() => {
+    if (ideaModal && showIdeaHistory) {
+      cargarIdeas()
+    }
+  }, [ideaModal, showIdeaHistory])
 
   const [data, setData] = useState({
     fecha: today,
@@ -344,10 +425,31 @@ export default function FreelanceOS() {
   return (
     <div className="os-container">
       {modalOpen && <div className="os-modal-overlay" onClick={()=>setModalOpen(null)}><div className="os-modal" onClick={e=>e.stopPropagation()}><h3>Agregar</h3><input autoFocus className="os-input" value={customText} onChange={e=>setCustomText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&saveCustom()}/><button className="btn-finish" style={{width:'100%'}} onClick={saveCustom}>Guardar</button></div></div>}
-      {notification && (<div className="os-modal-overlay" style={{zIndex: 9999}} onClick={() => setNotification(null)}><div className="os-modal" style={{textAlign:'center', padding:'40px'}} onClick={e => e.stopPropagation()}><div style={{fontSize:'3rem', marginBottom:'15px'}}>{notification.type === 'success' ? <CheckCircle size={50} color="#10b981"/> : <AlertTriangle size={50} color="#ef4444"/>}</div><h3 style={{fontSize:'1.5rem', marginBottom:'10px'}}>{notification.type === 'success' ? '¡Excelente!' : 'Atención'}</h3><p style={{marginBottom:'25px', color:'var(--text-color)', lineHeight:'1.5'}}>{notification.msg}</p><button className="btn-finish" style={{width:'100%'}} onClick={() => setNotification(null)}>{notification.type === 'success' ? 'Continuar' : 'Entendido'}</button></div></div>)}
+      {notification && (<div className="os-modal-overlay" style={{zIndex: 9999}} onClick={() => setNotification(null)}><div className="os-modal" style={{textAlign:'center', padding:'40px'}} onClick={e => e.stopPropagation()}><div style={{fontSize:'3rem', marginBottom:'15px'}}>{notification.type === 'success' ? <CheckCircle size={50} color="#10b981"/> : <AlertTriangle size={50} color="#ef4444"/>}</div><h3 style={{fontSize:'1.5rem', marginBottom:'10px'}}>{notification.type === 'success' ? 'Cool!' : 'Atención'}</h3><p style={{marginBottom:'25px', color:'var(--text-color)', lineHeight:'1.5'}}>{notification.msg}</p><button className="btn-finish" style={{width:'100%'}} onClick={() => setNotification(null)}>{notification.type === 'success' ? 'Continue...' : 'Entendido'}</button></div></div>)}
 
       <header className="os-header">
         <div className="os-logo" onClick={goHome}><Home size={20} color="var(--accent-color)"/> FreelanceOS</div>
+        <button 
+          onClick={() => { setIdeaModal(true); setShowIdeaHistory(false); }}
+          style={{
+            background: 'red', 
+            color: 'white', 
+            border: 'none', 
+            padding: '8px 15px', 
+            borderRadius: '20px', 
+            cursor: 'pointer', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            fontWeight: 'bold',
+            fontSize: '0.85rem',
+            marginLeft: 'auto', // Esto empuja el botón a la derecha pero antes de los iconos
+            marginRight: '15px'
+          }}
+        >
+          <Lightbulb className="bulb" size={16} fill="white" /> Se me ocurrió una idea
+        </button>
+        <div style={{display:'flex', gap:'10px'}}></div>
         <div style={{display:'flex', gap:'10px'}}><button onClick={handleLogout} title="Cerrar Sesión" style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444'}}><LogOut size={20}/></button><button onClick={()=>setView(view==='wizard'?'history':'wizard')} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}><List size={22}/></button><button onClick={toggleTheme} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}>{theme==='dark'?<Sun size={22}/>:<Moon size={22}/>}</button></div>
       </header>
 
@@ -366,6 +468,185 @@ export default function FreelanceOS() {
           <div className="chat-input-area"><input className="os-input" style={{marginBottom:0}} placeholder="Pregunta algo..." value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleChatSubmit()}/><button onClick={handleChatSubmit} disabled={!chatInput.trim()} style={{background:'var(--text-color)', color:'var(--bg-color)', border:'none', borderRadius:'6px', width:'40px', height:'40px', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center'}}><Send size={18}/></button></div>
         </aside>
       </div>
+      
+      {/* --- MODAL DE IDEAS (ACTUALIZADO) --- */}
+      {ideaModal && (
+        <div className="os-modal-overlay" onClick={() => setIdeaModal(false)}>
+          <div className="os-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '550px', width: '90%' }}>
+            
+            {/* Header del Modal */}
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
+              <h3 style={{margin:0, display:'flex', alignItems:'center', gap:'10px'}}>
+                <Lightbulb color="var(--accent-color)"/> {showIdeaHistory ? 'Historial de Ideas' : 'Capturar Idea'}
+              </h3>
+              <button 
+                onClick={() => { setShowIdeaHistory(!showIdeaHistory); setEditingId(null); }}
+                className="btn-ghost"
+                style={{fontSize:'0.8rem', padding:'6px 12px', display:'flex', gap:'6px', alignItems:'center'}}
+              >
+                {showIdeaHistory ? <><Lightbulb size={14}/> Nueva Idea</> : <><Clock size={14}/> Ver Historial</>}
+              </button>
+            </div>
+
+            {!showIdeaHistory ? (
+              // --- VISTA: ESCRIBIR NUEVA ---
+              <div className="fade-in">
+                <textarea 
+                  autoFocus
+                  className="os-textarea" 
+                  rows="6"
+                  placeholder="¿Qué tienes en mente? Escríbelo rápido..."
+                  value={ideaText}
+                  onChange={e => setIdeaText(e.target.value)}
+                  style={{fontSize:'1rem', resize:'none'}}
+                />
+                <div style={{marginTop:'15px'}}>
+                   <button className="btn-finish" style={{width:'100%'}} onClick={guardarIdea} disabled={loading}>
+                     {loading ? 'Saving...' : 'Save Idea'}
+                   </button>
+                </div>
+              </div>
+            ) : (
+              // --- VISTA: HISTORIAL (MEJORADO) ---
+              <div className="os-scroll-area" style={{maxHeight:'450px', overflowY:'auto', paddingRight:'5px'}}>
+                {ideasList.length === 0 && (
+                  <div style={{textAlign:'center', padding:'30px', color:'#888', fontStyle:'italic'}}>
+                    No hay ideas guardadas. <br/> ¡Es momento de ser creativo!
+                  </div>
+                )}
+                
+                {ideasList.map(idea => (
+                  <div key={idea.id} style={{
+                    background: 'var(--card-bg)', 
+                    padding:'15px', 
+                    borderRadius:'12px', // Borde redondeado
+                    marginBottom:'15px',
+                    border: '1px solid var(--border-color)', // Cuadro completo en vez de línea izq
+                    transition: 'all 0.2s',
+                    position: 'relative'
+                  }}>
+                    
+                    {/* Modo Edición vs Modo Lectura */}
+                    {editingId === idea.id ? (
+                      // --- FORMULARIO EDICIÓN EN LÍNEA ---
+                      <div className="fade-in">
+                        <textarea 
+                          className="os-textarea"
+                          value={editText}
+                          onChange={e => setEditText(e.target.value)}
+                          rows="3"
+                          style={{marginBottom:'10px', fontSize:'0.9rem'}}
+                        />
+                        <div style={{display:'flex', gap:'10px', justifyContent:'flex-end'}}>
+                          <button onClick={() => setEditingId(null)} style={{background:'transparent', border:'1px solid var(--border-color)', borderRadius:'6px', padding:'5px 10px', cursor:'pointer', display:'flex', alignItems:'center', gap:'5px', fontSize:'0.8rem', color:'var(--text-color)'}}>
+                             <X size={14}/> Cancelar
+                          </button>
+                          <button onClick={() => guardarEdicion(idea.id)} style={{background:'var(--accent-color)', border:'none', borderRadius:'6px', padding:'5px 10px', cursor:'pointer', display:'flex', alignItems:'center', gap:'5px', fontSize:'0.8rem', color:'white'}}>
+                             <Check size={14}/> Guardar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // --- VISUALIZACIÓN NORMAL ---
+                      <>
+                        <div style={{whiteSpace:'pre-wrap', fontSize:'0.95rem', marginBottom:'12px', color:'var(--text-color)', lineHeight:'1.5'}}>
+                          {idea.content}
+                        </div>
+                        
+                        <div style={{
+                          display:'flex', 
+                          justifyContent:'space-between', 
+                          alignItems:'center', 
+                          borderTop:'1px solid var(--border-color)', 
+                          paddingTop:'10px',
+                          marginTop:'10px'
+                        }}>
+                          <div style={{fontSize:'0.75rem', color:'#888', display:'flex', alignItems:'center', gap:'5px'}}>
+                            <Clock size={12}/> 
+                            {new Date(idea.created_at).toLocaleDateString('es-PE', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}
+                          </div>
+                          
+                          <div style={{display:'flex', gap:'8px'}}>
+                            <button 
+                              onClick={() => empezarEdicion(idea)}
+                              title="Editar"
+                              style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-muted)', padding:'4px'}}
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button 
+                              onClick={() => solicitarBorrado(idea.id)}
+                              title="Eliminar"
+                              style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444', padding:'4px'}}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button 
+              onClick={() => setIdeaModal(false)} 
+              style={{
+                marginTop:'15px', width:'100%', background:'transparent', border:'none', 
+                color:'#888', cursor:'pointer', fontSize:'0.9rem'
+              }}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="os-modal-overlay" onClick={() => setDeleteTarget(null)} style={{zIndex: 10001}}>
+          <div className="os-modal" onClick={e => e.stopPropagation()} style={{maxWidth:'350px', textAlign:'center', border:'1px solid #ef4444'}}>
+            
+            <div style={{marginBottom:'15px', color:'#ef4444'}}>
+              <AlertTriangle size={40} />
+            </div>
+            
+            <h3 style={{marginTop:0, fontSize:'1.1rem'}}>¿Eliminar esta idea?</h3>
+            <p style={{color:'var(--text-muted)', fontSize:'0.9rem', marginBottom:'25px'}}>
+              Esta acción no se puede deshacer. La idea desaparecerá de tu base de datos permanentemente.
+            </p>
+
+            <div style={{display:'flex', gap:'10px'}}>
+              <button 
+                onClick={() => setDeleteTarget(null)} 
+                className="btn-ghost" 
+                style={{flex:1, justifyContent:'center'}}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={confirmarBorrado} 
+                className="btn-finish" 
+                style={{
+                  flex:1, 
+                  background:'#ef4444', 
+                  borderColor:'#ef4444', 
+                  color:'white',
+                  justifyContent:'center'
+                }}
+              >
+                Sí, Eliminar
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
+
+    
+
   )
 }
