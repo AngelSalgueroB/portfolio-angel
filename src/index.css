@@ -357,7 +357,7 @@ h1 .muted {
 .hero-desc {
   font-size: 1rem;
   max-width: 480px;
-  margin-bottom: 30px;
+  margin-bottom: 0px;
 }
 
 .hero-desc strong { 
