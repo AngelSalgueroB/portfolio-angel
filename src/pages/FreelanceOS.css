@@ -434,8 +434,17 @@ html, body {
   height: 100dvh;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
   background: var(--bg-color);
+  gap: 20px;
+}
+
+.login-footer {
+  color: #5a5b5d;
+  font-size: 1rem;  
+  font-family: monospace; /* Le da el toque técnico */
+  opacity: 0.8;
 }
 
 .login-card {
@@ -549,7 +558,7 @@ html, body {
 
   .login-input {
     font-size: 16px;   /* IMPORTANTE: 16px evita que el iPhone haga zoom al escribir */
-    padding: 14px;     /* Área táctil más grande */
+    padding: 30px 40px;
   }
 
   .btn-login {

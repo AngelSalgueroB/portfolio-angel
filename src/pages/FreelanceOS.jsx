@@ -312,6 +312,11 @@ export default function FreelanceOS() {
             <button className="btn-login" type="submit" disabled={authLoading}>{authLoading ? '...' : 'Iniciar Sesión'}</button>
           </form>
         </div>
+
+        <div className="login-footer">
+           © {new Date().getFullYear()} Angel Salguero
+        </div>
+        
         {notification && <div className="os-modal-overlay" style={{zIndex: 9999}}><div className="os-modal" style={{textAlign:'center', padding:'30px'}}><div style={{color:'#ef4444', marginBottom:'10px'}}><XCircle size={48}/></div><p>{notification.msg}</p><button className="btn-finish" style={{width:'100%', marginTop:'20px'}} onClick={() => setNotification(null)}>Intentar de nuevo</button></div></div>}
       </div>
     )
@@ -447,7 +452,7 @@ export default function FreelanceOS() {
             marginRight: '15px'
           }}
         >
-          <Lightbulb className="bulb" size={16} fill="white" /> Se me ocurrió una idea
+          <Lightbulb className="bulb" size={16} fill="white" /> Any idea?
         </button>
         <div style={{display:'flex', gap:'10px'}}></div>
         <div style={{display:'flex', gap:'10px'}}><button onClick={handleLogout} title="Cerrar Sesión" style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444'}}><LogOut size={20}/></button><button onClick={()=>setView(view==='wizard'?'history':'wizard')} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}><List size={22}/></button><button onClick={toggleTheme} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}>{theme==='dark'?<Sun size={22}/>:<Moon size={22}/>}</button></div>
