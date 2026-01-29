@@ -12,6 +12,7 @@
   --nav-bg: rgba(10,10,10,0.95);
   --font: 'Inter', sans-serif;
   --mono: 'JetBrains Mono', monospace;
+  --accent: #e11d48;
 }
 
 /* Modo Claro (Sobreescritura) */
@@ -80,7 +81,7 @@ nav {
 
 .logo .dot { 
   color: var(--accent); 
-  animation: blink 0.75s infinite;
+  animation: blink 1s infinite;
 }
 
 @keyframes blink { 
@@ -88,26 +89,34 @@ nav {
 }
 
 /* Enlaces de navegación */
-.nav-links { 
-  display: flex; 
-  gap: 32px; 
-  align-items: center; 
+.nav-links {
+  display: flex;
+  gap: 10px;        /* Espacio fijo entre botones */
+  align-items: center;
 }
 
 .nav-btn {
-  background: none;
+  /* TUS ESTILOS EXISTENTES (color, background, etc)... consérvalos */
+  background: transparent;
   border: none;
-  font-family: var(--font);
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-color);
   cursor: pointer;
-  transition: color 0.2s;
-  padding: 0;
+  font-size: 1rem;
+  transition: all 0.2s;
+  
+  /* --- LA SOLUCIÓN MÁGICA --- */
+  width: 110px;          /* 1. Ancho FIJO para todos los botones */
+  text-align: center;    /* 2. Texto centrado en ese ancho */
+  display: flex;         /* 3. Flex para centrar perfecto */
+  justify-content: center; 
+  align-items: center;
+  padding: 10px 0;       /* 4. Quitamos padding lateral variable */
 }
 
-.nav-btn:hover, 
-.nav-btn.active { 
-  color: var(--text); 
+.nav-btn:hover, .nav-btn.active {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.05); /* Sutil fondo al pasar mouse */
+  border-radius: 8px;
 }
 
 .nav-btn.active { 
@@ -208,13 +217,27 @@ input:checked + .slider::after {
 }
 
 .btn-primary {
+  /* CAMBIO CLAVE: Usar la variable en lugar de un color fijo */
   background: var(--accent);
-  color: #fff;
+  border: 1px solid var(--accent);
+  
+  /* Resto de estilos para que se vea bien */
+  color: white; /* Texto blanco siempre */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.39);
 }
 
+/* Efecto Hover Brillante */
 .btn-primary:hover {
+  /* Al pasar el mouse, hacemos que brille con el color del tema */
+  background: var(--accent); 
+  filter: brightness(1.1); /* Lo hace un 10% más brillante */
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(255,51,51,0.3);
+  
+  /* Sombra del color del tema */
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent), transparent 40%);
 }
 
 .btn-ghost {
@@ -314,7 +337,7 @@ input:checked + .slider::after {
   height: 6px;
   background: var(--accent);
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
@@ -339,7 +362,7 @@ h1 .muted {
 
 /* Texto con Gradiente */
 .text-gradient {
-  background: linear-gradient(to right, #ffffff 0%, #a0a0a0 100%);
+  background: linear-gradient(to right, var(--accent), #ffbd2e);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -655,7 +678,7 @@ h1 .muted {
 .cta-title { 
   font-size: 2.5rem; 
   margin-bottom: 16px; 
-  color: var(--text); 
+  color: var(--accent); 
 }
 
 /* =========================================
@@ -689,11 +712,19 @@ h1 .muted {
 }
 
 .footer-social-link:hover {
-  color: #ff3333;
+  /* Color del icono */
+  color: var(--accent);
+  
+  /* Efecto de movimiento */
   transform: translateY(-5px) scale(1.1);
-  background-color: rgba(255, 51, 51, 0.1);
-  box-shadow: 0 10px 20px -10px rgba(255, 51, 51, 0.6),
-              0 0 15px rgba(255, 51, 51, 0.2);
+  
+  /* FONDO: Tu color acento pero al 10% de opacidad (transparente al 90%) */
+  background-color: color-mix(in srgb, var(--accent), transparent 90%);
+  
+  /* SOMBRA/AURA: Tu color acento con diferentes transparencias */
+  box-shadow: 
+    0 10px 20px -10px color-mix(in srgb, var(--accent), transparent 40%),
+    0 0 15px color-mix(in srgb, var(--accent), transparent 80%);
 }
 
 /* =========================================
@@ -779,7 +810,7 @@ h1 .muted {
 
 /* Animación Fade In */
 .fade-in { 
-  animation: fadeIn 0.5s ease-out forwards; 
+  animation: fadeIn 0.5s forwards;
   opacity: 0; 
 }
 

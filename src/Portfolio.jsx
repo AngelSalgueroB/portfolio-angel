@@ -1,14 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-// AGREGAMOS: Layout, Server, Database, Code
-import { 
-  Mail, FileText, Layout, Server, Database, Code, 
-  Terminal, Globe, Cpu, BarChart3, CloudCog, ArrowRight, Activity 
-} from 'lucide-react';
+// IMPORTAMOS EL DICCIONARIO DE IDIOMAS
+import { translations } from './translations';
 
-import { 
-  FaGithub, FaLinkedin, FaFacebook, FaInstagram, FaTwitter, FaYoutube, FaEnvelope 
-} from 'react-icons/fa';
+import {
+  Mail,
+  FileText,
+  Layout,
+  Server,
+  Database,
+  Code,
+  Terminal,
+  Globe,
+  Cpu,
+  BarChart3,
+  CloudCog,
+  ArrowRight,
+  Activity,
+  Palette, // <--- Importante para el icono de temas
+} from "lucide-react";
+
+import {
+  FaGithub,
+  FaLinkedin,
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaYoutube,
+  FaEnvelope,
+} from "react-icons/fa";
 
 import DataCleanerDemo from "./components/DataCleanerDemo";
 import FinanceHubDemo from "./components/FinanceHubDemo";
@@ -17,7 +37,7 @@ import GastroAppDemo from "./components/GastroAppDemo";
 import AutomationToolsDemo from "./components/AutomationToolsDemo";
 import UniVaultDemo from "./components/UniVaultDemo";
 
-// --- DATA: Fragmentos de código para el fondo ---
+// --- DATA: Fragmentos de código (Se mantiene por si lo usas luego) ---
 const BACKGROUND_CODE = [
   "npm install react-router-dom",
   "git commit -m 'feat: new dashboard'",
@@ -37,149 +57,44 @@ const BACKGROUND_CODE = [
   "tailwind.config.js: theme: { extend: ... }",
   "python3 manage.py runserver",
 ];
-// Repetimos la lista para llenar la pantalla
-const fullCodeGrid = [
-  ...BACKGROUND_CODE,
-  ...BACKGROUND_CODE,
-  ...BACKGROUND_CODE,
-];
 
-// --- 1. DATOS ACTUALIZADOS CON IMÁGENES Y DESCRIPCIÓN ---
-const PROJECTS = [
-  {
-    title: "FinanceHub",
-    desc: "Billetera virtual con autenticación segura.",
-    longDesc:
-      "Esta aplicación permite a los usuarios gestionar sus finanzas personales, establecer metas de ahorro y visualizar gastos mediante gráficos interactivos. Incluye autenticación segura y modo oscuro.",
-    tech: ["Supabase", "React", "JS"],
-    icon: "💳",
-
-    hasDemo: true,
-  },
-  {
-    title: "DataCleaner Bot",
-    desc: "Pipeline de automatización de datos.",
-    longDesc:
-      "Bot desarrollado en Python que procesa archivos Excel masivos, limpia datos inconsistentes y genera reportes automáticos listos para análisis en Power BI.",
-    tech: ["Python", "Pandas", "ETL"],
-    icon: "🤖",
-    hasDemo: true, //
-  },
-  {
-    title: "SQL vs NoSQL",
-    desc: "Benchmark de rendimiento de bases de datos.",
-    longDesc:
-      "Un estudio comparativo técnico donde se analizan tiempos de respuesta en consultas complejas utilizando millones de registros. Se comparan PostgreSQL vs MongoDB.",
-    tech: ["PostgreSQL", "Mongo", "DB"],
-    icon: "⚡",
-    hasDemo: true,
-  },
-  {
-    title: "Gastro-App",
-    desc: "Plataforma de reservas para restaurantes.",
-    longDesc:
-      "Sistema completo para gestión de mesas y reservas en tiempo real. Permite a los dueños administrar el menú y a los clientes reservar su mesa favorita.",
-    tech: ["Nuxt 3", "Vue.js", "Prisma", "Pinia"],
-    icon: "🍽️",
-    hasDemo: true,
-  },
-  {
-    title: "Automation-Tools",
-    desc: "Scripts para automatizar tareas.",
-    longDesc:
-      "Colección de scripts de utilidad para sistemas operativos Windows y Linux. Incluye organizadores de carpetas, renombrado masivo y backups automáticos.",
-    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Node.js"],
-    icon: "🛠️",
-    hasDemo: true,
-  },
-  {
-    title: "UniVault",
-    desc: "Repositorio académico centralizado.",
-    longDesc:
-      "Plataforma de gestión del conocimiento universitario. Organiza el material de los 10 ciclos académicos (Syllabus, Proyectos, PDFs) con búsqueda indexada y previsualización de documentos.",
-    tech: ["React", "Node.js", "AWS S3"], // El stack ideal para esto
-    icon: "🎓",
-    hasDemo: true,
-  },
-];
-
-const SERVICES = [
-  {
-    id: "01",
-    title: "Desarrollo Full Stack",
-    desc: "Arquitectura y construcción de aplicaciones web a medida. Desde el diseño UI hasta la base de datos.",
-    icon: <Globe size={28} />,
-    features: [
-      "React / Next.js",
-      "APIs REST & GraphQL",
-      "Paneles Administrativos",
-    ],
-  },
-  {
-    id: "02",
-    title: "Automatización & Scripts",
-    desc: "Elimino tareas repetitivas creando bots y scripts que trabajan por ti 24/7.",
-    icon: <Terminal size={28} />,
-    features: [
-      "Web Scraping (Python)",
-      "Procesamiento de Excel",
-      "Bots de Telegram/WhatsApp",
-    ],
-  },
-  {
-    id: "03",
-    title: "Ingeniería de Datos",
-    desc: "Transformo datos brutos en dashboards interactivos para la toma de decisiones.",
-    icon: <BarChart3 size={28} />,
-    features: [
-      "ETL Pipelines",
-      "Limpieza de Datos",
-      "Power BI / Looker Studio",
-    ],
-  },
-  {
-    id: "04",
-    title: "Infraestructura Cloud",
-    desc: "Despliegue y optimización de servidores para que tu aplicación nunca se caiga.",
-    icon: <CloudCog size={28} />,
-    features: [
-      "AWS / Vercel / Docker",
-      "CI/CD Pipelines",
-      "Optimización de Costos",
-    ],
-  },
-
-  {
-    id: "05",
-    title: "Auditoría de Rendimiento",
-    desc: "Diagnóstico profundo de bases de datos y sistemas para maximizar la velocidad y escalabilidad.",
-    icon: <Activity size={28} />, // Icono de pulso/actividad
-    features: [
-      "Benchmarking SQL vs NoSQL",
-      "Optimización de Consultas",
-      "Pruebas de Carga (Stress Testing)",
-    ],
-  },
+// --- DEFINICIÓN DE TEMAS DE COLOR (Fuera para que no se recree) ---
+const COLOR_THEMES = [
+  { id: 'red', color: '#e11d48', name: 'Rojo' },
+  { id: 'green', color: '#10b981', name: 'Esmeralda' },
+  { id: 'blue', color: '#3b82f6', name: 'Azul' },
+  { id: 'purple', color: '#8b5cf6', name: 'Violeta' },
+  { id: 'orange', color: '#f97316', name: 'Naranja' },
 ];
 
 function App() {
   const [activeSection, setActiveSection] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
 
   // ESTADO NUEVO: Para saber qué proyecto se abrió
   const [selectedProject, setSelectedProject] = useState(null);
-
   const cursorRef = useRef(null);
+  
+  // --- CONFIGURACIÓN DE IDIOMA ---
+  const [language, setLanguage] = useState("es"); // 'es' o 'en'
+  const t = translations[language]; // 't' contiene todo el texto en el idioma actual
 
+  // --- CONFIGURACIÓN DE TEMA DE COLOR ---
+  const [accentColor, setAccentColor] = useState('#e11d48'); // Rojo por defecto
+  const [showThemeMenu, setShowThemeMenu] = useState(false); // Menú de colores
+
+  // EFECTO 1: Tema Oscuro/Claro
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  // EFECTO 2: Inyectar variable de color (--accent)
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent', accentColor);
+  }, [accentColor]);
 
+  // EFECTO 3: Cursor
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (cursorRef.current) {
@@ -190,6 +105,10 @@ function App() {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -212,12 +131,12 @@ function App() {
                 <div
                   className="badge"
                   style={{
-                    background: "rgba(225, 29, 72, 0.1)",
-                    color: "#e11d48",
-                    border: "1px solid rgba(225, 29, 72, 0.2)",
+                    background: `${accentColor}1a`, // Color con transparencia (hex + 1a = ~10%)
+                    color: accentColor,
+                    border: `1px solid ${accentColor}33`,
                   }}
                 >
-                  Disponible para proyectos
+                  {t.hero.badge}
                 </div>
 
                 <h1
@@ -227,9 +146,9 @@ function App() {
                     marginBottom: "20px",
                   }}
                 >
-                  Resuelvo problemas{" "}
-                  <span className="text-gradient">complejos con</span>{" "}
-                  soluciones digitales.
+                  {t.hero.title_start}{" "}
+                  <span className="text-gradient">{t.hero.title_gradient}</span>{" "}
+                  {t.hero.title_end}
                 </h1>
 
                 <p
@@ -240,12 +159,11 @@ function App() {
                     color: "#94a3b8",
                   }}
                 >
-                  Ingeniero de Sistemas enfocado en el desarrollo{" "}
-                  <span style={{ fontWeight: "bold" }}>Full Stack</span> y la
-                  optimización de procesos. Transformo requerimientos en
-                  aplicaciones web automatizado con una interfaz{" "}
-                  <span style={{ fontWeight: "bold" }}>(UI/UX)</span> limpia y
-                  funcional.
+                  {t.hero.desc_start}{" "}
+                  <span style={{ fontWeight: "bold" }}>Full Stack</span>{" "}
+                  {t.hero.desc_mid}{" "}
+                  <span style={{ fontWeight: "bold" }}>(UI/UX)</span>{" "}
+                  {t.hero.desc_end}
                 </p>
 
                 <div className="hero-buttons" style={{ marginTop: "30px" }}>
@@ -254,14 +172,14 @@ function App() {
                     className="btn btn-primary"
                     style={{ padding: "12px 30px", fontSize: "1rem" }}
                   >
-                    Ver Portafolio
+                    {t.hero.btn_primary}
                   </button>
                   <button
                     onClick={() => setActiveSection("contact")}
                     className="btn btn-ghost"
                     style={{ padding: "12px 30px", fontSize: "1rem" }}
                   >
-                    Contactar
+                     {t.hero.btn_secondary}
                   </button>
                 </div>
               </div>
@@ -288,7 +206,7 @@ function App() {
                     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
                     overflow: "hidden",
                     fontFamily: "'Courier New', Courier, monospace",
-                    animation: "floatCard 6s ease-in-out infinite", // Mantenemos que la tarjeta flote suave
+                    animation: "floatCard 6s ease-in-out infinite",
                   }}
                 >
                   {/* Header de Ventana */}
@@ -301,94 +219,41 @@ function App() {
                       borderBottom: "1px solid #333",
                     }}
                   >
-                    <div
-                      style={{
-                        width: "10px",
-                        height: "10px",
-                        borderRadius: "50%",
-                        background: "#ff5f56",
-                      }}
-                    ></div>
-                    <div
-                      style={{
-                        width: "10px",
-                        height: "10px",
-                        borderRadius: "50%",
-                        background: "#ffbd2e",
-                      }}
-                    ></div>
-                    <div
-                      style={{
-                        width: "10px",
-                        height: "10px",
-                        borderRadius: "50%",
-                        background: "#27c93f",
-                      }}
-                    ></div>
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f56" }}></div>
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ffbd2e" }}></div>
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#27c93f" }}></div>
                   </div>
 
                   {/* Contenido (Estadísticas como código) */}
                   <div style={{ padding: "25px" }}>
+                    
                     {/* Item 1 */}
                     <div style={{ marginBottom: "20px" }}>
-                      <p
-                        style={{
-                          margin: 0,
-                          color: "#6a9955",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        // Años Experiencia
+                      {/* AQUÍ EL CAMBIO: Usamos accentColor en lugar de #6a9955 */}
+                      <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
+                        {t.hero.stats.exp}
                       </p>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ color: "#569cd6" }}>const</span>
                         <span style={{ color: "#9cdcfe" }}>exp</span>
                         <span style={{ color: "#d4d4d4" }}>+=</span>
-                        <span
-                          style={{
-                            color: "#b5cea8",
-                            fontSize: "1.4rem",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>
                           3;
                         </span>
                       </div>
                     </div>
 
+                    {/* Item 2 */}
                     <div style={{ marginBottom: "20px" }}>
-                      <p
-                        style={{
-                          margin: 0,
-                          color: "#6a9955",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        // Proyectos Reales
+                      {/* AQUÍ EL CAMBIO */}
+                      <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
+                          {t.hero.stats.projects}
                       </p>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ color: "#c586c0" }}>let</span>
                         <span style={{ color: "#9cdcfe" }}>done</span>
                         <span style={{ color: "#d4d4d4" }}>=</span>
-                        <span
-                          style={{
-                            color: "#b5cea8",
-                            fontSize: "1.4rem",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>
                           15;
                         </span>
                       </div>
@@ -396,31 +261,14 @@ function App() {
 
                     {/* Item 3 */}
                     <div>
-                      <p
-                        style={{
-                          margin: 0,
-                          color: "#6a9955",
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        // Clientes Satisfechos
+                      {/* AQUÍ EL CAMBIO */}
+                      <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
+                          {t.hero.stats.clients}
                       </p>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ color: "#9cdcfe" }}>status</span>
                         <span style={{ color: "#d4d4d4" }}>:</span>
-                        <span
-                          style={{
-                            color: "#ce9178",
-                            fontSize: "1.4rem",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <span style={{ color: "#ce9178", fontSize: "1.4rem", fontWeight: "bold" }}>
                           "100%"
                         </span>
                       </div>
@@ -436,15 +284,14 @@ function App() {
         return (
           <div className="section-wrapper fade-in">
             <div className="section-header">
-              <p className="section-label">01 — PROYECTOS</p>
-              <h2 className="section-title">Trabajo seleccionado</h2>
+              <p className="section-label">{t.section_titles.projects_label}</p>
+              <h2 className="section-title">{t.section_titles.projects_title}</h2>
               <p style={{ marginTop: "10px", color: "var(--text-muted)" }}>
-                Haz clic en una tarjeta para ver detalles.
+                 {t.section_titles.projects_subtitle}
               </p>
             </div>
             <div className="projects-grid">
-              {PROJECTS.map((p, i) => (
-                // AQUI AGREGAMOS EL EVENTO CLICK
+              {t.projects.map((p, i) => (
                 <div
                   key={i}
                   className="project-card clickable"
@@ -454,9 +301,9 @@ function App() {
                   <h3>{p.title}</h3>
                   <p>{p.desc}</p>
                   <div className="tech-stack">
-                    {p.tech.map((t, j) => (
+                    {p.tech.map((techItem, j) => (
                       <span key={j} className="tech-tag">
-                        {t}
+                        {techItem}
                       </span>
                     ))}
                   </div>
@@ -471,8 +318,8 @@ function App() {
         return (
           <div className="section-wrapper fade-in">
             <div className="section-header">
-              <p className="section-label">02 — SOLUCIONES</p>
-              <h2 className="section-title">Cómo puedo ayudarte</h2>
+              <p className="section-label">{t.section_titles.services_label}</p>
+              <h2 className="section-title">{t.section_titles.services_title}</h2>
               <p
                 style={{
                   marginTop: "10px",
@@ -480,24 +327,18 @@ function App() {
                   maxWidth: "600px",
                 }}
               >
-                Combino ingeniería de software con visión de negocio para
-                entregar resultados técnicos que resuelven problemas reales.
+                {t.section_titles.services_desc}
               </p>
             </div>
 
             <div className="services-grid">
-              {SERVICES.map((s, i) => (
+              {t.services.map((s, i) => (
                 <div key={i} className="service-card">
-                  {/* Icono Flotante */}
                   <div className="service-icon-box">{s.icon}</div>
-
-                  {/* Número de fondo sutil */}
                   <div className="service-bg-num">{s.id}</div>
-
                   <h3 className="service-title">{s.title}</h3>
                   <p className="service-desc">{s.desc}</p>
 
-                  {/* Lista de características estilo terminal */}
                   <ul className="service-features">
                     {s.features.map((feat, j) => (
                       <li key={j}>
@@ -531,11 +372,10 @@ function App() {
         return (
           <div className="section-wrapper fade-in">
             <div className="cta-container">
-              <p className="section-label">03 — CONTACTO</p>
-              <h2 className="cta-title">¿Tienes un proyecto?</h2>
+              <p className="section-label">{t.section_titles.contact_label}</p>
+              <h2 className="cta-title">{t.section_titles.contact_title}</h2>
               <p className="hero-desc" style={{ margin: "0 auto 30px" }}>
-                Estoy listo para nuevos desafíos freelance. Envíame un correo o
-                conecta en redes.
+                  {t.section_titles.contact_desc}
               </p>
 
               <a
@@ -543,8 +383,138 @@ function App() {
                 className="btn btn-primary"
                 style={{ marginBottom: "2rem" }}
               >
-                Envíame un correo →
+                  {t.section_titles.contact_btn}
               </a>
+            </div>
+          </div>
+        );
+
+      case "privacy":
+        return (
+          <div
+            className="section-wrapper fade-in"
+            style={{
+              maxWidth: "800px",
+              margin: "0 auto",
+              padding: "40px 25px",
+              fontFamily:
+                '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+            }}
+          >
+            {/* Header Política */}
+            <div
+              className="section-header"
+              style={{ textAlign: "center", marginBottom: "70px" }}
+            >
+              <p
+                className="section-label"
+                style={{ letterSpacing: "3px", fontSize: "0.85rem", color: "#999" }}
+              >
+                {t.privacy.header.label}
+              </p>
+
+              <h2
+                style={{
+                  fontSize: "4rem",
+                  fontFamily: 'Georgia, "Times New Roman", Times, serif',
+                  fontWeight: "700",
+                  lineHeight: "1.1",
+                  margin: "15px 0",
+                  color: "var(--accent)",
+                  letterSpacing: "-2px",
+                }}
+              >
+                {t.privacy.header.title}
+              </h2>
+              <p
+                style={{
+                  fontFamily: "Georgia, serif",
+                  fontSize: "1.4rem",
+                  color: "var(--text-muted)",
+                  fontStyle: "italic",
+                  marginTop: "10px",
+                }}
+              >
+                {t.privacy.header.subtitle}
+              </p>
+            </div>
+
+            {/* CONTENIDO DINÁMICO */}
+            <div
+              className="privacy-content"
+              style={{
+                lineHeight: "1.8",
+                fontSize: "1.15rem",
+                color: "var(--text-color)",
+                opacity: 0.95,
+              }}
+            >
+               {/* 1. RESPONSABLE */}
+               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
+                 {t.privacy.sections.responsible.title}
+               </h3>
+               <p>{t.privacy.sections.responsible.text}</p>
+               <ul style={{ listStyle: 'none', padding: 0, marginTop: '15px', borderLeft: '3px solid var(--accent)', paddingLeft: '20px' }}>
+                 {t.privacy.sections.responsible.items.map((item, i) => (
+                   <li key={i}><strong>{item}</strong></li>
+                 ))}
+               </ul>
+
+               {/* 2. DATOS */}
+               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
+                 {t.privacy.sections.data.title}
+               </h3>
+               <p>{t.privacy.sections.data.intro}</p>
+               <div style={{ display: 'grid', gap: '20px', marginTop: '20px' }}>
+                 {t.privacy.sections.data.cards.map((card, i) => (
+                    <div key={i} style={{ background: 'var(--card-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                      <strong style={{ display:'block', marginBottom:'10px', color: 'var(--accent)' }}>{card.title}</strong>
+                      <p style={{ fontSize: '1rem', margin:0 }}>{card.content}</p>
+                    </div>
+                 ))}
+               </div>
+
+               {/* 3. TERCEROS */}
+               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
+                 {t.privacy.sections.third_parties.title}
+               </h3>
+               <p>{t.privacy.sections.third_parties.text}</p>
+               <ul style={{ paddingLeft: '20px', color: 'var(--text-muted)' }}>
+                 {t.privacy.sections.third_parties.items.map((item, i) => (
+                   <li key={i} style={{ marginBottom: '10px' }}><strong>{item}</strong></li>
+                 ))}
+               </ul>
+               <p style={{ fontSize: '0.95rem', fontStyle: 'italic' }}>{t.privacy.sections.third_parties.note}</p>
+
+               {/* 4. DERECHOS */}
+               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
+                 {t.privacy.sections.rights.title}
+               </h3>
+               <p>{t.privacy.sections.rights.intro}</p>
+               <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '20px' }}>
+                 {t.privacy.sections.rights.list.map((right, i) => (
+                   <li key={i} style={{ padding: '15px', border: '1px solid var(--border-color)', borderRadius: '6px' }}>
+                     <strong>{right.label}:</strong><br/> {right.desc}
+                   </li>
+                 ))}
+               </ul>
+
+               {/* 5 & 6. COOKIES Y RETENCIÓN */}
+               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
+                 {t.privacy.sections.cookies.title}
+               </h3>
+               <p>{t.privacy.sections.cookies.text}</p>
+
+               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
+                 {t.privacy.sections.retention.title}
+               </h3>
+               <p>{t.privacy.sections.retention.text}</p>
+            </div>
+            
+             <div style={{ textAlign: 'center', marginTop: '100px', marginBottom: '80px', borderTop: '1px solid var(--border-color)', paddingTop: '30px' }}>
+               <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                 {t.privacy.footer_text}
+               </span>
             </div>
           </div>
         );
@@ -558,64 +528,169 @@ function App() {
     <div className="app-container">
       <div className="cursor-glow" ref={cursorRef}></div>
 
-      {/* Navbar */}
-      <nav>
+      {/* Navbar OPTIMIZADO */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 50px' }}>
+        
+        {/* 1. LOGO (Izquierda) */}
         <div className="logo" onClick={() => setActiveSection("home")}>
           as<span className="dot">_</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+
+        {/* CONTENEDOR DERECHO */}
+        <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+          
+          {/* 2. ENLACES DE NAVEGACIÓN (Centro-Derecha) */}
           <div className={`nav-links ${menuOpen ? "active" : ""}`}>
             <button
               className={`nav-btn ${activeSection === "home" ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection("home");
-                setMenuOpen(false);
-              }}
+              onClick={() => { setActiveSection("home"); setMenuOpen(false); }}
             >
-              Inicio
+              {t.nav.home}
             </button>
             <button
               className={`nav-btn ${activeSection === "projects" ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection("projects");
-                setMenuOpen(false);
-              }}
+              onClick={() => { setActiveSection("projects"); setMenuOpen(false); }}
             >
-              Proyectos
+               {t.nav.projects}
             </button>
             <button
               className={`nav-btn ${activeSection === "services" ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection("services");
-                setMenuOpen(false);
-              }}
+              onClick={() => { setActiveSection("services"); setMenuOpen(false); }}
             >
-              Servicios
+               {t.nav.services}
             </button>
             <button
               className="btn btn-primary"
-              onClick={() => {
-                setActiveSection("contact");
-                setMenuOpen(false);
-              }}
+              onClick={() => { setActiveSection("contact"); setMenuOpen(false); }}
             >
-              Contacto
+               {t.nav.contact}
             </button>
           </div>
-          <label className="switch">
-            <input
-              type="checkbox"
-              onChange={toggleTheme}
-              checked={theme === "light"}
-            />
-            <span className="slider"></span>
-          </label>
-          <button
-            className="menu-toggle"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            ☰
-          </button>
+
+          {/* 3. CONTROLES (Idioma + Tema + Color) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            
+            {/* BOTÓN IDIOMA */}
+            <button 
+                onClick={() => setLanguage(prev => prev === "es" ? "en" : "es")}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-color)',
+                  width: '40px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '0.8rem',
+                  padding: '0'
+                }}
+              >
+                {language === "es" ? "ES" : "EN"}
+            </button>
+
+            {/* --- NUEVO: SELECTOR DE TEMA DE COLOR --- */}
+            <div style={{ position: 'relative' }}> 
+              <button
+                onClick={() => setShowThemeMenu(!showThemeMenu)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-color)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '5px'
+                }}
+                title="Cambiar Color de Tema"
+              >
+                {/* El icono toma el color actual del tema */}
+                <Palette size={20} style={{ color: accentColor }} />
+              </button>
+
+              {/* MODAL FLOTANTE (POPOVER) */}
+              {showThemeMenu && (
+                <div 
+                  className="theme-menu fade-in"
+                  style={{
+                    position: 'absolute',
+                    top: '40px',
+                    right: '-10px',
+                    background: 'var(--card-bg, #1e1e1e)', 
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    padding: '15px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                    zIndex: 100,
+                    minWidth: '160px'
+                  }}
+                >
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted, #888)', marginBottom: '5px' }}>
+                    Selecciona un color:
+                  </p>
+                  
+                  {COLOR_THEMES.map((themeOption) => (
+                    <button
+                      key={themeOption.id}
+                      onClick={() => {
+                        setAccentColor(themeOption.color);
+                        setShowThemeMenu(false); 
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '5px',
+                        color: 'var(--text-color)',
+                        fontSize: '0.9rem',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <div 
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '50%',
+                          background: themeOption.color,
+                          border: accentColor === themeOption.color ? '2px solid white' : 'none',
+                          boxShadow: accentColor === themeOption.color ? '0 0 0 2px var(--text-color)' : 'none'
+                        }}
+                      />
+                      {themeOption.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* SWITCH TEMA */}
+            <label className="switch">
+              <input
+                type="checkbox"
+                onChange={toggleTheme}
+                checked={theme === "light"}
+              />
+              <span className="slider"></span>
+            </label>
+
+            {/* HAMBURGUESA (Solo Móvil) */}
+            <button
+              className="menu-toggle"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              ☰
+            </button>
+          </div>
+
         </div>
       </nav>
 
@@ -628,11 +703,11 @@ function App() {
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
             style={{
-              maxWidth: "1200px", // <--- AUMENTADO (Antes 850px)
-              width: "95%", // Ocupa casi todo el ancho de la pantalla
-              maxHeight: "110vh", // Casi todo el alto
-              overflowY: "auto", // Scroll solo si es extremaaaamente necesario
-              padding: "50px", // Más aire interno
+              maxWidth: "1200px",
+              width: "95%",
+              maxHeight: "110vh",
+              overflowY: "auto",
+              padding: "50px",
             }}
           >
             <button
@@ -647,40 +722,22 @@ function App() {
               <div className="project-icon">{selectedProject.icon}</div>
             </div>
 
-            {/* --- AQUÍ ESTÁ LA LÓGICA DE LA DEMO --- */}
-            {selectedProject.hasDemo ? (
-              <div style={{ margin: "0 -20px 25px -20px" }}>
-                {(() => {
-                  switch (selectedProject.title) {
-                    case "FinanceHub":
-                      return <FinanceHubDemo />;
-                    case "DataCleaner Bot":
-                      return <DataCleanerDemo />;
-                    case "SQL vs NoSQL":
-                      return <SqlNoSqlDemo />;
-                    case "Gastro-App":
-                      return <GastroAppDemo />;
-                    case "Automation-Tools":
-                      return <AutomationToolsDemo />;
-                    case "UniVault":
-                      return <UniVaultDemo />;
-                    default:
-                      return null;
-                  }
-                })()}
-              </div>
-            ) : (
-              // Imagen normal...
-              <div className="modal-image-container">
-                <img
-                  src={selectedProject.img}
-                  alt={selectedProject.title}
-                  className="modal-img"
-                />
-              </div>
-            )}
+            {/* DEMOS LOGIC */}
+            <div style={{ margin: "0 -20px 25px -20px" }}>
+              {(() => {
+                switch (selectedProject.title) {
+                  case "FinanceHub": return <FinanceHubDemo />;
+                  case "DataCleaner Bot": return <DataCleanerDemo />;
+                  case "SQL vs NoSQL": return <SqlNoSqlDemo />;
+                  case "Gastro-App": return <GastroAppDemo />;
+                  case "Automation-Tools": return <AutomationToolsDemo />;
+                  case "UniVault": return <UniVaultDemo />;
+                  default: 
+                    return null; 
+                }
+              })()}
+            </div>
 
-            {/* Descripción y Texto (Igual para todos) */}
             <div className="modal-text">
               <div className="tech-stack" style={{ marginBottom: "1rem" }}>
                 {selectedProject.tech.map((t, j) => (
@@ -689,60 +746,80 @@ function App() {
                   </span>
                 ))}
               </div>
-              <p className="modal-desc">{selectedProject.longDesc}</p>
+              <p className="modal-desc">{selectedProject.desc} <br/><br/> {selectedProject.longDesc || "Description available via demo."}</p>
             </div>
           </div>
         </div>
       )}
 
-        {/* --- FOOTER HORIZONTAL (OPTIMIZADO) --- */}
-        <footer
-          style={{
-            marginTop: "80px",
-            padding: "30px 50px", // Espacio a los lados
-            width: "100%",
-            display: "flex",
-            flexDirection: "row", // Alineación horizontal
-            alignItems: "center",
-            justifyContent: "space-between", // Separa los elementos a los extremos
-            borderTop: "1px solid var(--border-color, rgba(255,255,255,0.1))", // Línea sutil superior
-            flexWrap: "wrap", // Para que se adapte en móviles
-            gap: "20px",
-          }}
-        >
-          {/* IZQUIERDA: Copyright */}
-          <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
-            <span>© {new Date().getFullYear()} Angel Salguero</span>
-          </div>
+      {/* --- FOOTER --- */}
+      <footer
+        style={{
+          marginTop: "80px",
+          padding: "30px 50px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderTop: "1px solid var(--border-color, rgba(255,255,255,0.1))",
+          flexWrap: "wrap",
+          gap: "20px",
+        }}
+      >
+        <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
+          <span>© {new Date().getFullYear()} Angel Salguero</span>
+        </div>
 
-          {/* DERECHA: Iconos Sociales */}
-          <div style={{ display: 'flex', gap: '10px' }}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveSection("privacy");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#888",
+            fontSize: "0.9rem",
+            textDecoration: "none",
+            cursor: "pointer",
+            transition: "color 0.2s",
+            fontFamily: "inherit",
+          }}
+          onMouseEnter={(e) => (e.target.style.color = "var(--accent)")}
+          onMouseLeave={(e) => (e.target.style.color = "#888")}
+        >
+          {t.footer.privacy}
+        </button>
+
+        <div style={{ display: "flex", gap: "10px" }}>
           {[
-            // Usamos el COMPONENTE (FaLinkedin) sin < >, para que React lo pueda renderizar abajo
             { icon: FaLinkedin, link: "https://www.linkedin.com/in/TU-USUARIO" },
             { icon: FaGithub, link: "https://github.com/TU-USUARIO" },
             { icon: FaFacebook, link: "https://facebook.com/TU-USUARIO" },
             { icon: FaInstagram, link: "https://instagram.com/TU-USUARIO" },
             { icon: FaTwitter, link: "https://twitter.com/TU-USUARIO" },
             { icon: FaYoutube, link: "https://youtube.com/@TU-CANAL" },
-            // Usamos FaEnvelope para el mail en lugar de Mail de Lucide para mantener el estilo
             { icon: FaEnvelope, link: "mailto:tu-email@ejemplo.com" },
           ].map((item, index) => (
-            <a 
+            <a
               key={index}
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-social-link"
-              // Estilo opcional para asegurar alineación
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              {/* AQUÍ ESTABA EL ERROR: React Icons no usa strokeWidth */}
               <item.icon size={20} />
             </a>
           ))}
         </div>
-        </footer>
+      </footer>
     </div>
   );
 }
