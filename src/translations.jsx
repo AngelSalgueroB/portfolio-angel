@@ -11,7 +11,7 @@ import {
 export const translations = {
   es: {
     nav: {
-      home: "Inicio",
+      home: "Inicio", 
       projects: "Proyectos",
       services: "Servicios",
       contact: "Contacto"

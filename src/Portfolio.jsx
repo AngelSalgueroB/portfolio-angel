@@ -63,8 +63,15 @@ const COLOR_THEMES = [
   { id: 'red', color: '#e11d48', name: 'Rojo' },
   { id: 'green', color: '#10b981', name: 'Esmeralda' },
   { id: 'blue', color: '#3b82f6', name: 'Azul' },
-  { id: 'purple', color: '#8b5cf6', name: 'Violeta' },
+  { id: 'purple', color: '#8c5cff', name: 'Violeta' },
   { id: 'orange', color: '#f97316', name: 'Naranja' },
+  { id: 'cyan', color: '#06b6d4', name: 'Cian Cyber' },
+  { id: 'yellow', color: '#eab308', name: 'Amarillo Code' },
+  { id: 'pink', color: '#ec4899', name: 'Rosa Tech' },
+  { id: 'brown', color: '#a0522d', name: 'Marrón Tierra' },
+  { id: 'black', color: '#374151', name: 'Negro Carbón' },
+  { id: 'Peach', color: '#ff7e5f', name: 'Peach' },
+  { id: 'Verde', color: '#33cc33', name: 'Verde Lima' },
 ];
 
 function App() {

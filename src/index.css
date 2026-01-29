@@ -1,3 +1,5 @@
+/*src\index.css*/
+
 /* =========================================
    1. VARIABLES CSS (TEMAS)
    ========================================= */
@@ -286,7 +288,7 @@ input:checked + .slider::after {
 
 .section-label { 
   font-family: var(--mono); 
-  font-size: 0.75rem; 
+  font-size: 0.75rem;
   color: var(--accent); 
   margin-bottom: 8px; 
 }
@@ -514,7 +516,7 @@ h1 .muted {
 
 .service-card {
   background: var(--card-bg);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 30px;
   position: relative;
@@ -631,9 +633,9 @@ h1 .muted {
 }
 
 .service-card:hover .service-btn {
-  background: var(--text-color);
+  background: var(--accent);
   color: var(--bg-color);
-  border-color: var(--text-color);
+  border-color: var(--accent);
 }
 
 /* Servicios Legacy (Alternativo) */

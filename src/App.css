@@ -82,7 +82,7 @@ nav {
 }
 
 /* Tipografía y Botones */
-h1 { font-size: 1rem; margin-bottom: 1rem; font-weight: 700; line-height: 1.2; }
+h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 800; line-height: 1.2; }
 p { font-size: 1.1rem; line-height: 1.6; }
 
 .btn { 
@@ -205,19 +205,14 @@ p { font-size: 1.1rem; line-height: 1.6; }
   margin-top: auto; /* Empuja el texto al fondo de la tarjeta */
   font-weight: bold;
   font-size: 0.9rem;
-  letter-spacing: 1px;
-  
-  /* AQUÍ LA SOLUCIÓN: Usar la variable del tema */
-  color: var(--accent); 
-  
+  letter-spacing: 1px;  
   cursor: pointer;
-  transition: transform 0.2s ease;
-}
+  transition: transform 0.2s ease;}
 
 /* Efecto al pasar el mouse sobre el texto */
 .project-card:hover .learn-more {
   transform: translateX(5px); /* Se mueve un poquito a la derecha */
-   color: var(--accent); 
+  color: var(--accent); 
 }
 
 /* --- DETALLE SUTIL DE FONDO (TEXTURA) --- */
@@ -457,15 +452,6 @@ p { font-size: 1.1rem; line-height: 1.6; }
   transform: translateY(-5px);
 }
 
-.learn-more {
-  display: block;
-  margin-top: 1rem;
-  font-size: 0.8rem;
-  color: var(--accent-color);
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
 
 /* --- MEJORAS VISUALES HOME (HERO) --- */
 
