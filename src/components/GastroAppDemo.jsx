@@ -24,7 +24,7 @@ export default function GastroAppDemo() {
         const tables = ['Mesa 2', 'Mesa 5', 'Barra 1', 'Delivery'];
         const menus = [
             ['1x Lomo Saltado', '1x Chicha'],
-            ['1x Pizza Americana', '2x Cerveza'],
+            ['1x Pizza Americana', '2x Cervezas'],
             ['1x Ají de Gallina'],
             ['1x Maki Acevichado', '1x Limonada']
         ];

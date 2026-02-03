@@ -113,6 +113,26 @@ function App() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  //REFERENCIA PARA EL MENÚ DE TEMAS
+  const themeMenuRef = useRef(null);
+
+  // EFECTO: CERRAR AL HACER CLIC FUERA
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // Si el menú existe y el clic NO fue dentro del menú...
+      if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+        setShowThemeMenu(false);
+      }
+    }
+    // Escuchamos el evento 'mousedown' en todo el documento
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Limpieza al desmontar
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [themeMenuRef]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
@@ -151,11 +171,25 @@ function App() {
                     fontSize: "3.5rem",
                     lineHeight: "1.3",
                     marginBottom: "20px",
+                    color: "var(--text)",
+              
                   }}
                 >
+                  {/* Parte 1: Texto normal */}
                   {t.hero.title_start}{" "}
+                  
+                  {/* Parte 2: Texto normal (o puedes dejarle el gradiente si prefieres) */}
                   <span className="text-gradient">{t.hero.title_gradient}</span>{" "}
-                  {t.hero.title_end}
+                  
+                  {/* Parte 3: ¡AQUÍ ESTÁ EL CAMBIO! Color del tema seleccionado */}
+                  <span 
+                    style={{ 
+                      color: "var(--accent)", // <--- Esto pinta el texto del color elegido (Rojo, Verde, etc.)
+                      fontWeight: "800"       // Un poco más grueso para que destaque más
+                    }}
+                  >
+                    {t.hero.title_end}
+                  </span>
                 </h1>
 
                 <p
@@ -297,23 +331,31 @@ function App() {
                  {t.section_titles.projects_subtitle}
               </p>
             </div>
+            {/* GRID DE PROYECTOS */}
             <div className="projects-grid">
-              {t.projects.map((p, i) => (
+              {t.projects.map((project, i) => (
                 <div
                   key={i}
-                  className="project-card clickable"
-                  onClick={() => setSelectedProject(p)}
+                  className="project-card"
+                  onClick={() => setSelectedProject(project)}
+                  
+                  /* --- MAGIA AQUÍ: Retraso basado en el índice (i) --- */
+                  style={{ 
+                    animationDelay: `${i * 0.1}s` 
+                  }} 
                 >
-                  <div className="project-icon">{p.icon}</div>
-                  <h3>{p.title}</h3>
-                  <p>{p.desc}</p>
+                  <div className="project-icon">
+                    {project.icon}
+                  </div>
+                  <h3>{project.title}</h3>
                   <div className="tech-stack">
-                    {p.tech.map((techItem, j) => (
-                      <span key={j} className="tech-tag">
-                        {techItem}
+                    {project.tech.map((tech, k) => (
+                      <span key={k} className="tech-tag">
+                        {tech}
                       </span>
                     ))}
                   </div>
+                  <p>{project.desc}</p>
                   <span className="learn-more">Ver más +</span>
                 </div>
               ))}
@@ -386,7 +428,7 @@ function App() {
               </p>
 
               <a
-                href="mailto:tuemail@ejemplo.com"
+                href="mailto:lafprintsource@gmail.com"
                 className="btn btn-primary"
                 style={{ marginBottom: "2rem" }}
               >
@@ -600,7 +642,8 @@ function App() {
             </button>
 
             {/* --- NUEVO: SELECTOR DE TEMA DE COLOR --- */}
-            <div style={{ position: 'relative' }}> 
+            {/* AQUI ESTA LA MAGIA: Agregamos ref={themeMenuRef} en este div */}
+            <div style={{ position: 'relative' }} ref={themeMenuRef}> 
               <button
                 onClick={() => setShowThemeMenu(!showThemeMenu)}
                 style={{
@@ -626,7 +669,8 @@ function App() {
                     position: 'absolute',
                     top: '40px',
                     right: '-10px',
-                    background: 'var(--card-bg, #1e1e1e)', 
+                    background: 'var(--card-bg)', /* Quitamos el fallback fijo para que use variable */
+                    backgroundColor: 'var(--bg-card)',   /* O forzamos color oscuro si prefieres */
                     border: '1px solid var(--border-color)',
                     borderRadius: '12px',
                     padding: '15px',
@@ -638,7 +682,7 @@ function App() {
                     minWidth: '160px'
                   }}
                 >
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted, #888)', marginBottom: '5px' }}>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>
                     Selecciona un color:
                   </p>
                   
@@ -802,13 +846,13 @@ function App() {
 
         <div style={{ display: "flex", gap: "10px" }}>
           {[
-            { icon: FaLinkedin, link: "https://www.linkedin.com/in/TU-USUARIO" },
-            { icon: FaGithub, link: "https://github.com/TU-USUARIO" },
+            { icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
+            { icon: FaGithub, link: "https://github.com/AngelSalgueroB" },
             { icon: FaFacebook, link: "https://facebook.com/TU-USUARIO" },
             { icon: FaInstagram, link: "https://instagram.com/TU-USUARIO" },
             { icon: FaTwitter, link: "https://twitter.com/TU-USUARIO" },
             { icon: FaYoutube, link: "https://youtube.com/@TU-CANAL" },
-            { icon: FaEnvelope, link: "mailto:tu-email@ejemplo.com" },
+            { icon: FaEnvelope, link: "mailto:lafprintsource@gmail.com" },
           ].map((item, index) => (
             <a
               key={index}

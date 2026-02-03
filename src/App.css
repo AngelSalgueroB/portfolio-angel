@@ -136,7 +136,7 @@ p { font-size: 1.1rem; line-height: 1.6; }
 /* Efecto Hover: Elevación y Borde de Color */
 .project-card:hover {
   /* Forzamos que el borde sea del tema seleccionado */
-  border-color: var(--accent) !important; 
+  border-color: var(--border) !important; 
   
   transform: translateY(-5px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
@@ -146,7 +146,8 @@ p { font-size: 1.1rem; line-height: 1.6; }
 /* Icono del Proyecto con Fondo */
 .project-icon {
   width: 50px;
-  height: 50px;
+  height: 50px;    
+  color: var(--text-color);
   background: rgba(120, 120, 120, 0.1); /* Fondo sutil */
   border-radius: 12px;
   display: flex;
@@ -156,11 +157,19 @@ p { font-size: 1.1rem; line-height: 1.6; }
   transition: transform 0.3s ease;
 }
 
-.project-card:hover .project-icon {
+.project-icon svg {
+  color: var(--text-muted);
+  stroke-width: 1.25px !important; /* Vuelve al grosor estándar de Lucide */
+}
+
+.project-card:hover .project-icon{
   transform: scale(1.1) rotate(90deg); /* Pequeña animación divertida, agregar tiempo */
   background: var(--accent); /* Se pinta del color de marca */
-  color: white; /* Icono se vuelve blanco */
-}
+  }
+/*Servicios, en blanco icono hover*/
+  .project-card:hover .project-icon svg {
+    color: white;
+  }
 
 /* Títulos y Texto */
 .project-card h3 {
@@ -203,7 +212,7 @@ p { font-size: 1.1rem; line-height: 1.6; }
 /* Botón "Ver Más" */
 .learn-more {
   margin-top: auto; /* Empuja el texto al fondo de la tarjeta */
-  font-weight: bold;
+  
   font-size: 0.9rem;
   letter-spacing: 1px;  
   cursor: pointer;
@@ -213,6 +222,7 @@ p { font-size: 1.1rem; line-height: 1.6; }
 .project-card:hover .learn-more {
   transform: translateX(5px); /* Se mueve un poquito a la derecha */
   color: var(--accent); 
+  font-weight: bold;
 }
 
 /* --- DETALLE SUTIL DE FONDO (TEXTURA) --- */
@@ -270,63 +280,12 @@ p { font-size: 1.1rem; line-height: 1.6; }
   z-index: 10;
 }
 
-/* --- MODO MÓVIL --- */
-.menu-toggle { display: none; }
+/* --- APP.CSS (Al final del archivo) --- */
 
-@media (max-width: 768px) {
-  h1 { font-size: 2.2rem; }
-  .hero-content { padding: 1rem 0; }
-  
-  /* Botón Hamburguesa */
-  .menu-toggle {
-    display: block;
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 1.8rem;
-    cursor: pointer;
-    padding: 0.5rem;
-  }
 
-  /* Menú Desplegable */
-  .nav-links {
-    display: none;
-    position: absolute;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    background-color: var(--bg-color); 
-    border-bottom: 2px solid var(--accent-color);
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-    gap: 1.5rem;
-    z-index: 999;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-  }
 
-  .nav-links.active { display: flex; }
-  
-  .nav-btn {
-    font-size: 1.2rem;
-    width: 100%;
-    padding: 15px;
-    text-align: center;
-    border-bottom: 1px solid #333;
-  }
 
-  .main-content {
-    /* Aumentamos de 100px a 140px para que el título baje y se vea completo */
-    padding-top: 140px !important; 
-    
-    /* Mantenemos el espacio abajo para que no se pegue al footer */
-    padding-bottom: 40px;
-    
-    /* Aseguramos que el contenido empiece desde arriba y no intente centrarse */
-    justify-content: flex-start; 
-  }
 
-}
 /* --- ESTILOS DEL MODAL (POPUP) - VERSIÓN IMÁGENES COMPLETAS --- */
 
 .modal-overlay {
@@ -478,10 +437,30 @@ p { font-size: 1.1rem; line-height: 1.6; }
   height: 500px;
   animation-delay: 4s;
 }
-
+/* El siguiene efecto ..*/
 @keyframes pulseGlow {
   0% { opacity: 0.5; transform: scale(1); }
   100% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* Definimos la animación de entrada suave */
+@keyframes pulseGlow {
+  from {
+    opacity: 0;
+    transform: translateY(30px); /* Empieza un poco más abajo */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Termina en su sitio */
+  }
+}
+
+/* Aplicamos la animación a la tarjeta, pero PAUSADA inicialmente */
+.project-card {
+  /* ... tus otros estilos que ya tienes ... */
+  
+  /* AGREGAR ESTO: */
+  animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 /* 2. Título con Gradiente */
@@ -522,4 +501,151 @@ p { font-size: 1.1rem; line-height: 1.6; }
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+/* =========================================
+   13. RESPONSIVE (MOBILE & TABLET)
+   ========================================= */
+
+/* Usamos 900px para que el cambio ocurra antes en tablets también */
+@media (max-width: 900px) {
+  
+  /* --- 1. ARREGLO CRÍTICO DEL INICIO (HERO) --- */
+  .home-wrapper {
+    /* "Rompemos" la altura fija de escritorio */
+    height: auto !important;
+    min-height: 100vh;
+    
+    /* Permitimos scroll vertical, prohibimos el horizontal */
+    overflow-y: visible !important; 
+    overflow-x: hidden !important; 
+    
+    /* Alineación: Empezar arriba, no centrar verticalmente */
+    align-items: flex-start;
+    
+    /* Espacio arriba para que el menú no tape el título */
+    padding-top: 120px; 
+    padding-bottom: 60px;
+  }
+
+  /* Contenedor del contenido Hero */
+  .hero-content {
+    display: flex; /* Cambiamos grid por flex para mejor control */
+    flex-direction: column; /* Uno debajo del otro */
+    align-items: center;
+    gap: 50px; /* Espacio entre el texto y la tarjeta negra */
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* Grupo de Texto */
+  .hero-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem;
+  }
+
+  /* Ajuste de Títulos para Móvil */
+  h1 {
+    font-size: 2.5rem; /* Un poco más pequeño que en PC */
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  /* Botones Centrados */
+  .hero-buttons { 
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Si la pantalla es muy pequeña, baja un botón */
+    gap: 15px;
+    width: 100%;
+  }
+
+  /* --- 2. TARJETA NEGRA Y VISUALES --- */
+  .hero-visuals { 
+    margin: 0 auto; 
+    width: 100%;
+    /* Limitamos el ancho para que no cree scroll horizontal */
+    max-width: 340px; 
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Forzamos que la tarjeta de código entre en la pantalla */
+  .stats-card {
+    width: 100%; 
+    max-width: 100%;
+    transform: none !important; /* Quitamos rotaciones raras si las hubiera */
+  }
+
+  /* Stats dentro de la tarjeta */
+  .stats {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap; /* Para que no se rompan si no caben */
+    gap: 20px;
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  /* --- 3. ARREGLO DE MANCHAS DE FONDO (Evita scroll horizontal) --- */
+  .hero-glow-blob {
+    width: 300px;
+    height: 300px;
+    opacity: 0.4; /* Menos intenso en móvil */
+  }
+  .hero-glow-blob.secondary {
+    right: -100px; /* Lo escondemos un poco más */
+  }
+
+  /* Footer */
+  footer { 
+    flex-direction: column; 
+    text-align: center; 
+    gap: 20px;
+  }
+}
+
+/* --- AJUSTES ESPECÍFICOS PARA MÓVILES PEQUEÑOS --- */
+@media (max-width: 768px) {
+  
+  /* Navegación */
+  .nav-links { 
+    display: none; 
+    position: fixed; 
+    top: 70px; /* Ajustado a la altura de tu navbar */
+    left: 0; 
+    width: 100%; 
+    background: var(--bg-color); /* Asegura que use la variable correcta */
+    padding: 30px; 
+    flex-direction: column; 
+    border-bottom: 1px solid var(--border); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    height: auto;
+  }
+  
+  .nav-links.active { 
+    display: flex; 
+  }
+  
+  .menu-toggle { 
+    display: block; 
+    background: none; 
+    border: none; 
+    color: var(--text-color); 
+    font-size: 1.8rem; 
+    cursor: pointer; 
+    padding: 5px;
+  }
+
+  /* Switch de tema */
+  .switch { 
+    margin-left: auto; 
+    margin-right: 15px; 
+  }
 }

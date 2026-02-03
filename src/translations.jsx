@@ -38,7 +38,7 @@ export const translations = {
       projects_subtitle: "Haz clic en una tarjeta para ver detalles.",
       services_label: "02 — SOLUCIONES",
       services_title: "Cómo puedo ayudarte",
-      services_desc: "Combino ingeniería de software con visión de negocio para entregar resultados técnicos que resuelven problemas reales.",
+      services_desc: "Combino ingeniería de sistemas con visión de negocio para entregar resultados técnicos que resuelven problemas reales.",
       contact_label: "03 — CONTACTO",
       contact_title: "¿Tienes un proyecto?",
       contact_desc: "Estoy listo para nuevos desafíos freelance. Envíame un correo o conecta en redes.",
@@ -58,7 +58,7 @@ export const translations = {
         responsible: {
           title: "1. Responsable del Tratamiento",
           text: "El responsable de los datos recogidos en este sitio web es:",
-          items: ["Titular: Angel Salguero", "Actividad: Desarrollo de Software", "Contacto: tu-email@ejemplo.com"]
+          items: ["Titular: Angel Salguero", "Actividad: Desarrollo de Software", "Contacto: lafprintsource@gmail.com"]
         },
         data: {
           title: "2. Qué datos recopilo y para qué",
@@ -115,6 +115,7 @@ export const translations = {
       { title: "Gastro-App", desc: "Plataforma de reservas.", longDesc: "Sistema de gestión de mesas y reservas en tiempo real para restaurantes.", tech: ["Nuxt 3", "Vue.js", "Prisma"], icon: <Utensils size={40} />, hasDemo: true },
       { title: "Automation-Tools", desc: "Scripts de utilidad.", longDesc: "Colección de scripts para automatizar tareas repetitivas en Windows y Linux.", tech: ["Node.js", "TypeScript"], icon: <Wrench size={40} />, hasDemo: true },
       { title: "UniVault", desc: "Repositorio académico.", longDesc: "Plataforma para organizar material universitario con búsqueda indexada.", tech: ["React", "AWS S3"], icon: <Library size={40} />, hasDemo: true },
+      { title: "Proyecto X", desc: "Descripción breve del proyecto X.", longDesc: "Descripción larga y detallada del proyecto X, sus funcionalidades y tecnologías usadas.", tech: ["Tecnología1", "Tecnología2"], icon: <Globe size={40} />, hasDemo: false },
     ]
   },
   en: {
@@ -146,7 +147,7 @@ export const translations = {
       projects_subtitle: "Click on a card to see details.",
       services_label: "02 — SOLUTIONS",
       services_title: "How I can help",
-      services_desc: "I combine software engineering with business vision to deliver technical results that solve real-world problems.",
+      services_desc: "I combine system engineering with business vision to deliver technical results that solve real-world problems.",
       contact_label: "03 — CONTACT",
       contact_title: "Have a project?",
       contact_desc: "I'm ready for new freelance challenges. Send me an email or connect on social media.",
@@ -223,6 +224,7 @@ export const translations = {
       { title: "Gastro-App", desc: "Restaurant reservation platform.", longDesc: "Real-time table management and reservation system for restaurants.", tech: ["Nuxt 3", "Vue.js", "Prisma"], icon: <Utensils size={40} />, hasDemo: true },
       { title: "Automation-Tools", desc: "Utility scripts for automation.", longDesc: "Collection of scripts to automate repetitive tasks on Windows and Linux.", tech: ["Node.js", "TypeScript"], icon: <Wrench size={40} />, hasDemo: true },
       { title: "UniVault", desc: "Centralized academic repository.", longDesc: "Platform to organize university material with indexed search.", tech: ["React", "AWS S3"], icon: <Library size={40} />, hasDemo: true },
+      { title: "Project X", desc: "Brief description of Project X.", longDesc: "Detailed long description of Project X, its features, and technologies used.", tech: ["Technology1", "Technology2"], icon: <Globe size={40} />, hasDemo: false },
     ]
   }
 };
