@@ -648,4 +648,81 @@ p { font-size: 1.1rem; line-height: 1.6; }
     margin-left: auto; 
     margin-right: 15px; 
   }
+
+  /* 1. CONTENEDOR DEL MODAL (La caja blanca/negra) */
+  .modal-content {
+    /* Forzamos que ocupe el 92% del ancho de la pantalla */
+    width: 92% !important;
+    max-width: none !important; /* Quitamos el límite de escritorio */
+    
+    /* Importante: Si es muy alto, activamos el scroll INTERNO */
+    max-height: 85vh; 
+    overflow-y: auto; 
+    
+    /* Ajustamos posición y relleno */
+    margin: auto;
+    padding: 15px; /* Menos relleno para ganar espacio */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* Centrado perfecto */
+    position: fixed; /* Asegura que flote sobre todo */
+  }
+
+  /* 2. LA IMAGEN DEL DEMO */
+  .modal-image-container {
+    width: 100%;
+    background: #000;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    padding: 5px;
+    
+    /* Limitamos la altura de la imagen para que NO tape el texto */
+    /* Así siempre verás la descripción abajo sin tener que scrollear tanto */
+    height: auto;
+    max-height: 35vh; /* Ocupa máximo el 35% de la altura de la pantalla */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-img {
+    /* La imagen se ajusta para verse completa sin recortes */
+    max-width: 100%;
+    max-height: 100%; 
+    object-fit: contain; 
+    height: auto;
+  }
+
+  /* 3. TEXTOS Y TÍTULOS */
+  .modal-header {
+    flex-direction: column; /* Título arriba */
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-right: 40px; /* Dejamos hueco para el botón X */
+  }
+
+  .modal-header h2 {
+    font-size: 1.4rem;
+    margin: 0;
+  }
+
+  .modal-desc {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding-bottom: 20px; /* Espacio extra al final */
+  }
+
+  /* 4. BOTÓN CERRAR (X) */
+  .modal-close {
+    /* Lo hacemos más grande y fácil de tocar con el dedo */
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    background: rgba(0,0,0,0.8); /* Fondo oscuro para que resalte */
+    border: 1px solid rgba(255,255,255,0.3);
+    z-index: 50; /* Siempre encima */
+  }
 }
