@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Wallet, TrendingUp, TrendingDown, Plus, CreditCard, Home, PieChart, LogOut } from 'lucide-react';
+import '../App.css';
 
 // --- CONFIGURACIÓN COMPACTA ---
 const INITIAL_INCOME = 3200.00; 

@@ -1,54 +1,60 @@
-/* --- APP.CSS FINAL (SCROLL MÓVIL ARREGLADO) --- */
+/* =========================================
+   APP.CSS - SCROLL ARREGLADO
+   ========================================= */
 
-/* 1. RESET & SCROLL NATIVO */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  /* CAMBIO CLAVE: Usamos min-height en lugar de height fijo */
-  min-height: 100vh; 
-  
-  overflow-x: hidden;
-  /* Scroll suave y nativo */
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-}
-
+/* --- 1. VARIABLES CSS --- */
 :root {
-  --bg-color: #0a0a0a;
-  --text-color: #ffffff;
+  --bg: #0a0a0a;
+  --bg-card: #111;
+  --text: #fff;
   --text-muted: #888;
-  --nav-bg: #111;
-  --border: #333;
-  --accent-color: #ff3333;
+  --accent: #e11d48;
+  --border: #222;
+  --nav-bg: rgba(10, 10, 10, 0.95);
+  --font: "Inter", sans-serif;
+  --mono: "JetBrains Mono", monospace;
 }
 
 [data-theme="light"] {
-  --bg-color: #ffffff;
-  --text-color: #111111;
-  --text-muted: #555;
-  --nav-bg: #f0f0f0;
-  --border: #ccc;
+  --bg: #ffffff;
+  --bg-card: #f3f4f6;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --accent: #e11d48;
+  --border: #e5e7eb;
+  --nav-bg: rgba(255, 255, 255, 0.95);
 }
 
-* { box-sizing: border-box; }
+/* --- 2. RESET TOTAL --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* CRÍTICO: Permitir scroll natural */
+html, body {
+  overflow-y: auto !important; /* <--- ESTO ES VITAL */
+  height: auto !important;
+  min-height: 100vh;
+}
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  display: block;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.6;
+  width: 100%;
+  min-height: 100vh;
+  /* NO pongas overflow: hidden aquí */
 }
 
-/* 2. ESTRUCTURA FLEXIBLE (STICKY FOOTER) */
-/* Esto asegura que el footer siempre se empuje al final */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Ocupa al menos toda la pantalla */
+#root {
+  width: 100%;
+  /* NO pongas height fijo ni overflow hidden */
 }
 
-/* Navbar Fijo Arriba */
+/* --- 3. NAVEGACIÓN FIJA --- */
 nav {
   position: fixed;
   top: 0;
@@ -60,118 +66,489 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 6%;
   z-index: 1000;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* 3. CONTENIDO PRINCIPAL */
-.main-content {
-  flex: 1; /* Esto hace que el contenido crezca y empuje el footer */
-  width: 100%;
-  padding-top: 75px; /* Espacio para que el Navbar no tape el título */
-  padding-bottom: 10px;
+.logo {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 1.5rem;
+  letter-spacing: -1px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.logo .dot {
+  color: var(--accent);
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.nav-links {
   display: flex;
-  flex-direction: column; /* Asegura orden vertical */
-  align-items: center;    /* Centra el contenido */
+  gap: 10px;
+  align-items: center;
 }
 
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: var(--font);
+  transition: all 0.2s;
+  width: 110px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.nav-btn.active {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 4px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  margin-left: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-muted);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+  background-color: white;
+}
+
+.menu-toggle {
+  display: none;
+}
+
+/* --- 4. CONTENIDO PRINCIPAL (SIN RESTRICCIONES DE SCROLL) --- */
+.main-content {
+  width: 100%;
+  padding-top: 70px;
+  padding-bottom: 80px; /* Espacio para el footer */
+  /* NO pongas min-height aquí */
+}
 .section-wrapper {
   width: 100%;
-  max-width: 1000px;
-  padding: 1rem;
+  max-width: 1200px;
+  padding: 2rem 1rem;
+  margin: 0 auto;
 }
 
-/* Tipografía y Botones */
-h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 800; line-height: 1.2; }
-p { font-size: 1.1rem; line-height: 1.6; }
+/* --- 5. HOME / HERO --- */
+.home-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 60px;
+  position: relative;
+}
 
-.btn { 
-  padding: 10px 20px; 
-  cursor: pointer; 
-  margin-right: 10px; 
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
+.hero-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 60px;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem;
+}
+
+.hero-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(225, 29, 72, 0.1);
+  border: 1px solid rgba(225, 29, 72, 0.2);
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: 1rem;
+  color: var(--accent);
+  margin-bottom: 24px;
+  width: fit-content;
+}
+
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -2px;
+  color: var(--text);
+}
+
+h1 .muted {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--accent), #ffbd2e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
   display: inline-block;
-  border: none; /* Asegura limpieza */
+}
+
+[data-theme="light"] .text-gradient {
+  background: none;
+  -webkit-text-fill-color: #374151;
+  color: #374151;
+}
+
+.hero-desc {
+  font-size: 1rem;
+  max-width: 480px;
+  margin-bottom: 30px;
+  color: var(--text-muted);
+}
+
+.hero-desc strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-glow-blob {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+  top: -150px;
+  left: -100px;
+  z-index: 0;
+  pointer-events: none;
+  animation: pulseGlow 8s infinite alternate;
+}
+
+.hero-glow-blob.secondary {
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.1) 0%, transparent 70%);
+  top: auto;
+  bottom: -100px;
+  left: auto;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  animation-delay: 4s;
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.stats-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.stat-item h3 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.stat-item h3 span {
+  color: var(--accent);
+}
+
+.stat-item p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- 6. CARRUSEL --- */
+.skills-section {
+  width: 100%;
+  padding: 40px 0;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.skills-section h3 {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.skills-track {
+  display: flex;
+  gap: 4rem;
+  width: max-content;
+  animation: scroll 20s linear infinite;
+}
+
+.skills-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.skill-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  min-width: 80px;
+  transition: all 0.3s;
+}
+
+.skill-item:hover {
+  color: var(--accent);
+  transform: translateY(-5px);
+}
+
+.skill-item span {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.skills-section::before,
+.skills-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.skills-section::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg), transparent);
+}
+
+.skills-section::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg), transparent);
+}
+
+/* --- 7. BOTONES --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
 }
 
 .btn-primary {
-  background-color: var(--text-color);
-  color: var(--bg-color);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.39);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent), transparent 40%);
 }
 
 .btn-ghost {
   background: transparent;
+  color: var(--text);
   border: 1px solid var(--border);
-  color: var(--text-color);
 }
 
-/* --- SECCIÓN PROYECTOS MEJORADA --- */
+.btn-ghost:hover {
+  border-color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+}
 
+/* --- 8. SECCIONES --- */
+.section-header {
+  margin-bottom: 32px;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -1px;
+  color: var(--text);
+}
+
+/* --- 9. PROYECTOS --- */
 .projects-grid {
   display: grid;
-  /* CAMBIO AQUÍ: Bajamos de 320px a 280px */
-  /* Esto permite que entren 3 tarjetas cómodamente en la mayoría de pantallas */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 30px;
   padding-bottom: 50px;
 }
 
-/* Tarjeta Base */
 .project-card {
-  background: var(--card-bg); /* Usa tu variable de tema */
-  border: 2px solid var(--border-color);
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 16px;
   padding: 25px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
   position: relative;
   overflow: hidden;
-  /* Sombra suave inicial */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
-/* Efecto Hover: Elevación y Borde de Color */
 .project-card:hover {
-  /* Forzamos que el borde sea del tema seleccionado */
-  border-color: var(--border) !important; 
-  
+  border-color: var(--accent);
   transform: translateY(-5px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
               0 10px 10px -5px color-mix(in srgb, var(--accent), transparent 85%);
 }
 
-/* Icono del Proyecto con Fondo */
 .project-icon {
   width: 50px;
-  height: 50px;    
-  color: var(--text-color);
-  background: rgba(120, 120, 120, 0.1); /* Fondo sutil */
+  height: 50px;
+  background: rgba(120, 120, 120, 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
-  transition: transform 0.3s ease;
+  transition: all 0.3s;
 }
 
 .project-icon svg {
   color: var(--text-muted);
-  stroke-width: 1.25px !important; /* Vuelve al grosor estándar de Lucide */
+  stroke-width: 1.25px;
 }
 
-.project-card:hover .project-icon{
-  transform: scale(1.1) rotate(90deg); /* Pequeña animación divertida, agregar tiempo */
-  background: var(--accent); /* Se pinta del color de marca */
-  }
-/*Servicios, en blanco icono hover*/
-  .project-card:hover .project-icon svg {
-    color: white;
-  }
+.project-card:hover .project-icon {
+  background: var(--accent);
+  transform: scale(1.1) rotate(5deg);
+}
 
-/* Títulos y Texto */
+.project-card:hover .project-icon svg {
+  color: white;
+}
+
 .project-card h3 {
   font-size: 1.4rem;
   margin: 0 0 10px 0;
@@ -184,10 +561,9 @@ p { font-size: 1.1rem; line-height: 1.6; }
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 20px;
-  flex-grow: 1; /* Empuja los tags hacia abajo */
+  flex-grow: 1;
 }
 
-/* Tags de Tecnología (Pill Shape) */
 .tech-stack {
   display: flex;
   flex-wrap: wrap;
@@ -206,38 +582,177 @@ p { font-size: 1.1rem; line-height: 1.6; }
 }
 
 .project-card:hover .tech-tag {
-  border-color: rgba(150, 150, 150, 0.3); /* Borde sutil al hover */
+  border-color: rgba(150, 150, 150, 0.3);
 }
 
-/* Botón "Ver Más" */
 .learn-more {
-  margin-top: auto; /* Empuja el texto al fondo de la tarjeta */
-  
+  margin-top: auto;
   font-size: 0.9rem;
-  letter-spacing: 1px;  
+  letter-spacing: 1px;
   cursor: pointer;
-  transition: transform 0.2s ease;}
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+}
 
-/* Efecto al pasar el mouse sobre el texto */
 .project-card:hover .learn-more {
-  transform: translateX(5px); /* Se mueve un poquito a la derecha */
-  color: var(--accent); 
+  transform: translateX(5px);
+  color: var(--accent);
   font-weight: bold;
 }
 
-/* --- DETALLE SUTIL DE FONDO (TEXTURA) --- */
-/* Agrega esto al contenedor principal si quieres puntitos de fondo */
-.section-wrapper {
-  /* ... tus estilos actuales ... */
-  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
-  background-size: 20px 20px; /* Tamaño de la cuadrícula de puntos */
-  background-attachment: fixed;
+/* --- 10. SERVICIOS --- */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding-bottom: 50px;
 }
 
-/* --- BOTONES SOCIALES --- */
+.service-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.service-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  box-shadow: 0 15px 30px -10px rgba(225, 29, 72, 0.15);
+}
+
+.service-icon-box {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.service-card:hover .service-icon-box {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.service-bg-num {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.02);
+  z-index: 1;
+  pointer-events: none;
+  font-family: "Inter", sans-serif;
+  transition: transform 0.3s;
+}
+
+.service-card:hover .service-bg-num {
+  transform: translateY(-10px);
+  color: rgba(255, 255, 255, 0.05);
+}
+
+.service-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  z-index: 2;
+  position: relative;
+  color: var(--text);
+}
+
+.service-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  z-index: 2;
+  position: relative;
+}
+
+.service-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 25px 0;
+  z-index: 2;
+  position: relative;
+  flex-grow: 1;
+}
+
+.service-features li {
+  font-family: "Courier New", monospace;
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.service-features li::before {
+  content: "▸";
+  color: var(--accent);
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.service-btn {
+  margin-top: auto;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  z-index: 2;
+  position: relative;
+}
+
+.service-card:hover .service-btn {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* --- 11. CONTACTO --- */
+.cta-container {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 40px;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
 .social-container {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 1rem;
@@ -248,53 +763,34 @@ p { font-size: 1.1rem; line-height: 1.6; }
   position: relative;
   text-decoration: none;
   font-family: 'Consolas', 'Monaco', monospace;
-  font-size: 0.75rem;        
-  padding: 0.5rem 1rem;      
-  text-transform: none;      
+  font-size: 0.75rem;
+  padding: 0.5rem 1rem;
+  text-transform: none;
   font-weight: 600;
   color: #a0a0a0;
   background-color: rgba(255, 255, 255, 0.03);
   border: 1px solid #333;
-  border-left: 3px solid var(--accent-color);
+  border-left: 3px solid var(--accent);
   border-radius: 3px;
   transition: transform 0.2s ease, background 0.2s;
 }
 
 .social-btn:hover {
-  background-color: var(--accent-color);
+  background-color: var(--accent);
   color: #ffffff;
-  border-color: var(--accent-color);
+  border-color: var(--accent);
   box-shadow: 0 0 12px rgba(255, 51, 51, 0.5);
   transform: translateY(-2px);
 }
 
-/* 4. FOOTER (ESTÁTICO, NO FIJO) */
-.footer-simple {
-  width: 100%;
-  text-align: center;
-  padding: 3rem 1rem;
-  border-top: 1px solid var(--border);
-  background-color: var(--bg-color);
-  margin-top: auto; /* Empuja hacia abajo si sobra espacio */
-  position: relative;
-  z-index: 10;
-}
-
-/* --- APP.CSS (Al final del archivo) --- */
-
-
-
-
-
-/* --- ESTILOS DEL MODAL (POPUP) - VERSIÓN IMÁGENES COMPLETAS --- */
-
+/* --- 12. MODAL --- */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9); /* Fondo más oscuro para resaltar la imagen */
+  background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -304,16 +800,18 @@ p { font-size: 1.1rem; line-height: 1.6; }
   animation: fadeIn 0.3s ease;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .modal-content {
-  background-color: var(--card-bg);
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
   width: 100%;
-  max-width: 500px; /* Ancho ideal para tu imagen de 451px */
-  
-  /* IMPORTANTE: Esto permite scroll si la imagen es muy alta en móviles */
-  max-height: 90vh; 
-  overflow-y: auto; 
-  
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   border-radius: 12px;
   position: relative;
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -322,28 +820,29 @@ p { font-size: 1.1rem; line-height: 1.6; }
   flex-direction: column;
 }
 
-/* Contenedor de la imagen: Se adapta al contenido */
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 .modal-image-container {
   width: 100%;
-  background-color: #000; /* Fondo negro elegante */
+  background: #000;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 10px; /* Un pequeño marco negro alrededor */
+  padding: 10px;
 }
 
 .modal-img {
-  /* Muestra la imagen COMPLETA respetando sus proporciones */
   max-width: 100%;
-  height: auto; 
-  max-height: 60vh; /* Limita la altura para que no ocupe toda la pantalla */
-  object-fit: contain; /* CLAVE: Asegura que se vea todo el pixelaje */
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
   border-radius: 4px;
 }
 
 .modal-text {
   padding: 1.5rem;
-  text-align: left;
 }
 
 .modal-header {
@@ -354,22 +853,22 @@ p { font-size: 1.1rem; line-height: 1.6; }
 }
 
 .modal-header h2 {
-    font-size: 1.5rem;
-    margin: 0;
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--text);
 }
 
 .modal-desc {
   line-height: 1.6;
-  color: var(--text-color);
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
-/* Botón cerrar flotante y visible */
 .modal-close {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(0,0,0,0.8); /* Fondo oscuro semi-transparente */
+  background: rgba(0,0,0,0.8);
   color: white;
   border: 1px solid #444;
   width: 32px;
@@ -380,349 +879,171 @@ p { font-size: 1.1rem; line-height: 1.6; }
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.2s;
   z-index: 10;
+  transition: all 0.2s;
 }
 
 .modal-close:hover {
-  background: #ff3333;
-  border-color: #ff3333;
+  background: var(--accent);
+  border-color: var(--accent);
   transform: rotate(90deg);
 }
 
-@keyframes slideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Indicador en la tarjeta */
-.project-card.clickable {
-  cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s;
-}
-
-.project-card.clickable:hover {
-  border-color: var(--accent-color);
-  transform: translateY(-5px);
-}
-
-
-/* --- MEJORAS VISUALES HOME (HERO) --- */
-
-/* 1. Iluminación de Fondo (Glow) */
-.hero-glow-blob {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%); /* Color Índigo suave */
-  top: -150px;
-  left: -100px;
-  z-index: 0;
-  pointer-events: none; /* Para que no interfiera con clicks */
-  animation: pulseGlow 8s infinite alternate;
-}
-
-.hero-glow-blob.secondary {
-  background: radial-gradient(circle, rgba(225, 29, 72, 0.1) 0%, transparent 70%); /* Color Rojo suave */
-  top: auto;
-  bottom: -100px;
-  left: auto;
-  right: -100px;
-  width: 500px;
-  height: 500px;
-  animation-delay: 4s;
-}
-/* El siguiene efecto ..*/
-@keyframes pulseGlow {
-  0% { opacity: 0.5; transform: scale(1); }
-  100% { opacity: 0.8; transform: scale(1.1); }
-}
-
-/* Definimos la animación de entrada suave */
-@keyframes pulseGlow {
-  from {
-    opacity: 0;
-    transform: translateY(30px); /* Empieza un poco más abajo */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0); /* Termina en su sitio */
-  }
-}
-
-/* Aplicamos la animación a la tarjeta, pero PAUSADA inicialmente */
-.project-card {
-  /* ... tus otros estilos que ya tienes ... */
-  
-  /* AGREGAR ESTO: */
-  animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-/* 2. Título con Gradiente */
-.text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); /* Blanco a Gris Plata */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent; /* Fallback */
-}
-
-/* Contenedor de las Stats para que parezca una tarjeta de cristal */
-.stats-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 30px;
-  border-radius: 20px;
+/* --- 13. FOOTER --- */
+.footer-simple {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 25px;
-  position: relative;
-  z-index: 2;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-  min-width: 200px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 6%;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  margin-top: 60px;
 }
 
-.stat-item h3 {
-  font-size: 2.5rem;
-  margin: 0;
-  color: var(--accent-color, #e11d48); /* Usa tu color rojo/accent */
-  line-height: 1;
+.footer-social-link {
+  color: var(--text);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: transparent;
+  text-decoration: none;
 }
 
-.stat-item p {
-  margin: 5px 0 0 0;
-  color: #888;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.footer-social-link:hover {
+  color: var(--accent);
+  transform: translateY(-5px) scale(1.1);
+  background-color: color-mix(in srgb, var(--accent), transparent 90%);
+  box-shadow:
+    0 10px 20px -10px color-mix(in srgb, var(--accent), transparent 40%),
+    0 0 15px color-mix(in srgb, var(--accent), transparent 80%);
+}
+footer {
+  width: 100%;
+  padding: 30px 50px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  margin-top: 80px;
+  /* NO uses position: fixed */
 }
 
-/* =========================================
-   13. RESPONSIVE (MOBILE & TABLET)
-   ========================================= */
-
-/* Usamos 900px para que el cambio ocurra antes en tablets también */
+/* --- 14. RESPONSIVE --- */
 @media (max-width: 900px) {
-  
-  /* --- 1. ARREGLO CRÍTICO DEL INICIO (HERO) --- */
   .home-wrapper {
-    /* "Rompemos" la altura fija de escritorio */
-    height: auto !important;
-    min-height: 100vh;
-    
-    /* Permitimos scroll vertical, prohibimos el horizontal */
-    overflow-y: visible !important; 
-    overflow-x: hidden !important; 
-    
-    /* Alineación: Empezar arriba, no centrar verticalmente */
-    align-items: flex-start;
-    
-    /* Espacio arriba para que el menú no tape el título */
-    padding-top: 120px; 
-    padding-bottom: 60px;
+    padding-top: 100px;
   }
 
-  /* Contenedor del contenido Hero */
   .hero-content {
-    display: flex; /* Cambiamos grid por flex para mejor control */
-    flex-direction: column; /* Uno debajo del otro */
-    align-items: center;
-    gap: 50px; /* Espacio entre el texto y la tarjeta negra */
-    text-align: center;
-    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
-  
-  /* Grupo de Texto */
+
   .hero-text-group {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 0 1rem;
+    text-align: center;
   }
 
-  /* Ajuste de Títulos para Móvil */
-  h1 {
-    font-size: 2.5rem; /* Un poco más pequeño que en PC */
-    line-height: 1.2;
-    margin-bottom: 20px;
-  }
-
-  /* Botones Centrados */
-  .hero-buttons { 
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap; /* Si la pantalla es muy pequeña, baja un botón */
-    gap: 15px;
-    width: 100%;
-  }
-
-  /* --- 2. TARJETA NEGRA Y VISUALES --- */
-  .hero-visuals { 
-    margin: 0 auto; 
-    width: 100%;
-    /* Limitamos el ancho para que no cree scroll horizontal */
-    max-width: 340px; 
-    display: flex;
+  .hero-buttons {
     justify-content: center;
   }
 
-  /* Forzamos que la tarjeta de código entre en la pantalla */
   .stats-card {
-    width: 100%; 
-    max-width: 100%;
-    transform: none !important; /* Quitamos rotaciones raras si las hubiera */
+    max-width: 340px;
+    margin: 0 auto;
   }
 
-  /* Stats dentro de la tarjeta */
   .stats {
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
-    flex-wrap: wrap; /* Para que no se rompan si no caben */
     gap: 20px;
     padding-left: 0;
     border-left: none;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 20px;
     margin-top: 20px;
-    width: 100%;
   }
 
-  /* --- 3. ARREGLO DE MANCHAS DE FONDO (Evita scroll horizontal) --- */
   .hero-glow-blob {
     width: 300px;
     height: 300px;
-    opacity: 0.4; /* Menos intenso en móvil */
-  }
-  .hero-glow-blob.secondary {
-    right: -100px; /* Lo escondemos un poco más */
+    opacity: 0.4;
   }
 
-  /* Footer */
-  footer { 
-    flex-direction: column; 
-    text-align: center; 
-    gap: 20px;
+  h1 {
+    font-size: 2.5rem;
   }
 }
 
-/* --- AJUSTES ESPECÍFICOS PARA MÓVILES PEQUEÑOS --- */
 @media (max-width: 768px) {
-  
-  /* Navegación */
-  .nav-links { 
-    display: none; 
-    position: fixed; 
-    top: 70px; /* Ajustado a la altura de tu navbar */
-    left: 0; 
-    width: 100%; 
-    background: var(--bg-color); /* Asegura que use la variable correcta */
-    padding: 30px; 
-    flex-direction: column; 
-    border-bottom: 1px solid var(--border); 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    height: auto;
-  }
-  
-  .nav-links.active { 
-    display: flex; 
-  }
-  
-  .menu-toggle { 
-    display: block; 
-    background: none; 
-    border: none; 
-    color: var(--text-color); 
-    font-size: 1.8rem; 
-    cursor: pointer; 
-    padding: 5px;
-  }
-
-  /* Switch de tema */
-  .switch { 
-    margin-left: auto; 
-    margin-right: 15px; 
-  }
-
-  /* 1. CONTENEDOR DEL MODAL (La caja blanca/negra) */
-  .modal-content {
-    /* Forzamos que ocupe el 92% del ancho de la pantalla */
-    width: 92% !important;
-    max-width: none !important; /* Quitamos el límite de escritorio */
-    
-    /* Importante: Si es muy alto, activamos el scroll INTERNO */
-    max-height: 85vh; 
-    overflow-y: auto; 
-    
-    /* Ajustamos posición y relleno */
-    margin: auto;
-    padding: 15px; /* Menos relleno para ganar espacio */
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%); /* Centrado perfecto */
-    position: fixed; /* Asegura que flote sobre todo */
-  }
-
-  /* 2. LA IMAGEN DEL DEMO */
-  .modal-image-container {
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
     width: 100%;
-    background: #000;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    padding: 5px;
-    
-    /* Limitamos la altura de la imagen para que NO tape el texto */
-    /* Así siempre verás la descripción abajo sin tener que scrollear tanto */
-    height: auto;
-    max-height: 35vh; /* Ocupa máximo el 35% de la altura de la pantalla */
+    background: var(--bg);
+    padding: 30px;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+
+  .nav-links.active {
     display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  .modal-img {
-    /* La imagen se ajusta para verse completa sin recortes */
-    max-width: 100%;
-    max-height: 100%; 
-    object-fit: contain; 
-    height: auto;
+  .menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 5px;
   }
 
-  /* 3. TEXTOS Y TÍTULOS */
+  .switch {
+    margin-left: auto;
+    margin-right: 15px;
+  }
+
+  .modal-content {
+    width: 92%;
+    max-width: none;
+    padding: 15px;
+  }
+
+  .modal-image-container {
+    max-height: 35vh;
+    margin-bottom: 15px;
+  }
+
   .modal-header {
-    flex-direction: column; /* Título arriba */
+    flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 10px;
-    padding-right: 40px; /* Dejamos hueco para el botón X */
+    padding-right: 40px;
   }
 
   .modal-header h2 {
     font-size: 1.4rem;
-    margin: 0;
   }
 
-  .modal-desc {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    padding-bottom: 20px; /* Espacio extra al final */
-  }
-
-  /* 4. BOTÓN CERRAR (X) */
   .modal-close {
-    /* Lo hacemos más grande y fácil de tocar con el dedo */
-    top: 10px;
-    right: 10px;
+    top: 50px;
     width: 36px;
     height: 36px;
-    font-size: 1.2rem;
-    background: rgba(0,0,0,0.8); /* Fondo oscuro para que resalte */
-    border: 1px solid rgba(255,255,255,0.3);
-    z-index: 50; /* Siempre encima */
+  }
+
+  .footer-simple {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
   }
 }

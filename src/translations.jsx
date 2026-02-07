@@ -26,6 +26,7 @@ export const translations = {
       desc_end: "limpia y funcional.",
       btn_primary: "Ver Portafolio",
       btn_secondary: "Contactar",
+      tech_stack: "Tecnologías que domino",
       stats: {
         exp: "// Años Experiencia",
         projects: "// Proyectos Reales",
@@ -135,6 +136,7 @@ export const translations = {
       desc_end: "clean and functional UI.",
       btn_primary: "View Portfolio",
       btn_secondary: "Get in Touch",
+      tech_stack: "Technologies I Master",
       stats: {
         exp: "// Years Experience",
         projects: "// Real Projects",

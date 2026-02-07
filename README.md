@@ -20,7 +20,7 @@ github:
 git add .
 
 # 2. Guarda los cambios con un mensaje
-git commit -m "fix: scroll y footer arreglados"
+git commit -m "fix:  "
 
 # 3. Ahora sí, empuja los cambios a la nube
 git push

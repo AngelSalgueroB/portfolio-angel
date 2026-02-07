@@ -5,8 +5,8 @@ import { translations } from './translations';
 
 import {
   Mail,
-  FileText,
-  Layout,
+  FileText, // Icono para el CV
+  Layout,   // Nuevo para el carrusel
   Server,
   Database,
   Code,
@@ -17,7 +17,8 @@ import {
   CloudCog,
   ArrowRight,
   Activity,
-  Palette, // <--- Importante para el icono de temas
+  Palette,
+  Layers,   // Nuevo para el carrusel
 } from "lucide-react";
 
 import {
@@ -30,6 +31,7 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 
+// IMPORTACIÓN DE DEMOS (Asegúrate que estas rutas existan)
 import DataCleanerDemo from "./components/DataCleanerDemo";
 import FinanceHubDemo from "./components/FinanceHubDemo";
 import SqlNoSqlDemo from "./components/SqlNoSqlDemo";
@@ -37,28 +39,19 @@ import GastroAppDemo from "./components/GastroAppDemo";
 import AutomationToolsDemo from "./components/AutomationToolsDemo";
 import UniVaultDemo from "./components/UniVaultDemo";
 
-// --- DATA: Fragmentos de código (Se mantiene por si lo usas luego) ---
-const BACKGROUND_CODE = [
-  "npm install react-router-dom",
-  "git commit -m 'feat: new dashboard'",
-  "SELECT * FROM users WHERE active=1;",
-  "const [state, setState] = useState(null);",
-  "if (res.status === 200) { return data; }",
-  "pip install pandas numpy",
-  "docker-compose up --build -d",
-  "console.log('Debugging connection...');",
-  "export default function App() {",
-  "import { useEffect } from 'react';",
-  ".map((item, i) => (<div key={i}>))",
-  "sudo systemctl restart nginx",
-  "while(isRunning) { processData(); }",
-  "const theme = createTheme({ palette: ... })",
-  "await prisma.user.findMany()",
-  "tailwind.config.js: theme: { extend: ... }",
-  "python3 manage.py runserver",
+// --- DATA: LISTA DE TECNOLOGÍAS PARA EL CARRUSEL ---
+const TECH_STACK = [
+  { name: "React", icon: <Code size={30} /> },
+  { name: "Node.js", icon: <Server size={30} /> },
+  { name: "JavaScript", icon: <Terminal size={30} /> },
+  { name: "SQL", icon: <Database size={30} /> },
+  { name: "Next.js", icon: <Globe size={30} /> },
+  { name: "Python", icon: <Cpu size={30} /> },
+  { name: "UX/UI", icon: <Layout size={30} /> },
+  { name: "DevOps", icon: <Layers size={30} /> },
 ];
 
-// --- DEFINICIÓN DE TEMAS DE COLOR (Fuera para que no se recree) ---
+// --- DEFINICIÓN DE TEMAS DE COLOR ---
 const COLOR_THEMES = [
   { id: 'red', color: '#e11d48', name: 'Rojo' },
   { id: 'green', color: '#10b981', name: 'Esmeralda' },
@@ -75,33 +68,46 @@ const COLOR_THEMES = [
 ];
 
 function App() {
-  const [activeSection, setActiveSection] = useState("home");
+  // 1. ESTADOS PRINCIPALES
+  // Usamos localStorage para recordar la sección al recargar (Pull to Refresh)
+  const [activeSection, setActiveSection] = useState(() => {
+    return localStorage.getItem('myPortfolioSection') || 'home';
+  });
+  
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState("dark");
-
-  // ESTADO NUEVO: Para saber qué proyecto se abrió
   const [selectedProject, setSelectedProject] = useState(null);
   const cursorRef = useRef(null);
   
-  // --- CONFIGURACIÓN DE IDIOMA ---
-  const [language, setLanguage] = useState("es"); // 'es' o 'en'
-  const t = translations[language]; // 't' contiene todo el texto en el idioma actual
+  // Configuración de Idioma
+  const [language, setLanguage] = useState("es");
+  const t = translations[language];
 
-  // --- CONFIGURACIÓN DE TEMA DE COLOR ---
-  const [accentColor, setAccentColor] = useState('#e11d48'); // Rojo por defecto
-  const [showThemeMenu, setShowThemeMenu] = useState(false); // Menú de colores
+  // Configuración de Color
+  const [accentColor, setAccentColor] = useState('#e11d48');
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const themeMenuRef = useRef(null);
 
-  // EFECTO 1: Tema Oscuro/Claro
+  // --- EFECTOS (Side Effects) ---
+
+  // Guardar sección activa
+  useEffect(() => {
+    localStorage.setItem('myPortfolioSection', activeSection);
+    // Scroll arriba al cambiar sección
+    window.scrollTo(0, 0);
+  }, [activeSection]);
+
+  // Aplicar Tema Oscuro/Claro
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // EFECTO 2: Inyectar variable de color (--accent)
+  // Aplicar Color de Acento
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', accentColor);
   }, [accentColor]);
 
-  // EFECTO 3: Cursor
+  // Efecto Cursor (Círculo que sigue al mouse)
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (cursorRef.current) {
@@ -113,52 +119,82 @@ function App() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  //REFERENCIA PARA EL MENÚ DE TEMAS
-  const themeMenuRef = useRef(null);
-
-  // EFECTO: CERRAR AL HACER CLIC FUERA
+  // Cerrar menú de colores al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
-      // Si el menú existe y el clic NO fue dentro del menú...
       if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
         setShowThemeMenu(false);
       }
     }
-    // Escuchamos el evento 'mousedown' en todo el documento
     document.addEventListener("mousedown", handleClickOutside);
-    
-    // Limpieza al desmontar
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [themeMenuRef]);
+
+  // Pull to Refresh Manual (Opcional, si el nativo falla)
+  useEffect(() => {
+    let touchStartY = 0;
+    const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY; };
+    const handleTouchEnd = (e) => {
+      const touchEndY = e.changedTouches[0].clientY;
+      const distance = touchEndY - touchStartY;
+      if (window.scrollY === 0 && distance > 150) {
+        // Vibración suave en móviles
+        if (navigator.vibrate) navigator.vibrate(50);
+        window.location.reload(); 
+      }
+    };
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  // --- RENDERIZADO DE CONTENIDO PRINCIPAL ---
   const renderContent = () => {
     switch (activeSection) {
       case "home":
         return (
+          /* 1. CONTENEDOR PRINCIPAL (HOME WRAPPER) */
+          /* Importante: Ya no usamos el fragmento <> </>, todo va dentro de este div */
           <div
             className="section-wrapper fade-in home-wrapper"
-            style={{ position: "relative", overflow: "hidden" }}
+            style={{ 
+              position: "relative", 
+              overflow: "hidden",
+              /* Estos estilos inline aseguran la estructura vertical si falla el CSS */
+              display: "flex",
+              flexDirection: "column",
+              height: "100vh" 
+            }}
           >
-            {/* 1. LUCES DE FONDO (GLOW) */}
+            {/* LUCES DE FONDO */}
             <div className="hero-glow-blob"></div>
             <div className="hero-glow-blob secondary"></div>
 
+            {/* 2. CONTENIDO CENTRAL (TEXTO + TARJETA) */}
             <div
               className="hero-content"
-              style={{ position: "relative", zIndex: 1 }}
+              style={{ 
+                position: "relative", 
+                zIndex: 1, 
+                flex: 1, /* Esto hace que ocupe todo el espacio disponible */
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
             >
               {/* BLOQUE IZQUIERDO: Texto */}
               <div className="hero-text-group">
                 <div
                   className="badge"
                   style={{
-                    background: `${accentColor}1a`, // Color con transparencia (hex + 1a = ~10%)
+                    background: `${accentColor}1a`,
                     color: accentColor,
                     border: `1px solid ${accentColor}33`,
                   }}
@@ -172,20 +208,14 @@ function App() {
                     lineHeight: "1.3",
                     marginBottom: "20px",
                     color: "var(--text)",
-              
                   }}
                 >
-                  {/* Parte 1: Texto normal */}
                   {t.hero.title_start}{" "}
-                  
-                  {/* Parte 2: Texto normal (o puedes dejarle el gradiente si prefieres) */}
                   <span className="text-gradient">{t.hero.title_gradient}</span>{" "}
-                  
-                  {/* Parte 3: ¡AQUÍ ESTÁ EL CAMBIO! Color del tema seleccionado */}
-                  <span 
-                    style={{ 
-                      color: "var(--accent)", // <--- Esto pinta el texto del color elegido (Rojo, Verde, etc.)
-                      fontWeight: "800"       // Un poco más grueso para que destaque más
+                  <span
+                    style={{
+                      color: "var(--accent)",
+                      fontWeight: "800",
                     }}
                   >
                     {t.hero.title_end}
@@ -207,7 +237,7 @@ function App() {
                   {t.hero.desc_end}
                 </p>
 
-                <div className="hero-buttons" style={{ marginTop: "30px" }}>
+                <div className="hero-buttons" style={{ marginTop: "30px", display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setActiveSection("projects")}
                     className="btn btn-primary"
@@ -215,13 +245,31 @@ function App() {
                   >
                     {t.hero.btn_primary}
                   </button>
+                  
                   <button
                     onClick={() => setActiveSection("contact")}
                     className="btn btn-ghost"
                     style={{ padding: "12px 30px", fontSize: "1rem" }}
                   >
-                     {t.hero.btn_secondary}
+                    {t.hero.btn_secondary}
                   </button>
+
+                  {/* BOTÓN DESCARGAR CV */}
+                  <a 
+                    href="/CV_Angel_Salguero.pdf" 
+                    download="CV_Angel_Salguero.pdf"
+                    className="btn btn-ghost"
+                    style={{ 
+                      padding: "12px 30px", 
+                      fontSize: "1rem", 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    <FileText size={18} /> CV
+                  </a>
                 </div>
               </div>
 
@@ -250,7 +298,7 @@ function App() {
                     animation: "floatCard 6s ease-in-out infinite",
                   }}
                 >
-                  {/* Header de Ventana */}
+                  {/* Header Ventana */}
                   <div
                     style={{
                       background: "#252526",
@@ -265,12 +313,9 @@ function App() {
                     <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#27c93f" }}></div>
                   </div>
 
-                  {/* Contenido (Estadísticas como código) */}
+                  {/* Contenido Stats */}
                   <div style={{ padding: "25px" }}>
-                    
-                    {/* Item 1 */}
                     <div style={{ marginBottom: "20px" }}>
-                      {/* AQUÍ EL CAMBIO: Usamos accentColor en lugar de #6a9955 */}
                       <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
                         {t.hero.stats.exp}
                       </p>
@@ -278,46 +323,62 @@ function App() {
                         <span style={{ color: "#569cd6" }}>const</span>
                         <span style={{ color: "#9cdcfe" }}>exp</span>
                         <span style={{ color: "#d4d4d4" }}>+=</span>
-                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>
-                          3;
-                        </span>
+                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>3;</span>
                       </div>
                     </div>
 
-                    {/* Item 2 */}
                     <div style={{ marginBottom: "20px" }}>
-                      {/* AQUÍ EL CAMBIO */}
                       <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
-                          {t.hero.stats.projects}
+                        {t.hero.stats.projects}
                       </p>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ color: "#c586c0" }}>let</span>
                         <span style={{ color: "#9cdcfe" }}>done</span>
                         <span style={{ color: "#d4d4d4" }}>=</span>
-                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>
-                          15;
-                        </span>
+                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>15;</span>
                       </div>
                     </div>
 
-                    {/* Item 3 */}
                     <div>
-                      {/* AQUÍ EL CAMBIO */}
                       <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
-                          {t.hero.stats.clients}
+                        {t.hero.stats.clients}
                       </p>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <span style={{ color: "#9cdcfe" }}>status</span>
                         <span style={{ color: "#d4d4d4" }}>:</span>
-                        <span style={{ color: "#ce9178", fontSize: "1.4rem", fontWeight: "bold" }}>
-                          "100%"
-                        </span>
+                        <span style={{ color: "#ce9178", fontSize: "1.4rem", fontWeight: "bold" }}>"100%"</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* 3. CARRUSEL DE SKILLS (AHORA DENTRO DEL HOME WRAPPER) */}
+            <div className="skills-section">
+              <h3 style={{ opacity: 0.6, marginBottom: '15px' }}>
+                {t.hero.tech_stack}
+              </h3>
+              
+              <div className="skills-track">
+                {/* VUELTA 1 */}
+                {TECH_STACK.map((tech, index) => (
+                  <div key={`skill-${index}`} className="skill-item">
+                    {tech.icon}
+                    <span>{tech.name}</span>
+                  </div>
+                ))}
+
+                {/* VUELTA 2 (Efecto Infinito) */}
+                {TECH_STACK.map((tech, index) => (
+                  <div key={`skill-dup-${index}`} className="skill-item">
+                    {tech.icon}
+                    <span>{tech.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         );
 
@@ -338,11 +399,7 @@ function App() {
                   key={i}
                   className="project-card"
                   onClick={() => setSelectedProject(project)}
-                  
-                  /* --- MAGIA AQUÍ: Retraso basado en el índice (i) --- */
-                  style={{ 
-                    animationDelay: `${i * 0.1}s` 
-                  }} 
+                  style={{ animationDelay: `${i * 0.1}s` }} 
                 >
                   <div className="project-icon">
                     {project.icon}
@@ -451,14 +508,8 @@ function App() {
             }}
           >
             {/* Header Política */}
-            <div
-              className="section-header"
-              style={{ textAlign: "center", marginBottom: "70px" }}
-            >
-              <p
-                className="section-label"
-                style={{ letterSpacing: "3px", fontSize: "0.85rem", color: "#999" }}
-              >
+            <div className="section-header" style={{ textAlign: "center", marginBottom: "70px" }}>
+              <p className="section-label" style={{ letterSpacing: "3px", fontSize: "0.85rem", color: "#999" }}>
                 {t.privacy.header.label}
               </p>
 
@@ -641,8 +692,7 @@ function App() {
                 {language === "es" ? "ES" : "EN"}
             </button>
 
-            {/* --- NUEVO: SELECTOR DE TEMA DE COLOR --- */}
-            {/* AQUI ESTA LA MAGIA: Agregamos ref={themeMenuRef} en este div */}
+            {/* SELECTOR DE TEMA DE COLOR */}
             <div style={{ position: 'relative' }} ref={themeMenuRef}> 
               <button
                 onClick={() => setShowThemeMenu(!showThemeMenu)}
@@ -657,7 +707,6 @@ function App() {
                 }}
                 title="Cambiar Color de Tema"
               >
-                {/* El icono toma el color actual del tema */}
                 <Palette size={20} style={{ color: accentColor }} />
               </button>
 
@@ -669,8 +718,8 @@ function App() {
                     position: 'absolute',
                     top: '40px',
                     right: '-10px',
-                    background: 'var(--card-bg)', /* Quitamos el fallback fijo para que use variable */
-                    backgroundColor: 'var(--bg-card)',   /* O forzamos color oscuro si prefieres */
+                    background: 'var(--card-bg)', 
+                    backgroundColor: 'var(--bg-card)',
                     border: '1px solid var(--border-color)',
                     borderRadius: '12px',
                     padding: '15px',
@@ -683,7 +732,7 @@ function App() {
                   }}
                 >
                   <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>
-                    Selecciona un color:
+                     Selecciona un color:
                   </p>
                   
                   {COLOR_THEMES.map((themeOption) => (
@@ -701,7 +750,7 @@ function App() {
                         alignItems: 'center',
                         gap: '10px',
                         padding: '5px',
-                        color: 'var(--text-color)',
+                        color: 'var(--text)',
                         fontSize: '0.9rem',
                         textAlign: 'left'
                       }}
@@ -713,7 +762,7 @@ function App() {
                           borderRadius: '50%',
                           background: themeOption.color,
                           border: accentColor === themeOption.color ? '2px solid white' : 'none',
-                          boxShadow: accentColor === themeOption.color ? '0 0 0 2px var(--text-color)' : 'none'
+                          boxShadow: accentColor === themeOption.color ? '0 0 0 2px #fff' : 'none'
                         }}
                       />
                       {themeOption.name}
@@ -723,7 +772,7 @@ function App() {
               )}
             </div>
 
-            {/* SWITCH TEMA */}
+            {/* SWITCH TEMA (Sol/Luna) */}
             <label className="switch">
               <input
                 type="checkbox"
@@ -784,7 +833,9 @@ function App() {
                   case "Automation-Tools": return <AutomationToolsDemo />;
                   case "UniVault": return <UniVaultDemo />;
                   default: 
-                    return null; 
+                    return <div className="modal-image-container">
+                             <img src="/api/placeholder/400/320" alt="Demo Placeholder" className="modal-img" />
+                           </div>; 
                 }
               })()}
             </div>
@@ -806,7 +857,7 @@ function App() {
       {/* --- FOOTER --- */}
       <footer
         style={{
-          marginTop: "80px",
+          marginTop: "auto", /* Empuja el footer al final si la pantalla es alta */
           padding: "30px 50px",
           width: "100%",
           display: "flex",
@@ -815,7 +866,13 @@ function App() {
           justifyContent: "space-between",
           borderTop: "1px solid var(--border-color, rgba(255,255,255,0.1))",
           flexWrap: "wrap",
-          gap: "20px",
+          
+          /* AQUÍ ESTABA EL ERROR: */
+          gap: "20px", /* Antes tenías 1000px, ¡eso lo rompía todo! */
+          
+          background: "var(--bg-color)", /* Asegura que tenga fondo */
+          position: "relative",
+          zIndex: 10
         }}
       >
         <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
@@ -848,10 +905,10 @@ function App() {
           {[
             { icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
             { icon: FaGithub, link: "https://github.com/AngelSalgueroB" },
-            { icon: FaFacebook, link: "https://facebook.com/TU-USUARIO" },
-            { icon: FaInstagram, link: "https://instagram.com/TU-USUARIO" },
-            { icon: FaTwitter, link: "https://twitter.com/TU-USUARIO" },
-            { icon: FaYoutube, link: "https://youtube.com/@TU-CANAL" },
+            { icon: FaFacebook, link: "https://facebook.com/" },
+            { icon: FaInstagram, link: "https://instagram.com/" },
+            { icon: FaTwitter, link: "https://twitter.com/" },
+            { icon: FaYoutube, link: "https://youtube.com/" },
             { icon: FaEnvelope, link: "mailto:lafprintsource@gmail.com" },
           ].map((item, index) => (
             <a
