@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 // IMPORTAMOS EL DICCIONARIO DE IDIOMAS
-import { translations } from './translations';
+import { translations } from "./translations";
+import Typewriter from "typewriter-effect";
 
 import {
   Mail,
   FileText, // Icono para el CV
-  Layout,   // Nuevo para el carrusel
+  Layout, // Nuevo para el carrusel
   Server,
   Database,
   Code,
@@ -18,7 +19,7 @@ import {
   ArrowRight,
   Activity,
   Palette,
-  Layers,   // Nuevo para el carrusel
+  Layers, // Nuevo para el carrusel
 } from "lucide-react";
 
 import {
@@ -31,7 +32,7 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 
-// IMPORTACIÓN DE DEMOS (Asegúrate que estas rutas existan)
+// IMPORTACIÓN DE DEMOS
 import DataCleanerDemo from "./components/DataCleanerDemo";
 import FinanceHubDemo from "./components/FinanceHubDemo";
 import SqlNoSqlDemo from "./components/SqlNoSqlDemo";
@@ -53,38 +54,38 @@ const TECH_STACK = [
 
 // --- DEFINICIÓN DE TEMAS DE COLOR ---
 const COLOR_THEMES = [
-  { id: 'red', color: '#e11d48', name: 'Rojo' },
-  { id: 'green', color: '#10b981', name: 'Esmeralda' },
-  { id: 'blue', color: '#3b82f6', name: 'Azul' },
-  { id: 'purple', color: '#8c5cff', name: 'Violeta' },
-  { id: 'orange', color: '#f97316', name: 'Naranja' },
-  { id: 'cyan', color: '#06b6d4', name: 'Cian Cyber' },
-  { id: 'yellow', color: '#eab308', name: 'Amarillo Code' },
-  { id: 'pink', color: '#ec4899', name: 'Rosa Tech' },
-  { id: 'brown', color: '#a0522d', name: 'Marrón Tierra' },
-  { id: 'black', color: '#374151', name: 'Negro Carbón' },
-  { id: 'Peach', color: '#ff7e5f', name: 'Peach' },
-  { id: 'Verde', color: '#33cc33', name: 'Verde Lima' },
+  { id: "red", color: "#e11d48", name: "Rojo" },
+  { id: "green", color: "#10b981", name: "Esmeralda" },
+  { id: "blue", color: "#3b82f6", name: "Azul" },
+  { id: "purple", color: "#8c5cff", name: "Violeta" },
+  { id: "orange", color: "#f97316", name: "Naranja" },
+  { id: "cyan", color: "#06b6d4", name: "Cian Cyber" },
+  { id: "yellow", color: "#eab308", name: "Amarillo Code" },
+  { id: "pink", color: "#ec4899", name: "Rosa Tech" },
+  { id: "brown", color: "#a0522d", name: "Marrón Tierra" },
+  { id: "black", color: "#374151", name: "Negro Carbón" },
+  { id: "Peach", color: "#ff7e5f", name: "Peach" },
+  { id: "Verde", color: "#33cc33", name: "Verde Lima" },
 ];
 
 function App() {
   // 1. ESTADOS PRINCIPALES
   // Usamos localStorage para recordar la sección al recargar (Pull to Refresh)
   const [activeSection, setActiveSection] = useState(() => {
-    return localStorage.getItem('myPortfolioSection') || 'home';
+    return localStorage.getItem("myPortfolioSection") || "home";
   });
-  
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState("dark");
   const [selectedProject, setSelectedProject] = useState(null);
   const cursorRef = useRef(null);
-  
+
   // Configuración de Idioma
   const [language, setLanguage] = useState("es");
   const t = translations[language];
 
   // Configuración de Color
-  const [accentColor, setAccentColor] = useState('#e11d48');
+  const [accentColor, setAccentColor] = useState("#e11d48");
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null);
 
@@ -92,7 +93,7 @@ function App() {
 
   // Guardar sección activa
   useEffect(() => {
-    localStorage.setItem('myPortfolioSection', activeSection);
+    localStorage.setItem("myPortfolioSection", activeSection);
     // Scroll arriba al cambiar sección
     window.scrollTo(0, 0);
   }, [activeSection]);
@@ -104,7 +105,7 @@ function App() {
 
   // Aplicar Color de Acento
   useEffect(() => {
-    document.documentElement.style.setProperty('--accent', accentColor);
+    document.documentElement.style.setProperty("--accent", accentColor);
   }, [accentColor]);
 
   // Efecto Cursor (Círculo que sigue al mouse)
@@ -122,7 +123,10 @@ function App() {
   // Cerrar menú de colores al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
-      if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+      if (
+        themeMenuRef.current &&
+        !themeMenuRef.current.contains(event.target)
+      ) {
         setShowThemeMenu(false);
       }
     }
@@ -133,21 +137,23 @@ function App() {
   // Pull to Refresh Manual (Opcional, si el nativo falla)
   useEffect(() => {
     let touchStartY = 0;
-    const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY; };
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY;
+    };
     const handleTouchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY;
       const distance = touchEndY - touchStartY;
       if (window.scrollY === 0 && distance > 150) {
         // Vibración suave en móviles
         if (navigator.vibrate) navigator.vibrate(50);
-        window.location.reload(); 
+        window.location.reload();
       }
     };
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
@@ -164,13 +170,13 @@ function App() {
           /* Importante: Ya no usamos el fragmento <> </>, todo va dentro de este div */
           <div
             className="section-wrapper fade-in home-wrapper"
-            style={{ 
-              position: "relative", 
+            style={{
+              position: "relative",
               overflow: "hidden",
               /* Estos estilos inline aseguran la estructura vertical si falla el CSS */
               display: "flex",
               flexDirection: "column",
-              height: "100vh" 
+              height: "100vh",
             }}
           >
             {/* LUCES DE FONDO */}
@@ -180,13 +186,13 @@ function App() {
             {/* 2. CONTENIDO CENTRAL (TEXTO + TARJETA) */}
             <div
               className="hero-content"
-              style={{ 
-                position: "relative", 
-                zIndex: 1, 
-                flex: 1, /* Esto hace que ocupe todo el espacio disponible */
+              style={{
+                position: "relative",
+                zIndex: 1 /* Asegura que esté encima de los blobs */,
+                flex: 1 /* Esto hace que ocupe todo el espacio disponible */,
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
+                alignItems: "flex-start",
+                justifyContent: "center",
               }}
             >
               {/* BLOQUE IZQUIERDO: Texto */}
@@ -237,7 +243,15 @@ function App() {
                   {t.hero.desc_end}
                 </p>
 
-                <div className="hero-buttons" style={{ marginTop: "30px", display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <div
+                  className="hero-buttons"
+                  style={{
+                    marginTop: "30px",
+                    display: "flex",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                  }}
+                >
                   <button
                     onClick={() => setActiveSection("projects")}
                     className="btn btn-primary"
@@ -245,7 +259,7 @@ function App() {
                   >
                     {t.hero.btn_primary}
                   </button>
-                  
+
                   <button
                     onClick={() => setActiveSection("contact")}
                     className="btn btn-ghost"
@@ -255,17 +269,17 @@ function App() {
                   </button>
 
                   {/* BOTÓN DESCARGAR CV */}
-                  <a 
-                    href="/CV_Angel_Salguero.pdf" 
+                  <a
+                    href="/CV_Angel_Salguero.pdf"
                     download="CV_Angel_Salguero.pdf"
                     className="btn btn-ghost"
-                    style={{ 
-                      padding: "12px 30px", 
-                      fontSize: "1rem", 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '8px',
-                      textDecoration: 'none'
+                    style={{
+                      padding: "12px 30px",
+                      fontSize: "1rem",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      textDecoration: "none",
                     }}
                   >
                     <FileText size={18} /> CV
@@ -284,6 +298,7 @@ function App() {
                   justifyContent: "center",
                 }}
               >
+                {/* --- TARJETA CON EFECTO TIPEADO (DINÁMICA) --- */}
                 <div
                   className="stats-card"
                   style={{
@@ -308,47 +323,87 @@ function App() {
                       borderBottom: "1px solid #333",
                     }}
                   >
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f56" }}></div>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ffbd2e" }}></div>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#27c93f" }}></div>
+                    <div
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "#ff5f56",
+                      }}
+                    ></div>
+                    <div
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "#ffbd2e",
+                      }}
+                    ></div>
+                    <div
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "#27c93f",
+                      }}
+                    ></div>
                   </div>
 
-                  {/* Contenido Stats */}
-                  <div style={{ padding: "25px" }}>
-                    <div style={{ marginBottom: "20px" }}>
-                      <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
-                        {t.hero.stats.exp}
-                      </p>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span style={{ color: "#569cd6" }}>const</span>
-                        <span style={{ color: "#9cdcfe" }}>exp</span>
-                        <span style={{ color: "#d4d4d4" }}>+=</span>
-                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>3;</span>
-                      </div>
-                    </div>
+                  {/* Contenido Animado */}
+                  <div
+                    style={{
+                      padding: "25px",
+                      textAlign: "left",
+                      minHeight: "200px",
+                    }}
+                  >
+                    <Typewriter
+                      key={
+                        language + accentColor
+                      } /* <--- TRUCO: Reinicia si cambia idioma O color */
+                      onInit={(typewriter) => {
+                        typewriter
+                          .changeDelay(40)
 
-                    <div style={{ marginBottom: "20px" }}>
-                      <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
-                        {t.hero.stats.projects}
-                      </p>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span style={{ color: "#c586c0" }}>let</span>
-                        <span style={{ color: "#9cdcfe" }}>done</span>
-                        <span style={{ color: "#d4d4d4" }}>=</span>
-                        <span style={{ color: "#b5cea8", fontSize: "1.4rem", fontWeight: "bold" }}>15;</span>
-                      </div>
-                    </div>
+                          /* LÍNEA 1: Años Experiencia */
+                          // COMENTARIO CON TU COLOR (accentColor)
+                          .typeString(
+                            `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.exp}</span><br/>`,
+                          )
+                          .pauseFor(300)
+                          .typeString(
+                            '<span style="color: #569cd6;">const</span> <span style="color: #9cdcfe;">exp</span> <span style="color: #d4d4d4;">+=</span> <span style="color: #b5cea8; font-weight: bold;">3;</span><br/><br/>',
+                          )
 
-                    <div>
-                      <p style={{ margin: 0, color: accentColor, fontSize: "0.8rem", fontWeight: "bold" }}>
-                        {t.hero.stats.clients}
-                      </p>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span style={{ color: "#9cdcfe" }}>status</span>
-                        <span style={{ color: "#d4d4d4" }}>:</span>
-                        <span style={{ color: "#ce9178", fontSize: "1.4rem", fontWeight: "bold" }}>"100%"</span>
-                      </div>
-                    </div>
+                          /* LÍNEA 2: Proyectos */
+                          // COMENTARIO CON TU COLOR (accentColor)
+                          .typeString(
+                            `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.projects}</span><br/>`,
+                          )
+                          .pauseFor(300)
+                          .typeString(
+                            '<span style="color: #c586c0;">let</span> <span style="color: #9cdcfe;">done</span> <span style="color: #d4d4d4;">=</span> <span style="color: #b5cea8; font-weight: bold;">15;</span><br/><br/>',
+                          )
+
+                          /* LÍNEA 3: Clientes */
+                          // COMENTARIO CON TU COLOR (accentColor)
+                          .typeString(
+                            `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.clients}</span><br/>`,
+                          )
+                          .pauseFor(300)
+                          .typeString(
+                            '<span style="color: #9cdcfe;">status</span> <span style="color: #d4d4d4;">:</span> <span style="color: #ce9178; font-weight: bold;">"100%"</span>',
+                          )
+
+                          .start();
+                      }}
+                      options={{
+                        autoStart: true,
+                        loop: false,
+                        cursor: "_",
+                        delay: 40,
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -356,10 +411,10 @@ function App() {
 
             {/* 3. CARRUSEL DE SKILLS (AHORA DENTRO DEL HOME WRAPPER) */}
             <div className="skills-section">
-              <h3 style={{ opacity: 0.6, marginBottom: '15px' }}>
+              <h3 style={{ opacity: 0.6, marginBottom: "15px" }}>
                 {t.hero.tech_stack}
               </h3>
-              
+
               <div className="skills-track">
                 {/* VUELTA 1 */}
                 {TECH_STACK.map((tech, index) => (
@@ -378,7 +433,6 @@ function App() {
                 ))}
               </div>
             </div>
-
           </div>
         );
 
@@ -387,9 +441,11 @@ function App() {
           <div className="section-wrapper fade-in">
             <div className="section-header">
               <p className="section-label">{t.section_titles.projects_label}</p>
-              <h2 className="section-title">{t.section_titles.projects_title}</h2>
+              <h2 className="section-title">
+                {t.section_titles.projects_title}
+              </h2>
               <p style={{ marginTop: "10px", color: "var(--text-muted)" }}>
-                 {t.section_titles.projects_subtitle}
+                {t.section_titles.projects_subtitle}
               </p>
             </div>
             {/* GRID DE PROYECTOS */}
@@ -399,11 +455,9 @@ function App() {
                   key={i}
                   className="project-card"
                   onClick={() => setSelectedProject(project)}
-                  style={{ animationDelay: `${i * 0.1}s` }} 
+                  style={{ animationDelay: `${i * 0.1}s` }}
                 >
-                  <div className="project-icon">
-                    {project.icon}
-                  </div>
+                  <div className="project-icon">{project.icon}</div>
                   <h3>{project.title}</h3>
                   <div className="tech-stack">
                     {project.tech.map((tech, k) => (
@@ -425,7 +479,9 @@ function App() {
           <div className="section-wrapper fade-in">
             <div className="section-header">
               <p className="section-label">{t.section_titles.services_label}</p>
-              <h2 className="section-title">{t.section_titles.services_title}</h2>
+              <h2 className="section-title">
+                {t.section_titles.services_title}
+              </h2>
               <p
                 style={{
                   marginTop: "10px",
@@ -481,7 +537,7 @@ function App() {
               <p className="section-label">{t.section_titles.contact_label}</p>
               <h2 className="cta-title">{t.section_titles.contact_title}</h2>
               <p className="hero-desc" style={{ margin: "0 auto 30px" }}>
-                  {t.section_titles.contact_desc}
+                {t.section_titles.contact_desc}
               </p>
 
               <a
@@ -489,7 +545,7 @@ function App() {
                 className="btn btn-primary"
                 style={{ marginBottom: "2rem" }}
               >
-                  {t.section_titles.contact_btn}
+                {t.section_titles.contact_btn}
               </a>
             </div>
           </div>
@@ -508,8 +564,18 @@ function App() {
             }}
           >
             {/* Header Política */}
-            <div className="section-header" style={{ textAlign: "center", marginBottom: "70px" }}>
-              <p className="section-label" style={{ letterSpacing: "3px", fontSize: "0.85rem", color: "#999" }}>
+            <div
+              className="section-header"
+              style={{ textAlign: "center", marginBottom: "70px" }}
+            >
+              <p
+                className="section-label"
+                style={{
+                  letterSpacing: "3px",
+                  fontSize: "0.85rem",
+                  color: "#999",
+                }}
+              >
                 {t.privacy.header.label}
               </p>
 
@@ -549,72 +615,177 @@ function App() {
                 opacity: 0.95,
               }}
             >
-               {/* 1. RESPONSABLE */}
-               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
-                 {t.privacy.sections.responsible.title}
-               </h3>
-               <p>{t.privacy.sections.responsible.text}</p>
-               <ul style={{ listStyle: 'none', padding: 0, marginTop: '15px', borderLeft: '3px solid var(--accent)', paddingLeft: '20px' }}>
-                 {t.privacy.sections.responsible.items.map((item, i) => (
-                   <li key={i}><strong>{item}</strong></li>
-                 ))}
-               </ul>
+              {/* 1. RESPONSABLE */}
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontFamily: "Georgia, serif",
+                  marginTop: "50px",
+                  marginBottom: "20px",
+                }}
+              >
+                {t.privacy.sections.responsible.title}
+              </h3>
+              <p>{t.privacy.sections.responsible.text}</p>
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  marginTop: "15px",
+                  borderLeft: "3px solid var(--accent)",
+                  paddingLeft: "20px",
+                }}
+              >
+                {t.privacy.sections.responsible.items.map((item, i) => (
+                  <li key={i}>
+                    <strong>{item}</strong>
+                  </li>
+                ))}
+              </ul>
 
-               {/* 2. DATOS */}
-               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
-                 {t.privacy.sections.data.title}
-               </h3>
-               <p>{t.privacy.sections.data.intro}</p>
-               <div style={{ display: 'grid', gap: '20px', marginTop: '20px' }}>
-                 {t.privacy.sections.data.cards.map((card, i) => (
-                    <div key={i} style={{ background: 'var(--card-bg)', padding: '20px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                      <strong style={{ display:'block', marginBottom:'10px', color: 'var(--accent)' }}>{card.title}</strong>
-                      <p style={{ fontSize: '1rem', margin:0 }}>{card.content}</p>
-                    </div>
-                 ))}
-               </div>
+              {/* 2. DATOS */}
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontFamily: "Georgia, serif",
+                  marginTop: "50px",
+                  marginBottom: "20px",
+                }}
+              >
+                {t.privacy.sections.data.title}
+              </h3>
+              <p>{t.privacy.sections.data.intro}</p>
+              <div style={{ display: "grid", gap: "20px", marginTop: "20px" }}>
+                {t.privacy.sections.data.cards.map((card, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      background: "var(--card-bg)",
+                      padding: "20px",
+                      borderRadius: "8px",
+                      border: "1px solid var(--border-color)",
+                    }}
+                  >
+                    <strong
+                      style={{
+                        display: "block",
+                        marginBottom: "10px",
+                        color: "var(--accent)",
+                      }}
+                    >
+                      {card.title}
+                    </strong>
+                    <p style={{ fontSize: "1rem", margin: 0 }}>
+                      {card.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
 
-               {/* 3. TERCEROS */}
-               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
-                 {t.privacy.sections.third_parties.title}
-               </h3>
-               <p>{t.privacy.sections.third_parties.text}</p>
-               <ul style={{ paddingLeft: '20px', color: 'var(--text-muted)' }}>
-                 {t.privacy.sections.third_parties.items.map((item, i) => (
-                   <li key={i} style={{ marginBottom: '10px' }}><strong>{item}</strong></li>
-                 ))}
-               </ul>
-               <p style={{ fontSize: '0.95rem', fontStyle: 'italic' }}>{t.privacy.sections.third_parties.note}</p>
+              {/* 3. TERCEROS */}
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontFamily: "Georgia, serif",
+                  marginTop: "50px",
+                  marginBottom: "20px",
+                }}
+              >
+                {t.privacy.sections.third_parties.title}
+              </h3>
+              <p>{t.privacy.sections.third_parties.text}</p>
+              <ul style={{ paddingLeft: "20px", color: "var(--text-muted)" }}>
+                {t.privacy.sections.third_parties.items.map((item, i) => (
+                  <li key={i} style={{ marginBottom: "10px" }}>
+                    <strong>{item}</strong>
+                  </li>
+                ))}
+              </ul>
+              <p style={{ fontSize: "0.95rem", fontStyle: "italic" }}>
+                {t.privacy.sections.third_parties.note}
+              </p>
 
-               {/* 4. DERECHOS */}
-               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
-                 {t.privacy.sections.rights.title}
-               </h3>
-               <p>{t.privacy.sections.rights.intro}</p>
-               <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '20px' }}>
-                 {t.privacy.sections.rights.list.map((right, i) => (
-                   <li key={i} style={{ padding: '15px', border: '1px solid var(--border-color)', borderRadius: '6px' }}>
-                     <strong>{right.label}:</strong><br/> {right.desc}
-                   </li>
-                 ))}
-               </ul>
+              {/* 4. DERECHOS */}
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontFamily: "Georgia, serif",
+                  marginTop: "50px",
+                  marginBottom: "20px",
+                }}
+              >
+                {t.privacy.sections.rights.title}
+              </h3>
+              <p>{t.privacy.sections.rights.intro}</p>
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  gap: "15px",
+                  marginTop: "20px",
+                }}
+              >
+                {t.privacy.sections.rights.list.map((right, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      padding: "15px",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    <strong>{right.label}:</strong>
+                    <br /> {right.desc}
+                  </li>
+                ))}
+              </ul>
 
-               {/* 5 & 6. COOKIES Y RETENCIÓN */}
-               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
-                 {t.privacy.sections.cookies.title}
-               </h3>
-               <p>{t.privacy.sections.cookies.text}</p>
+              {/* 5 & 6. COOKIES Y RETENCIÓN */}
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontFamily: "Georgia, serif",
+                  marginTop: "50px",
+                  marginBottom: "20px",
+                }}
+              >
+                {t.privacy.sections.cookies.title}
+              </h3>
+              <p>{t.privacy.sections.cookies.text}</p>
 
-               <h3 style={{ fontSize: '1.8rem', fontFamily: 'Georgia, serif', marginTop: '50px', marginBottom: '20px' }}>
-                 {t.privacy.sections.retention.title}
-               </h3>
-               <p>{t.privacy.sections.retention.text}</p>
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontFamily: "Georgia, serif",
+                  marginTop: "50px",
+                  marginBottom: "20px",
+                }}
+              >
+                {t.privacy.sections.retention.title}
+              </h3>
+              <p>{t.privacy.sections.retention.text}</p>
             </div>
-            
-             <div style={{ textAlign: 'center', marginTop: '100px', marginBottom: '80px', borderTop: '1px solid var(--border-color)', paddingTop: '30px' }}>
-               <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: 'var(--text-muted)' }}>
-                 {t.privacy.footer_text}
-               </span>
+
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "100px",
+                marginBottom: "80px",
+                borderTop: "1px solid var(--border-color)",
+                paddingTop: "30px",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "Georgia, serif",
+                  fontStyle: "italic",
+                  color: "var(--text-muted)",
+                }}
+              >
+                {t.privacy.footer_text}
+              </span>
             </div>
           </div>
         );
@@ -629,8 +800,14 @@ function App() {
       <div className="cursor-glow" ref={cursorRef}></div>
 
       {/* Navbar OPTIMIZADO */}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 50px' }}>
-        
+      <nav
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "20px 50px",
+        }}
+      >
         {/* 1. LOGO (Izquierda) */}
         <div className="logo" onClick={() => setActiveSection("home")}>
           as<span className="dot">_</span>
@@ -638,72 +815,84 @@ function App() {
 
         {/* CONTENEDOR DERECHO */}
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-          
           {/* 2. ENLACES DE NAVEGACIÓN (Centro-Derecha) */}
           <div className={`nav-links ${menuOpen ? "active" : ""}`}>
             <button
               className={`nav-btn ${activeSection === "home" ? "active" : ""}`}
-              onClick={() => { setActiveSection("home"); setMenuOpen(false); }}
+              onClick={() => {
+                setActiveSection("home");
+                setMenuOpen(false);
+              }}
             >
               {t.nav.home}
             </button>
             <button
               className={`nav-btn ${activeSection === "projects" ? "active" : ""}`}
-              onClick={() => { setActiveSection("projects"); setMenuOpen(false); }}
+              onClick={() => {
+                setActiveSection("projects");
+                setMenuOpen(false);
+              }}
             >
-               {t.nav.projects}
+              {t.nav.projects}
             </button>
             <button
               className={`nav-btn ${activeSection === "services" ? "active" : ""}`}
-              onClick={() => { setActiveSection("services"); setMenuOpen(false); }}
+              onClick={() => {
+                setActiveSection("services");
+                setMenuOpen(false);
+              }}
             >
-               {t.nav.services}
+              {t.nav.services}
             </button>
             <button
               className="btn btn-primary"
-              onClick={() => { setActiveSection("contact"); setMenuOpen(false); }}
+              onClick={() => {
+                setActiveSection("contact");
+                setMenuOpen(false);
+              }}
             >
-               {t.nav.contact}
+              {t.nav.contact}
             </button>
           </div>
 
           {/* 3. CONTROLES (Idioma + Tema + Color) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            
+          <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
             {/* BOTÓN IDIOMA */}
-            <button 
-                onClick={() => setLanguage(prev => prev === "es" ? "en" : "es")}
-                style={{
-                  background: 'transparent',
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-color)',
-                  width: '40px',
-                  height: '30px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '0.8rem',
-                  padding: '0'
-                }}
-              >
-                {language === "es" ? "ES" : "EN"}
+            <button
+              onClick={() =>
+                setLanguage((prev) => (prev === "es" ? "en" : "es"))
+              }
+              style={{
+                background: "transparent",
+                border: "1px solid var(--border-color)",
+                color: "var(--text-color)",
+                width: "40px",
+                height: "30px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "0.8rem",
+                padding: "0",
+              }}
+            >
+              {language === "es" ? "ES" : "EN"}
             </button>
 
             {/* SELECTOR DE TEMA DE COLOR */}
-            <div style={{ position: 'relative' }} ref={themeMenuRef}> 
+            <div style={{ position: "relative" }} ref={themeMenuRef}>
               <button
                 onClick={() => setShowThemeMenu(!showThemeMenu)}
                 style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-color)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '5px'
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--text-color)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "5px",
                 }}
                 title="Cambiar Color de Tema"
               >
@@ -712,57 +901,70 @@ function App() {
 
               {/* MODAL FLOTANTE (POPOVER) */}
               {showThemeMenu && (
-                <div 
+                <div
                   className="theme-menu fade-in"
                   style={{
-                    position: 'absolute',
-                    top: '40px',
-                    right: '-10px',
-                    background: 'var(--card-bg)', 
-                    backgroundColor: 'var(--bg-card)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '12px',
-                    padding: '15px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                    position: "absolute",
+                    top: "40px",
+                    right: "-10px",
+                    background: "var(--card-bg)",
+                    backgroundColor: "var(--bg-card)",
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "12px",
+                    padding: "15px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
                     zIndex: 100,
-                    minWidth: '160px'
+                    minWidth: "160px",
                   }}
                 >
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '5px' }}>
-                     Selecciona un color:
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.8rem",
+                      color: "var(--text-muted)",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    Selecciona un color:
                   </p>
-                  
+
                   {COLOR_THEMES.map((themeOption) => (
                     <button
                       key={themeOption.id}
                       onClick={() => {
                         setAccentColor(themeOption.color);
-                        setShowThemeMenu(false); 
+                        setShowThemeMenu(false);
                       }}
                       style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '5px',
-                        color: 'var(--text)',
-                        fontSize: '0.9rem',
-                        textAlign: 'left'
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "5px",
+                        color: "var(--text)",
+                        fontSize: "0.9rem",
+                        textAlign: "left",
                       }}
                     >
-                      <div 
+                      <div
                         style={{
-                          width: '18px',
-                          height: '18px',
-                          borderRadius: '50%',
+                          width: "18px",
+                          height: "18px",
+                          borderRadius: "50%",
                           background: themeOption.color,
-                          border: accentColor === themeOption.color ? '2px solid white' : 'none',
-                          boxShadow: accentColor === themeOption.color ? '0 0 0 2px #fff' : 'none'
+                          border:
+                            accentColor === themeOption.color
+                              ? "2px solid white"
+                              : "none",
+                          boxShadow:
+                            accentColor === themeOption.color
+                              ? "0 0 0 2px #fff"
+                              : "none",
                         }}
                       />
                       {themeOption.name}
@@ -790,7 +992,6 @@ function App() {
               ☰
             </button>
           </div>
-
         </div>
       </nav>
 
@@ -826,16 +1027,28 @@ function App() {
             <div style={{ margin: "0 -20px 25px -20px" }}>
               {(() => {
                 switch (selectedProject.title) {
-                  case "FinanceHub": return <FinanceHubDemo />;
-                  case "DataCleaner Bot": return <DataCleanerDemo />;
-                  case "SQL vs NoSQL": return <SqlNoSqlDemo />;
-                  case "Gastro-App": return <GastroAppDemo />;
-                  case "Automation-Tools": return <AutomationToolsDemo />;
-                  case "UniVault": return <UniVaultDemo />;
-                  default: 
-                    return <div className="modal-image-container">
-                             <img src="/api/placeholder/400/320" alt="Demo Placeholder" className="modal-img" />
-                           </div>; 
+                  case "FinanceHub":
+                    return <FinanceHubDemo />;
+                  case "DataCleaner Bot":
+                    return <DataCleanerDemo />;
+                  case "SQL vs NoSQL":
+                    return <SqlNoSqlDemo />;
+                  case "Gastro-App":
+                    return <GastroAppDemo />;
+                  case "Automation-Tools":
+                    return <AutomationToolsDemo />;
+                  case "UniVault":
+                    return <UniVaultDemo />;
+                  default:
+                    return (
+                      <div className="modal-image-container">
+                        <img
+                          src="/api/placeholder/400/320"
+                          alt="Demo Placeholder"
+                          className="modal-img"
+                        />
+                      </div>
+                    );
                 }
               })()}
             </div>
@@ -848,7 +1061,11 @@ function App() {
                   </span>
                 ))}
               </div>
-              <p className="modal-desc">{selectedProject.desc} <br/><br/> {selectedProject.longDesc || "Description available via demo."}</p>
+              <p className="modal-desc">
+                {selectedProject.desc} <br />
+                <br />{" "}
+                {selectedProject.longDesc || "Description available via demo."}
+              </p>
             </div>
           </div>
         </div>
@@ -856,23 +1073,26 @@ function App() {
 
       {/* --- FOOTER --- */}
       <footer
+        className="footer-simple"
         style={{
-          marginTop: "auto", /* Empuja el footer al final si la pantalla es alta */
-          padding: "30px 50px",
+          /* 1. POSICIÓN FIJA (MANDA SOBRE EL CSS) */
+          position: "fixed",  /* <--- ESTO ES LO IMPORTANTE */
+          bottom: 0,
+          left: 0,
+          zIndex: 1000,       /* Para que flote encima de todo */
+          
+          /* 2. DISEÑO Y COLOR */
           width: "100%",
+          padding: "15px 50px", /* Un poco más delgado para que no estorbe */
+          background: "var(--bg-color)", /* O usa "rgba(10,10,10,0.95)" para transparencia */
+          borderTop: "1px solid var(--border-color, rgba(255,255,255,0.1))",
+          
+          /* 3. ALINEACIÓN */
           display: "flex",
-          flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          borderTop: "1px solid var(--border-color, rgba(255,255,255,0.1))",
           flexWrap: "wrap",
-          
-          /* AQUÍ ESTABA EL ERROR: */
-          gap: "20px", /* Antes tenías 1000px, ¡eso lo rompía todo! */
-          
-          background: "var(--bg-color)", /* Asegura que tenga fondo */
-          position: "relative",
-          zIndex: 10
+          gap: "20px",
         }}
       >
         <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
@@ -903,7 +1123,10 @@ function App() {
 
         <div style={{ display: "flex", gap: "10px" }}>
           {[
-            { icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
+            {
+              icon: FaLinkedin,
+              link: "https://www.linkedin.com/in/angel-salguero-47b53535a/",
+            },
             { icon: FaGithub, link: "https://github.com/AngelSalgueroB" },
             { icon: FaFacebook, link: "https://facebook.com/" },
             { icon: FaInstagram, link: "https://instagram.com/" },
@@ -933,3 +1156,4 @@ function App() {
 }
 
 export default App;
+``;
