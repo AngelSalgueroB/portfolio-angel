@@ -5,9 +5,10 @@ import {
   Home, Send, Star, Lock, Mail, LogOut, Webhook, PenTool,
   TrendingDown, CreditCard, PackageX, Mountain, BarChart3, FileSpreadsheet, 
   Megaphone, Globe, AlertTriangle, Target, ShieldCheck, CheckCircle, XCircle,
-  Database, Cloud, Code, Wrench, Smartphone, Lightbulb, Clock, Trash2, Edit2, Check, X
+  Database, Cloud, Code, Wrench, Smartphone, Lightbulb, Clock, Trash2, Edit2, Check, X, Copy
 } from 'lucide-react'
 import { jsPDF } from "jspdf"
+import autoTable from 'jspdf-autotable'
 import Groq from "groq-sdk" 
 import './FreelanceOS.css'
 
@@ -17,7 +18,6 @@ export default function FreelanceOS() {
   const [authLoading, setAuthLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(true)
 
   // --- 2. ESTADOS APP & UI ---
   const [view, setView] = useState('wizard') 
@@ -39,89 +39,21 @@ export default function FreelanceOS() {
   const [currency, setCurrency] = useState('PEN') 
   const today = new Date().toISOString().split('T')[0]
 
-  // --- 5. ESTADOS DE IDEAS (NUEVO) ---
+  // --- 5. ESTADOS DE IDEAS ---
   const [ideaModal, setIdeaModal] = useState(false)
   const [ideaText, setIdeaText] = useState('')
   const [ideasList, setIdeasList] = useState([])
   const [showIdeaHistory, setShowIdeaHistory] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState('')
-  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null) // Para borrar Ideas
 
-  // Función para guardar la idea
-  const guardarIdea = async () => {
-    if (!ideaText.trim()) return
-    setLoading(true)
-    const { error } = await supabase.from('ideas').insert([{ content: ideaText }])
-    
-    if (error) {
-      setNotification({ type: 'error', msg: 'Error al guardar idea' })
-    } else {
-      setNotification({ type: 'success', msg: 'Idea successfully saved!' })
-      setIdeaText('')
-      if (showIdeaHistory) cargarIdeas() // Recargar si estamos viendo la lista
-    }
-    setLoading(false)
-  }
-  
-  // 1. Esta función ahora solo ABRE el modal de advertencia
-  const solicitarBorrado = (id) => {
-    setDeleteTarget(id) 
-  }
-
-  // 2. Esta es la que realmente BORRA en Supabase (se ejecuta al dar "Sí")
-  const confirmarBorrado = async () => {
-    if (!deleteTarget) return
-
-    const { error } = await supabase.from('ideas').delete().eq('id', deleteTarget)
-    
-    if (error) {
-      setNotification({ type: 'error', msg: 'Error al eliminar.' })
-    } else {
-      setNotification({ type: 'success', msg: 'Idea eliminada correctamente.' })
-      cargarIdeas() // Refrescar lista
-    }
-    setDeleteTarget(null) // Cerrar modal y limpiar
-  }
-
-  // Función: Iniciar Edición
-  const empezarEdicion = (idea) => {
-    setEditingId(idea.id)
-    setEditText(idea.content)
-  }
-
-  // Función: Guardar Cambios (Update)
-  const guardarEdicion = async (id) => {
-    const { error } = await supabase.from('ideas').update({ content: editText }).eq('id', id)
-    
-    if (error) {
-      setNotification({ type: 'error', msg: 'Error al actualizar.' })
-    } else {
-      setNotification({ type: 'success', msg: 'Idea actualizada.' })
-      setEditingId(null) // Salir modo edición
-      cargarIdeas() // Refrescar lista
-    }
-  }
-
-  // Función para cargar el historial
-  const cargarIdeas = async () => {
-    const { data, error } = await supabase
-      .from('ideas')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    if (data) setIdeasList(data)
-  }
-
-  // Efecto para cargar ideas cuando abrimos el historial
-  useEffect(() => {
-    if (ideaModal && showIdeaHistory) {
-      cargarIdeas()
-    }
-  }, [ideaModal, showIdeaHistory])
+  // --- 6. ESTADO BORRADO PROYECTOS (NUEVO) ---
+  const [deleteProjectTarget, setDeleteProjectTarget] = useState(null) // Para borrar Proyectos
 
   const [data, setData] = useState({
     fecha: today,
+    fechaInicio: today,
     cliente: '', empresa: '', cargo: '', ruc: '',
     emailContacto: '', telefono: '', direccion: '',
     objetivo: '', 
@@ -129,6 +61,8 @@ export default function FreelanceOS() {
     soporte: 'Ninguno', extras: [],
     plazo: '', presupuesto: '', descripcionProblema: ''
   })
+
+  const LOGOS_OSCUROS = ['Next.js', 'GitHub',  'Power', 'OpenAI', 'Vercel'];
 
   // --- DATOS: CATEGORÍAS ---
   const TECH_CATEGORIES = {
@@ -184,31 +118,6 @@ export default function FreelanceOS() {
   };
 
   const ALL_BASE_LABELS = Object.values(TECH_CATEGORIES).flatMap(cat => cat.items.map(i => i.label));
-
-  // --- EFECTOS ---
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
-    return () => subscription.unsubscribe()
-  }, [])
-
-  useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
-  useEffect(() => { if (messages.length === 0) setMessages([{ role: 'assistant', content: "Hola ingeniero. Soy tu copiloto IA. Pregúntame sobre stack, costos o estrategia." }]) }, [])
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages]);
-
-  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
-  const goHome = () => { setStep(1); setView('wizard'); }
-
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    setAuthLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setNotification({ type: 'error', msg: error.message })
-    setAuthLoading(false)
-  }
-  const handleLogout = async () => { await supabase.auth.signOut(); setSession(null) }
-
-  // --- OTROS CATÁLOGOS ---
   const PROBLEMAS_BASE = [
     { label: 'Fallos Pedidos/Pagos', icon: <CreditCard size={32} color="#ef4444" strokeWidth={1.5} /> },
     { label: 'Pérdida de Ventas', icon: <TrendingDown size={32} color="#ef4444" strokeWidth={1.5} /> },
@@ -223,103 +132,557 @@ export default function FreelanceOS() {
   const ENTREGABLES_BASE = [ 'Código Fuente', 'Manual Usuario', 'Capacitación', 'Despliegue', 'Garantía 30 días' ]
   const EXTRAS_CALIDAD = [ 'Backups Automáticos', 'Seguridad SSL/WAF', 'Analytics Dashboard', 'Documentación Técnica' ]
 
+  // --- EFECTOS ---
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+    return () => subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
+  
+  // Mensaje inicial del chat
+  useEffect(() => { 
+    if (messages.length === 0) setMessages([{ role: 'assistant', content: "Hola ingeniero. Soy tu copiloto IA. Pregúntame sobre stack, costos o estrategia." }]) 
+  }, [])
+
+  // Auto-scroll chat
+  useEffect(() => { 
+    const timeoutId = setTimeout(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+    }, 100);
+    return () => clearTimeout(timeoutId); 
+  }, [messages, isTyping]);
+
+  // Carga de ideas
+  useEffect(() => {
+    if (ideaModal && showIdeaHistory) {
+      cargarIdeas()
+    }
+  }, [ideaModal, showIdeaHistory])
+
+
+  // --- FUNCIONES CORE ---
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  const goHome = () => { setStep(1); setView('wizard'); }
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setAuthLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) setNotification({ type: 'error', msg: error.message })
+    setAuthLoading(false)
+  }
+  const handleLogout = async () => { await supabase.auth.signOut(); setSession(null) }
+
+  // --- FUNCIÓN CHAT IA (V4: HÍBRIDA) ---
   const handleChatSubmit = async (manualPrompt = null) => {
-    const textToSend = typeof manualPrompt === 'string' ? manualPrompt : chatInput
-    if (!textToSend.trim()) return
-    const userMsg = { role: 'user', content: textToSend }
-    setMessages(prev => [...prev, userMsg])
-    if (typeof manualPrompt !== 'string') setChatInput('')
-    setIsTyping(true)
+    // 1. Detectar origen
+    const isManualTrigger = typeof manualPrompt === 'string';
+    const textToSend = isManualTrigger ? manualPrompt : chatInput;
+    
+    if (!textToSend.trim()) return;
+
+    // 2. Agregar mensaje usuario
+    const userMsg = { role: 'user', content: textToSend };
+    setMessages(prev => [...prev, userMsg]);
+    
+    if (!isManualTrigger) setChatInput(''); 
+    setIsTyping(true);
+
     try {
       const groq = new Groq({ apiKey: import.meta.env.VITE_GROQ_API_KEY, dangerouslyAllowBrowser: true });
-      let contextTip = ""
-      if (step === 1) contextTip = "Diagnóstico: Enfócate en el OBJETIVO seleccionado."
-      if (step === 2) contextTip = "Stack: Recomienda tecnología robusta."
-      if (step === 3) contextTip = "Negocio: Sugiere soporte mensual."
-      if (step === 4) contextTip = "Detalles: Escribe especificaciones técnicas."
-      const systemPrompt = `ACTÚA COMO: CTO Senior para Angel Salguero. CONTEXTO (${step}/5): ${contextTip}. DATOS: Cliente: ${data.cliente} (${data.empresa}) | Objetivo: ${data.objetivo} | Stack: ${data.tecnologias.join(',')} REGLAS: Breve, técnico, usa negritas.`
-      const completion = await groq.chat.completions.create({ messages: [{ role: 'system', content: systemPrompt }, ...messages, userMsg], model: "llama-3.3-70b-versatile", temperature: 0.6 });
-      setMessages(prev => [...prev, { role: 'assistant', content: completion.choices[0]?.message?.content || "Error IA." }])
-    } catch (error) { setMessages(prev => [...prev, { role: 'assistant', content: "Error Groq." }]) } 
-    finally { setIsTyping(false) }
+      
+      const projectContext = `
+        PROYECTO ACTUAL:
+        - Cliente: ${data.cliente || 'N/A'} (${data.empresa || 'N/A'})
+        - Objetivo: ${data.objetivo}
+        - Stack: ${data.tecnologias.join(', ')}
+        - Plazo: ${data.plazo}
+        - Presupuesto: ${data.presupuesto}
+      `;
+
+      let systemPrompt = "";
+
+      if (isManualTrigger) {
+         // MODO REPORTE (BOTONES)
+         let specificInstruction = "";
+         if (step === 2) specificInstruction = "Valida el Stack Tecnológico. Sé crítico.";
+         if (step === 3) specificInstruction = "Analiza Plazo vs Presupuesto. Advierte riesgos.";
+         if (step === 4) specificInstruction = `Genera ESPECIFICACIONES TÉCNICAS y CRONOGRAMA DETALLADO. Usa el plazo "${data.plazo}". Desglosa por fases/meses/semanas exactas.`;
+
+         systemPrompt = `
+           ACTÚA COMO: CTO Senior generando un DOCUMENTO FORMAL.
+           CONTEXTO: ${projectContext}
+           TAREA: ${specificInstruction}
+           FORMATO: Markdown técnico, extenso, detallado, usa negritas y listas. NO saludes. Ve directo al contenido.
+         `;
+      } else {
+         // MODO CONVERSACIÓN (CHAT)
+         systemPrompt = `
+           ACTÚA COMO: Un asistente CTO amigable y experto llamado "Copiloto".
+           CONTEXTO DEL USUARIO: ${projectContext}
+           OBJETIVO: Responder la duda del usuario de forma breve y útil.
+           - Si te saludan, saluda corto.
+           - Si preguntan algo técnico, responde basándote en el Stack.
+           - No generes reportes largos a menos que te lo pidan.
+         `;
+      }
+
+      const completion = await groq.chat.completions.create({ 
+        messages: [ { role: 'system', content: systemPrompt }, ...messages, userMsg ], 
+        model: "llama-3.3-70b-versatile", 
+        temperature: isManualTrigger ? 0.5 : 0.7, 
+        max_tokens: isManualTrigger ? 8000 : 1024 
+      });
+
+      const aiResponse = completion.choices[0]?.message?.content || "Error IA.";
+      setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
+
+    } catch (error) { 
+      setMessages(prev => [...prev, { role: 'assistant', content: "Error de conexión." }]);
+    } finally { 
+      setIsTyping(false);
+    }
+  }
+
+  // --- HISTORIAL & PROYECTOS ---
+  const handleHistoryToggle = () => {
+    if (view === 'wizard') {
+      cargarHistorial(); 
+    } else {
+      setView('wizard');
+    }
   }
 
   const cargarHistorial = async () => {
     setLoading(true)
-    const { data: records, error } = await supabase.from('reuniones').select('*, clientes(*)').order('created_at', { ascending: false })
+    const { data: records, error } = await supabase
+      .from('reuniones')
+      .select('*, clientes(*)')
+      .order('created_at', { ascending: false }) 
+    
     if (!error) setHistoryData(records || [])
-    setLoading(false); setView('history')
+    setLoading(false)
+    setView('history') 
   }
-  const borrarItem = async (id) => { if(confirm("¿Borrar registro?")) { await supabase.from('reuniones').delete().eq('id', id); setHistoryData(prev => prev.filter(i => i.id !== id)) } }
+
+  // MODAL BORRAR PROYECTO (LÓGICA)
+  const solicitarBorradoProyecto = (id) => { setDeleteProjectTarget(id) }
+  
+  const confirmarBorradoProyecto = async () => {
+    if (!deleteProjectTarget) return
+    setLoading(true)
+    const { error } = await supabase.from('reuniones').delete().eq('id', deleteProjectTarget)
+    if (error) {
+      setNotification({ type: 'error', msg: 'Error al eliminar proyecto.' })
+    } else {
+      setHistoryData(prev => prev.filter(i => i.id !== deleteProjectTarget))
+      setNotification({ type: 'success', msg: 'Proyecto eliminado.' })
+    }
+    setLoading(false)
+    setDeleteProjectTarget(null)
+  }
 
   const guardarProyecto = async () => {
     if (!data.cliente) { setNotification({ type: 'error', msg: "⚠️ Por favor ingresa el nombre del cliente." }); return }
     setLoading(true)
-    const notas = `MONEDA:${currency}\nOBJETIVO:${data.objetivo}\nSOPORTE:${data.soporte}\nEXTRAS:${data.extras}\nRUC:${data.ruc}\nEMAIL:${data.emailContacto}\nTEL:${data.telefono}\nDIR:${data.direccion}\nPROBLEMAS:${data.problemas}\nSTACK:${data.tecnologias}\nPLAZO:${data.plazo}`
+    const notas = `MONEDA:${currency}\nOBJETIVO:${data.objetivo}\nSOPORTE:${data.soporte}\nEXTRAS:${data.extras}\nRUC:${data.ruc}\nEMAIL:${data.emailContacto}\nTEL:${data.telefono}\nDIR:${data.direccion}\nPROBLEMAS:${data.problemas}\nSTACK:${data.tecnologias}\nPLAZO:${data.plazo}\nDESC:${data.descripcionProblema}`
     const { data: cl, error: e1 } = await supabase.from('clientes').insert([{ nombre_contacto: data.cliente, empresa: data.empresa, notas }]).select()
     if (e1) { setNotification({ type: 'error', msg: "Error al guardar cliente: " + e1.message }); setLoading(false); return }
     await supabase.from('reuniones').insert([{ cliente_id: cl[0].id, presupuesto_estimado: parseFloat(data.presupuesto)||0 }])
     setLoading(false)
-    setNotification({ type: 'success', msg: "✅ Proyecto guardado exitosamente en la base de datos." })
+    setNotification({ type: 'success', msg: "✅ Proyecto guardado exitosamente." })
     setStep(1)
     setData({...data, cliente:'', empresa:'', ruc:'', emailContacto:'', telefono:'', direccion:'', objetivo:'', soporte:'Ninguno', extras:[], problemas:[], tecnologias:[], descripcionProblema:''})
   }
 
-  const generarPDF = (source = null) => {
-    const doc = new jsPDF(); const finalData = source || data; const symbol = (source?.currency || currency) === 'USD' ? '$' : 'S/.'
-    const COLOR_ACCENT = [255, 51, 51]; const COLOR_DARK = [20, 20, 20]; const COLOR_GRAY = [100, 100, 100]; const COLOR_LIGHT = [245, 245, 245]
-    const logoCenterX = 27; doc.setFillColor(...COLOR_DARK); doc.roundedRect(20, 15, 14, 14, 2, 2, 'F'); doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.text("as_", logoCenterX, 21.5, { align: 'center' }); doc.setTextColor(...COLOR_ACCENT); doc.setFont("courier", "bold"); doc.setFontSize(12); doc.text("</>", logoCenterX, 26.5, { align: 'center' })
-    doc.setTextColor(...COLOR_DARK); doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.text("PROPUESTA", 190, 23, { align: 'right' }); doc.setTextColor(...COLOR_ACCENT); doc.setFontSize(10); doc.text("TECNOLÓGICA & CONSULTORÍA", 190, 28, { align: 'right' }); doc.setDrawColor(...COLOR_ACCENT); doc.setLineWidth(0.5); doc.line(20, 35, 190, 35)
-    doc.setFillColor(...COLOR_LIGHT); doc.roundedRect(20, 42, 170, 28, 3, 3, 'F'); doc.setTextColor(...COLOR_GRAY); doc.setFontSize(9); doc.text("PREPARADO PARA:", 25, 50); doc.text("FECHA DE EMISIÓN:", 120, 50); doc.setTextColor(...COLOR_DARK); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text(finalData.cliente.toUpperCase(), 25, 56); doc.text(finalData.empresa || 'Empresa Privada', 25, 62); doc.setFont("helvetica", "normal"); doc.text(new Date(finalData.fecha).toLocaleDateString('es-PE', { year:'numeric', month:'long', day:'numeric' }), 120, 56); doc.setFontSize(9); doc.setTextColor(...COLOR_GRAY); doc.text(`RUC: ${finalData.ruc || 'N/A'}`, 120, 62)
-    let y = 85
-    const addSection = (title, content, isList = true) => {
-      if (!content || content.length === 0) return
-      if (y > 260) { doc.addPage(); y = 30; doc.setDrawColor(...COLOR_GRAY); doc.line(20, 20, 190, 20); }
-      doc.setFillColor(...COLOR_ACCENT); doc.rect(20, y - 4, 1.5, 6, 'F'); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(...COLOR_DARK); doc.text(title, 25, y); y += 8; doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(60, 60, 60)
-      if (isList && Array.isArray(content)) { content.forEach(item => { if (y > 275) { doc.addPage(); y = 30; } doc.setTextColor(...COLOR_ACCENT); doc.text("•", 25, y); doc.setTextColor(60, 60, 60); doc.text(item, 30, y); y += 6 }); y += 4 } 
-      else { const lines = doc.splitTextToSize(content, 165); doc.text(lines, 25, y); y += (lines.length * 5) + 8 }
+  // --- GESTIÓN DE IDEAS ---
+  const guardarIdea = async () => {
+    if (!ideaText.trim()) return
+    setLoading(true)
+    const { error } = await supabase.from('ideas').insert([{ content: ideaText }])
+    if (error) { setNotification({ type: 'error', msg: 'Error al guardar idea' }) } 
+    else {
+      setNotification({ type: 'success', msg: 'Idea guardada.' })
+      setIdeaText('')
+      if (showIdeaHistory) cargarIdeas()
     }
-    if (finalData.objetivo) addSection("OBJETIVO ESTRATÉGICO", finalData.objetivo, false)
-    addSection("PROBLEMÁTICA DETECTADA", finalData.problemas)
-    addSection("STACK TECNOLÓGICO PROPUESTO", finalData.tecnologias)
-    if (finalData.extras && finalData.extras.length > 0) addSection("GARANTÍA DE CALIDAD & SEGURIDAD (ITIL)", finalData.extras)
-    if (finalData.descripcionProblema) addSection("ESPECIFICACIONES TÉCNICAS", finalData.descripcionProblema, false)
-    addSection("ENTREGABLES DEL PROYECTO", finalData.entregables)
-    if (y > 240) { doc.addPage(); y = 30; } y += 10
-    doc.setFillColor(...COLOR_DARK); doc.roundedRect(100, y, 90, 35, 2, 2, 'F'); doc.setTextColor(200, 200, 200); doc.setFontSize(9); doc.text("INVERSIÓN TOTAL ESTIMADA", 110, y + 10); doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont("helvetica", "bold"); const precioFormat = parseFloat(finalData.presupuesto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 }); doc.text(`${symbol} ${precioFormat}`, 110, y + 20); doc.setFontSize(8); doc.setTextColor(...COLOR_ACCENT); doc.text("+ IGV (Facturable)", 110, y + 28)
-    doc.setTextColor(...COLOR_DARK); doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.text("PLAZOS & SOPORTE:", 20, y + 10); doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.text(`• Tiempo estimado: ${finalData.plazo || 'A definir'}`, 20, y + 18); doc.text(`• Plan de Soporte: ${finalData.soporte || 'No incluido'}`, 20, y + 24)
-    const pageCount = doc.internal.getNumberOfPages(); for(let i = 1; i <= pageCount; i++) { doc.setPage(i); doc.setFontSize(8); doc.setTextColor(...COLOR_GRAY); doc.text(`Generado por Angel Salguero Systems Dev | FreelanceOS`, 20, 285); doc.text(`Pág ${i} de ${pageCount}`, 180, 285); doc.setFillColor(...COLOR_ACCENT); doc.rect(180, 288, 20, 1, 'F') }
-    doc.save(`Propuesta_${finalData.empresa || 'Cliente'}_${finalData.fecha}.pdf`)
+    setLoading(false)
+  }
+  
+  const solicitarBorrado = (id) => { setDeleteTarget(id) }
+  const confirmarBorrado = async () => {
+    if (!deleteTarget) return
+    const { error } = await supabase.from('ideas').delete().eq('id', deleteTarget)
+    if (!error) { 
+        setNotification({ type: 'success', msg: 'Idea eliminada.' }); 
+        cargarIdeas(); 
+    }
+    setDeleteTarget(null)
   }
 
+  const empezarEdicion = (idea) => { setEditingId(idea.id); setEditText(idea.content) }
+  const guardarEdicion = async (id) => {
+    const { error } = await supabase.from('ideas').update({ content: editText }).eq('id', id)
+    if (!error) { 
+        setNotification({ type: 'success', msg: 'Idea actualizada.' }); 
+        setEditingId(null); 
+        cargarIdeas(); 
+    }
+  }
+
+  const cargarIdeas = async () => {
+    const { data, error } = await supabase.from('ideas').select('*').order('created_at', { ascending: false })
+    if (data) setIdeasList(data)
+  }
+
+  // --- PARSEO Y RECUPERACIÓN ---
+  const parseNotas = (notasStr) => {
+    if (!notasStr) return {};
+    const result = { problemas: [], tecnologias: [], entregables: [], extras: [] };
+    notasStr.split('\n').forEach(line => {
+      const [key, ...rest] = line.split(':');
+      const val = rest.join(':').trim();
+      if (!val) return;
+      if (key === 'MONEDA') result.currency = val;
+      else if (key === 'OBJETIVO') result.objetivo = val;
+      else if (key === 'SOPORTE') result.soporte = val;
+      else if (key === 'RUC') result.ruc = val;
+      else if (key === 'EMAIL') result.emailContacto = val;
+      else if (key === 'TEL') result.telefono = val;
+      else if (key === 'DIR') result.direccion = val;
+      else if (key === 'PLAZO') result.plazo = val;
+      else if (key === 'DESC') result.descripcionProblema = val;
+      else if (key === 'EXTRAS') result.extras = val.split(',').filter(x=>x);
+      else if (key === 'PROBLEMAS') result.problemas = val.split(',').filter(x=>x);
+      else if (key === 'STACK') result.tecnologias = val.split(',').filter(x=>x);
+    });
+    return result;
+  }
+
+  const cargarClienteParaEditar = (item) => {
+    const infoRecuperada = parseNotas(item.clientes?.notas || '');
+    if (infoRecuperada.currency) setCurrency(infoRecuperada.currency);
+    setData({
+      ...data,
+      cliente: item.clientes?.nombre_contacto || '',
+      empresa: item.clientes?.empresa || '',
+      presupuesto: item.presupuesto_estimado?.toString() || '',
+      fecha: new Date(item.created_at).toISOString().split('T')[0],
+      fechaInicio: today,
+      ...infoRecuperada
+    });
+    setStep(1); setView('wizard');
+    setNotification({ type: 'success', msg: `Datos de ${item.clientes?.nombre_contacto} cargados.` });
+  }
+
+  // --- UTILS ---
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+     
+  }
+
+  const getDataUrl = (url) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous'; 
+      img.src = url;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve(null);
+    });
+  }
+
+  const toggleSel = (field, value) => {
+    setData(prev => {
+      const list = prev[field] || [];
+      if (list.includes(value)) return { ...prev, [field]: list.filter(item => item !== value) };
+      else return { ...prev, [field]: [...list, value] };
+    });
+  };
+
+  const openModal = (field) => { setModalOpen(field); setCustomText(''); };
+  const saveCustom = () => {
+    if (!customText.trim()) return;
+    setData(prev => ({ ...prev, [modalOpen]: [...prev[modalOpen], customText] }));
+    setModalOpen(null);
+  };
+
+  // --- FUNCIÓN PDF ---
   const descargarPDFHistorial = (item) => {
-    const notas = item.clientes?.notas || ''; const ex = (k) => (notas.match(new RegExp(`${k}:\\s*(.*)`)) || [])[1]?.trim() || ''; const recData = { cliente: item.clientes?.nombre_contacto, empresa: item.clientes?.empresa, fecha: new Date(item.created_at).toLocaleDateString(), problemas: ex('PROBLEMAS').split(',').filter(Boolean), tecnologias: ex('STACK').split(',').filter(Boolean), presupuesto: item.presupuesto_estimado, currency: ex('MONEDA') || 'PEN', ruc: ex('RUC'), emailContacto: ex('EMAIL'), telefono: ex('TEL'), direccion: ex('DIR'), objetivo: ex('OBJETIVO'), soporte: ex('SOPORTE'), extras: ex('EXTRAS').split(',').filter(Boolean) }; generarPDF(recData)
+    const infoRecuperada = parseNotas(item.clientes?.notas || '');
+    const datosParaPDF = {
+      cliente: item.clientes?.nombre_contacto || '',
+      empresa: item.clientes?.empresa || '',
+      presupuesto: item.presupuesto_estimado || 0,
+      fecha: new Date(item.created_at).toLocaleDateString(),
+      fechaInicio: new Date(item.created_at).toISOString().split('T')[0],
+      ...infoRecuperada
+    };
+    generarPDF(datosParaPDF); 
   }
 
-  const openModal = (c) => { setModalOpen(c); setCustomText('') }
-  const saveCustom = () => { if(customText) setData({...data, [modalOpen]:[...data[modalOpen], customText]}); setModalOpen(null) }
-  const toggleSel = (c, v) => { const l=data[c]; setData({...data, [c]: l.includes(v)?l.filter(i=>i!==v):[...l, v]}) }
+  const generarPDF = async (source = null) => {
+    setLoading(true);
+    try {
+      const doc = new jsPDF();
+      const finalData = source || data;
+      const symbol = (source?.currency || currency) === 'USD' ? '$' : 'S/.';
+      
+      const techIconsMap = {
+        'React / Next.js': 'https://img.icons8.com/color/480/react-native.png',
+        'React': 'https://img.icons8.com/color/480/react-native.png',
+        'Vue / Nuxt.js': 'https://img.icons8.com/color/480/vue-js.png',
+        'Node.js': 'https://img.icons8.com/color/480/nodejs.png',
+        'Python': 'https://img.icons8.com/color/480/python.png',
+        'PHP / Laravel': 'https://img.icons8.com/fluency/480/laravel.png',
+        'Java': 'https://img.icons8.com/color/480/java-coffee-cup-logo.png',
+        'Supabase': 'https://img.icons8.com/color/480/database.png',
+        'Firebase': 'https://img.icons8.com/color/480/firebase.png',
+        'MongoDB': 'https://img.icons8.com/color/480/mongodb.png',
+        'AWS': 'https://img.icons8.com/color/480/amazon-web-services.png',
+        'Vercel': 'https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png',
+        'Docker': 'https://img.icons8.com/color/480/docker.png',
+        'Pasarela Pagos': 'https://img.icons8.com/color/480/bank-cards.png', 
+        'OpenAI API': 'https://img.icons8.com/fluency/480/chatgpt.png',
+        'Google Maps': 'https://img.icons8.com/color/480/google-maps.png',
+        'Power BI': 'https://img.icons8.com/color/480/power-bi.png',
+        'Git / GitHub': 'https://img.icons8.com/fluency/480/github.png',
+        'WordPress': 'https://img.icons8.com/color/480/wordpress.png',
+        'Shopify': 'https://img.icons8.com/color/480/shopify.png'
+      };
 
-  if (!session) {
-    return (
-      <div className="login-wrapper">
-        <div className="login-card">
-          <div className="login-logo"><Home size={28} color="var(--accent-color)"/> FreelanceOS</div>
-          <form onSubmit={handleLogin}>
-            <div className="login-input-group"><Mail className="login-icon" size={18} /><input className="login-input" type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username" /></div>
-            <div className="login-input-group"><Lock className="login-icon" size={18} /><input className="login-input" type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" /></div>
-            <div className="login-options"><input type="checkbox" id="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)} /><label htmlFor="remember">Recordar contraseña</label></div>
-            <button className="btn-login" type="submit" disabled={authLoading}>{authLoading ? '...' : 'Iniciar Sesión'}</button>
-          </form>
-        </div>
+      const C_BG = [255, 255, 255];       
+      const C_ACCENT = [225, 29, 72]; 
+      const C_TEXT = [25, 25, 25];        
+      const C_GRAY = [80, 80, 80];     
+      const C_DARK_HEADER = [20, 20, 25]; 
 
-        <div className="login-footer">
-           © {new Date().getFullYear()} Angel Salguero
-        </div>
-        
-        {notification && <div className="os-modal-overlay" style={{zIndex: 9999}}><div className="os-modal" style={{textAlign:'center', padding:'30px'}}><div style={{color:'#ef4444', marginBottom:'10px'}}><XCircle size={48}/></div><p>{notification.msg}</p><button className="btn-finish" style={{width:'100%', marginTop:'20px'}} onClick={() => setNotification(null)}>Intentar de nuevo</button></div></div>}
-      </div>
-    )
+      // PÁGINA 1
+      doc.setFillColor(...C_BG); doc.rect(0, 0, 210, 297, 'F');
+      doc.setFillColor(...C_ACCENT); doc.rect(0, 0, 8, 297, 'F'); 
+      doc.setFillColor(20, 20, 20); doc.roundedRect(30, 20, 20, 20, 3, 3, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFont("courier", "bold"); doc.setFontSize(22); doc.text("as_", 40, 32, { align: 'center' });
+      
+      doc.setFont("helvetica", "bold"); doc.setFontSize(50); doc.setTextColor(...C_TEXT);
+      doc.text("PROPUESTA", 30, 100); doc.setTextColor(...C_ACCENT); doc.text("TÉCNICA", 30, 118);
+      doc.setTextColor(...C_GRAY); doc.setFontSize(16); doc.setFont("helvetica", "normal");
+      doc.text("SOLUCIONES DIGITALES & CONSULTORÍA IA", 30, 135);
+
+      let infoY = 210;
+      doc.setDrawColor(200, 200, 200); doc.line(30, infoY, 180, infoY); infoY += 15;
+      doc.setFontSize(10); doc.setTextColor(150,150,150); doc.setFont("helvetica", "bold");
+      doc.text("PREPARADO EXCLUSIVAMENTE PARA:", 30, infoY); infoY += 10;
+      doc.setFontSize(22); doc.setTextColor(...C_TEXT); doc.setFont("times", "bold");
+      doc.text(finalData.empresa || finalData.cliente || "Cliente Confidencial", 30, infoY);
+      infoY += 8;
+      doc.setFontSize(11); doc.setFont("helvetica", "normal");
+      if(finalData.ruc) {
+          infoY += 8; doc.setFont("helvetica", "bold"); doc.setTextColor(60,60,60); doc.text("RUC:", 30, infoY);
+          doc.setFont("helvetica", "normal"); doc.setTextColor(0,0,0); doc.text(finalData.ruc, 60, infoY);
+      }
+      infoY += 15;
+      doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT); doc.text("Emisión:", 30, infoY);
+      doc.setTextColor(0,0,0); doc.setFont("helvetica", "normal");
+      doc.text(new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }), 55, infoY);
+
+      // PÁGINA 2
+      doc.addPage();
+      let y = 40; 
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
+      doc.text("1. OBJETIVO ESTRATÉGICO", 20, y); y += 10;
+      doc.setFontSize(11); doc.setTextColor(...C_TEXT); doc.setFont("helvetica", "normal");
+      doc.text(doc.splitTextToSize(finalData.objetivo || "No definido", 170), 20, y);
+      y += 20;
+
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
+      doc.text("2. DIAGNÓSTICO INICIAL", 20, y); y += 5;
+      const problemasData = finalData.problemas.map(p => [p]);
+      autoTable(doc, {
+          startY: y, head: [['Puntos de Dolor Detectados']], body: problemasData, theme: 'grid',
+          headStyles: { fillColor: [40, 40, 40], textColor: 255 },
+          styles: { fontSize: 10, cellPadding: 5 }, margin: { left: 20, right: 20 }
+      });
+      y = doc.lastAutoTable.finalY + 25;
+
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
+      doc.text("3. ARQUITECTURA TECNOLÓGICA", 20, y); y += 15;
+      let xIcon = 25;
+      for (const techName of finalData.tecnologias) {
+          const iconUrl = techIconsMap[techName] || null;
+          let imageLoaded = false;
+          doc.setDrawColor(220, 220, 220); doc.setFillColor(255, 255, 255);
+          doc.roundedRect(xIcon, y, 26, 26, 3, 3, 'FD');
+          if (iconUrl) {
+              const imgData = await getDataUrl(iconUrl);
+              if (imgData) { doc.addImage(imgData, 'PNG', xIcon + 4, y + 4, 18, 18); imageLoaded = true; }
+          }
+          if (!imageLoaded) {
+              doc.setFontSize(14); doc.setTextColor(200, 200, 200); doc.text(techName.charAt(0), xIcon + 13, y + 17, { align: 'center' });
+          }
+          doc.setFontSize(7); doc.setTextColor(60, 60, 60); doc.setFont("helvetica", "bold");
+          let cleanName = techName.split('/')[0].trim(); if(cleanName.length > 12) cleanName = cleanName.substring(0,11) + '.';
+          doc.text(cleanName, xIcon + 13, y + 33, { align: 'center' });
+          xIcon += 35; if (xIcon > 180) { xIcon = 25; y += 45; }
+      }
+      if (xIcon !== 25) y += 50; else y += 10;
+
+      // ESPECIFICACIONES
+      if (y > 230) { doc.addPage(); y = 40; }
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
+      doc.text("4. ESPECIFICACIONES TÉCNICAS", 20, y); y += 15;
+      doc.setFont("helvetica", "normal"); doc.setTextColor(...C_TEXT); doc.setFontSize(11); 
+      const rawText = finalData.descripcionProblema || "Especificaciones según estándares.";
+      const lines = rawText.split('\n');
+      lines.forEach(line => {
+          if (y > 270) { doc.addPage(); y = 40; }
+          line = line.trim(); if (!line) return;
+          if (line.includes(':') && line.length < 60) { 
+              y+=5; doc.setFont("helvetica", "bold"); doc.setTextColor(0, 0, 0); 
+              doc.text(line, 20, y); y += 7; doc.setFont("helvetica", "normal"); doc.setTextColor(...C_TEXT);
+          } else {
+              doc.text(line, 20, y, { maxWidth: 170, align: "justify", lineHeightFactor: 1.5 });
+              const dim = doc.getTextDimensions(line, { maxWidth: 170 }); y += dim.h + 5; 
+          }
+      });
+
+      // PÁGINA 3
+      doc.addPage(); y = 40;
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
+      doc.text("5. CRONOGRAMA DE EJECUCIÓN", 20, y);
+
+      const plazoStr = finalData.plazo || "1 Mes";
+      let totalUnits = 4; let unitType = 'week'; 
+      if (plazoStr.toLowerCase().includes('mes')) { totalUnits = parseInt(plazoStr) || 1; unitType = 'month'; }
+      else { totalUnits = (parseInt(plazoStr) || 2); unitType = 'week'; }
+      if(totalUnits < 2) totalUnits = 2;
+
+      const startDate = new Date(finalData.fechaInicio || new Date());
+      const headers = [];
+      const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+      for (let i = 0; i < totalUnits; i++) {
+          const d = new Date(startDate);
+          if (unitType === 'month') { d.setMonth(d.getMonth() + i); headers.push(`${monthNames[d.getMonth()]} ${d.getFullYear().toString().substr(2)}`); }
+          else { d.setDate(d.getDate() + (i * 7)); headers.push(`Sem ${i+1}`); }
+      }
+
+      let gridY = 60; const gridWidth = 170; const colWidth = gridWidth / totalUnits; const rowHeight = 15;
+      doc.setFillColor(240, 240, 240); doc.rect(20, gridY, gridWidth, 8, 'F');
+      doc.setFontSize(8); doc.setTextColor(80,80,80);
+      headers.forEach((h, i) => {
+          const hX = 20 + (i * colWidth);
+          doc.text(h, hX + (colWidth/2), gridY + 5, { align: 'center' });
+          doc.setDrawColor(220, 220, 220); doc.line(hX, gridY, hX, gridY + 8 + (4 * rowHeight));
+      });
+      gridY += 8;
+
+      let p1, p2, p3, p4; 
+      if (totalUnits >= 8) { p1=1; p2=4; p3=2; p4=1; } else if (totalUnits >= 4) { p1=1; p2=totalUnits-3; p3=1; p4=1; } else { p1=0.5; p2=totalUnits-1.5; p3=0.5; p4=0.5; }
+      const getTimeLabel = (dur) => { if(unitType === 'month') return dur <= 1 ? "1 Mes" : `${dur} Meses`; return dur <= 1 ? "1 Sem" : `${dur} Sem`; }
+      
+      const phases = [
+          { label: "1. Diseño & Proto", start: 0, dur: p1, c: [79, 70, 229], tc: [255,255,255] },
+          { label: "2. Desarrollo", start: p1, dur: p2, c: [225, 29, 72], tc: [255,255,255] },
+          { label: "3. QA & Testing", start: p1+p2, dur: p3, c: [16, 185, 129], tc: [255,255,255] },
+          { label: "4. Despliegue", start: p1+p2+p3, dur: Math.max(0.5, totalUnits - (p1+p2+p3)), c: [245, 158, 11], tc: [0,0,0] }
+      ];
+
+      phases.forEach((ph, i) => {
+          if(i%2===0) doc.setFillColor(255,255,255); else doc.setFillColor(252,252,252);
+          doc.rect(20, gridY, gridWidth, rowHeight, 'F');
+          doc.setFontSize(9); doc.setTextColor(0,0,0); doc.setFont("helvetica", "bold");
+          doc.text(ph.label, 22, gridY + 6);
+          const barX = 20 + (ph.start * colWidth); const barW = ph.dur * colWidth;
+          if (barW > 0) {
+              doc.setFillColor(...ph.c); doc.roundedRect(barX, gridY + 8, barW, 5, 1, 1, 'F');
+              doc.setTextColor(...ph.tc); doc.setFontSize(7);
+              const lbl = getTimeLabel(ph.dur); const tw = doc.getTextWidth(lbl);
+              if(barW > tw + 2) doc.text(lbl, barX + (barW/2) - (tw/2), gridY + 11.5);
+              else { doc.setTextColor(0,0,0); doc.text(lbl, barX + barW + 2, gridY + 11.5); }
+          }
+          gridY += rowHeight;
+      });
+      doc.setDrawColor(150, 150, 150); doc.rect(20, 60, gridWidth, gridY - 60, 'S');
+
+      const precioFmt = parseFloat(finalData.presupuesto || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 });
+      autoTable(doc, {
+          startY: gridY + 20, head: [['Concepto', 'Detalle', 'Inversión']],
+          body: [['Servicios Profesionales', 'Diseño, Desarrollo y Despliegue', `${symbol} ${precioFmt}`], ['Infraestructura', 'Configuración Servidores', 'Incluido']],
+          foot: [['', 'TOTAL + IGV', `${symbol} ${precioFmt}`]], theme: 'grid',
+          headStyles: { fillColor: [30, 30, 30] }, footStyles: { fillColor: C_ACCENT, fontSize: 12, halign: 'right' }, columnStyles: { 2: { halign: 'right' } }
+      });
+
+      // PÁGINA 4
+      doc.addPage(); y = 40;
+      doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
+      doc.text("ACUERDO DE NIVEL DE SERVICIO (SLA) Y TÉRMINOS", 20, y); y += 15;
+      doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(20, 20, 20);
+      const clausulas = [
+          { titulo: "1. PROPIEDAD INTELECTUAL", texto: "La titularidad del código fuente se transfiere tras el pago total (100%)." },
+          { titulo: "2. FORMA DE PAGO", texto: "50% Adelanto, 50% Contra-entrega. Se suspende el servicio si hay impagos." },
+          { titulo: "3. ALCANCE Y CAMBIOS", texto: "Requerimientos adicionales se cotizan por separado." },
+          { titulo: "4. DEPENDENCIAS", texto: "El plazo depende de la entrega oportuna de información por parte del cliente." },
+          { titulo: "5. GARANTÍA", texto: "30 días de garantía para corrección de bugs imputables al desarrollo." },
+          { titulo: "6. CONFIDENCIALIDAD", texto: "Se mantendrá estricta confidencialidad sobre la información del proyecto." }
+      ];
+      clausulas.forEach(item => {
+          doc.setFont("helvetica", "bold"); doc.text(item.titulo, 20, y); y += 5;
+          doc.setFont("helvetica", "normal"); const splitTexto = doc.splitTextToSize(item.texto, 170);
+          doc.text(splitTexto, 20, y, { align: 'justify', maxWidth: 170 }); y += (splitTexto.length * 5) + 8; 
+          if (y > 260) { doc.addPage(); y = 40; }
+      });
+
+      y += 15;
+      if (y > 240) { doc.addPage(); y = 60; }
+      const firmaY = y;
+      doc.setDrawColor(100, 100, 100); doc.setLineWidth(0.5);
+      doc.line(30, firmaY, 90, firmaY);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0,0,0);
+      doc.text("CONFORME CLIENTE", 60, firmaY + 5, { align: 'center' });
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100,100,100);
+      doc.text(finalData.cliente || "Firma Autorizada", 60, firmaY + 10, { align: 'center' });
+      if(finalData.ruc) doc.text(`RUC: ${finalData.ruc}`, 60, firmaY + 15, { align: 'center' });
+
+      doc.line(120, firmaY, 180, firmaY);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0,0,0);
+      doc.text("ANGEL SALGUERO", 150, firmaY + 5, { align: 'center' });
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100,100,100);
+      doc.text("Systems Developer", 150, firmaY + 10, { align: 'center' });
+
+      // HEADERS & FOOTERS
+      const pageCount = doc.internal.getNumberOfPages();
+      for(let i = 2; i <= pageCount; i++) { 
+          doc.setPage(i);
+          doc.setFillColor(...C_DARK_HEADER); doc.rect(0, 0, 210, 18, 'F');
+          doc.setFont("courier", "bold"); doc.setFontSize(14);
+          doc.setTextColor(255, 255, 255); doc.text("as", 10, 12);
+          doc.setTextColor(...C_ACCENT); doc.text("</>", 17, 12); 
+          doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(200, 200, 200);
+          doc.text("SISTEMA DE GESTIÓN & PROPUESTAS", 200, 12, { align: 'right' });
+
+          const h = doc.internal.pageSize.height;
+          doc.setFillColor(245, 245, 245); doc.rect(0, h - 15, 210, 15, 'F');
+          doc.setFontSize(8); doc.setTextColor(100, 100, 100);
+          doc.text(`Propuesta Confidencial - ${finalData.empresa || 'Cliente'}`, 20, h - 6);
+          doc.text(`Página ${i} de ${pageCount}`, 200, h - 6, { align: 'right' });
+      }
+
+      doc.save(`Contrato_${finalData.empresa || 'Proyecto'}.pdf`);
+    } catch (error) {
+      console.error("Error PDF:", error);
+      setNotification({ type: 'error', msg: 'Error al generar PDF' });
+    } finally {
+      setLoading(false);
+    }
   }
 
   const renderSteps = () => (
@@ -351,37 +714,28 @@ export default function FreelanceOS() {
       {step === 2 && <>
         <p className="os-subtitle">Arquitectura y Stack Tecnológico.</p>
         <button onClick={() => handleChatSubmit("Recomienda stack tecnológico para este objetivo y problemas.")} style={{marginBottom: '20px', padding: '12px 20px', background: 'linear-gradient(45deg, #4f46e5, #9333ea)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 'bold', fontSize: '0.9rem', boxShadow: '0 4px 15px rgba(79, 70, 229, 0.3)'}}><Star size={18} fill="white" /> Consultar al CTO (IA)</button>
-        
-        {/* --- GRID DE 2 COLUMNAS PARA CATEGORÍAS --- */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px', alignItems: 'start' }}>
             {Object.entries(TECH_CATEGORIES).map(([catName, catData]) => (
-               <div key={catName} style={{ 
-                   background: 'var(--input-bg)', 
-                   borderRadius: '12px', 
-                   padding: '15px', 
-                   border: '1px solid var(--border-color)',
-                   marginBottom: '10px' // Espacio extra por si acaso
-               }}>
+               <div key={catName} style={{ background: 'var(--input-bg)', borderRadius: '12px', padding: '15px', border: '1px solid var(--border-color)', marginBottom: '10px' }}>
                   <h3 style={{fontSize:'1rem', color:'var(--accent-color)', borderBottom:'1px solid var(--border-color)', paddingBottom:'8px', marginBottom:'15px', display:'flex', alignItems:'center', gap:'8px', marginTop: 0}}>
-                     {catData.icon} {catName}
+                      {catData.icon} {catName}
                   </h3>
                   <div className="os-grid" style={{ marginBottom: 0 }}>
-                     {catData.items.map((t, i) => {
-                        const icon = t.type === 'Integration' ? <Webhook size={32} color="#1f15da"/> : (t.type==='Payment'?<CreditCard size={32}/> : (t.logo ? <img src={t.logo} alt={t.label} className="tech-logo" /> : <div style={{fontSize:'1.8rem', marginBottom:'5px'}}>🚀</div>));
-                        return (
-                           <div key={i} className={`os-card ${data.tecnologias.includes(t.label)?'selected':''}`} onClick={()=>toggleSel('tecnologias', t.label)}>
+                      {catData.items.map((t, i) => {
+                          const icon = t.type === 'Integration' ? <Webhook size={32} color="#1f15da"/> : 
+                                       (t.type === 'Payment' ? <CreditCard size={32}/> : 
+                                       (t.logo ? <img src={t.logo} alt={t.label} style={{ width: '32px', height: '32px', objectFit: 'contain', filter: (theme === 'dark' && LOGOS_OSCUROS.some(l => t.label.includes(l))) ? 'brightness(0) invert(1)' : 'none' }} /> : <div style={{fontSize:'1.8rem', marginBottom:'5px'}}>🚀</div>));
+                          return (
+                            <div key={i} className={`os-card ${data.tecnologias.includes(t.label) ? 'selected' : ''}`} onClick={() => toggleSel('tecnologias', t.label)}>
                               <div className="tech-tooltip">{t.desc}</div>
-                              {icon}
-                              <div style={{fontSize:'0.8rem', marginTop: '5px'}}>{t.label}</div>
-                           </div>
-                        )
-                     })}
+                              {icon} <div style={{fontSize:'0.8rem', marginTop: '5px'}}>{t.label}</div>
+                            </div>
+                          )
+                      })}
                   </div>
                </div>
             ))}
         </div>
-
-        {/* --- PERSONALIZADOS (FUERA DEL GRID PRINCIPAL) --- */}
         {data.tecnologias.filter(x => !ALL_BASE_LABELS.includes(x)).length > 0 && (
            <div style={{marginTop: '20px', padding: '15px', border: '1px dashed var(--border-color)', borderRadius: '12px'}}>
               <h3 style={{fontSize:'2em', color:'var(--text-color)', marginBottom:'10px'}}>Personalizados</h3>
@@ -395,19 +749,41 @@ export default function FreelanceOS() {
               </div>
            </div>
         )}
-
         <button className="btn-ghost" style={{width:'100%', marginTop:'20px', borderStyle:'dashed'}} onClick={()=>openModal('tecnologias')}><Plus size={16}/> Agregar tecnología manual</button>
       </>}
 
       {step === 3 && <>
         <p className="os-subtitle">Alcance y Recurrencia.</p>
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'20px'}}>{['Urgente (2 sem)', '1 Mes', '3 Meses', '6 Meses', '8 Meses'].map(p=><button key={p} onClick={()=>setData({...data, plazo:p})} style={{padding:'12px', borderRadius:'8px', border:'1px solid var(--border-color)', background:data.plazo===p?'var(--accent-color)':'var(--input-bg)', color:data.plazo===p?'white':'var(--text-color)', fontSize:'0.9rem', cursor:'pointer'}}>{p}</button>)}</div>
+        <div style={{marginBottom: '15px'}}>
+            <label style={{display:'block', fontSize:'0.9rem', fontWeight:'bold', marginBottom:'5px', color:'var(--text-color)'}}>📅 Fecha de Inicio:</label>
+            <input type="date" className="os-input" style={{width: '100%'}} value={data.fechaInicio || today} onChange={e => setData({...data, fechaInicio: e.target.value})} />
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'20px'}}>
+            {['Urgente (2 sem)', '1 Mes', '3 Meses', '6 Meses', '8 Meses'].map(p => (
+                <button key={p} onClick={()=>setData({...data, plazo:p})} style={{padding:'12px', borderRadius:'8px', border:'1px solid var(--border-color)', background:data.plazo===p?'var(--accent-color)':'var(--input-bg)', color:data.plazo===p?'white':'var(--text-color)', fontSize:'0.9rem', cursor:'pointer'}}>{p}</button>
+            ))}
+        </div>
         <div style={{background:'var(--input-bg)', padding:'15px', borderRadius:'8px', border:'1px solid var(--border-color)', marginBottom:'20px'}}>
             <p style={{margin:'0 0 10px 0', fontWeight:'bold', fontSize:'0.9rem'}}>Soporte & Mantenimiento (Mensual):</p>
-            <div style={{display:'flex', gap:'10px'}}>{['Ninguno', 'Básico (Monitorización)', 'Premium (Soporte 24/7)', 'Enterprise (SLA)'].map(s => (<button key={s} onClick={()=>setData({...data, soporte: s})} style={{flex:1, padding:'8px', borderRadius:'6px', border:'1px solid var(--border-color)', background: data.soporte===s?'#10b981':'white', color:data.soporte===s?'white':'black', cursor:'pointer', fontSize:'0.8rem'}}>{s}</button>))}</div>
+            <div style={{display:'flex', gap:'10px'}}>
+                {['Ninguno', 'Básico (Monitorización)', 'Premium (Soporte 24/7)', 'Enterprise (SLA)'].map(s => (
+                    <button key={s} onClick={()=>setData({...data, soporte: s})} style={{flex:1, padding:'8px', borderRadius:'6px', border:'1px solid var(--border-color)', background: data.soporte===s?'#10b981':'white', color:data.soporte===s?'white':'black', cursor:'pointer', fontSize:'0.8rem'}}>{s}</button>
+                ))}
+            </div>
         </div>
-        <div className="os-grid">{[...ENTREGABLES_BASE, ...data.entregables.filter(x => !ENTREGABLES_BASE.includes(x))].map((e,i)=><div key={i} className={`os-card ${data.entregables.includes(e)?'selected':''}`} style={{minHeight:'60px'}} onClick={()=>toggleSel('entregables', e)}>{e}</div>)}<div className="os-card" style={{borderStyle:'dashed', opacity:0.6, minHeight:'60px'}} onClick={()=>openModal('entregables')}><Plus size={24}/><div style={{fontSize:'0.8rem'}}>Otro...</div></div></div>
-        <div style={{display:'flex', gap:'10px'}}><input type="number" className="os-input" placeholder="Inversión Proyecto (Sin IGV)" value={data.presupuesto} onChange={e=>setData({...data, presupuesto:e.target.value})}/><div className="currency-toggle"><button onClick={()=>setCurrency('PEN')} style={{background:currency==='PEN'?'var(--accent-color)':'transparent', color:currency==='PEN'?'white':'#888'}}>S/.</button><button onClick={()=>setCurrency('USD')} style={{background:currency==='USD'?'var(--accent-color)':'transparent', color:currency==='USD'?'white':'#888'}}>$</button></div></div>
+        <div className="os-grid">
+            {[...ENTREGABLES_BASE, ...data.entregables.filter(x => !ENTREGABLES_BASE.includes(x))].map((e,i) => (
+                <div key={i} className={`os-card ${data.entregables.includes(e)?'selected':''}`} style={{minHeight:'60px'}} onClick={()=>toggleSel('entregables', e)}>{e}</div>
+            ))}
+            <div className="os-card" style={{borderStyle:'dashed', opacity:0.6, minHeight:'60px'}} onClick={()=>openModal('entregables')}><Plus size={24}/><div style={{fontSize:'0.8rem'}}>Otro...</div></div>
+        </div>
+        <div style={{display:'flex', gap:'10px'}}>
+            <input type="number" className="os-input" placeholder="Inversión Proyecto (Sin IGV)" value={data.presupuesto} onChange={e=>setData({...data, presupuesto:e.target.value})}/>
+            <div className="currency-toggle">
+                <button onClick={()=>setCurrency('PEN')} style={{background:currency==='PEN'?'var(--accent-color)':'transparent', color:currency==='PEN'?'white':'#888'}}>S/.</button>
+                <button onClick={()=>setCurrency('USD')} style={{background:currency==='USD'?'var(--accent-color)':'transparent', color:currency==='USD'?'white':'#888'}}>$</button>
+            </div>
+        </div>
       </>}
 
       {step === 4 && <>
@@ -430,228 +806,190 @@ export default function FreelanceOS() {
   return (
     <div className="os-container">
       {modalOpen && <div className="os-modal-overlay" onClick={()=>setModalOpen(null)}><div className="os-modal" onClick={e=>e.stopPropagation()}><h3>Agregar</h3><input autoFocus className="os-input" value={customText} onChange={e=>setCustomText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&saveCustom()}/><button className="btn-finish" style={{width:'100%'}} onClick={saveCustom}>Guardar</button></div></div>}
-      {notification && (<div className="os-modal-overlay" style={{zIndex: 9999}} onClick={() => setNotification(null)}><div className="os-modal" style={{textAlign:'center', padding:'40px'}} onClick={e => e.stopPropagation()}><div style={{fontSize:'3rem', marginBottom:'15px'}}>{notification.type === 'success' ? <CheckCircle size={50} color="#10b981"/> : <AlertTriangle size={50} color="#ef4444"/>}</div><h3 style={{fontSize:'1.5rem', marginBottom:'10px'}}>{notification.type === 'success' ? 'Cool!' : 'Atención'}</h3><p style={{marginBottom:'25px', color:'var(--text-color)', lineHeight:'1.5'}}>{notification.msg}</p><button className="btn-finish" style={{width:'100%'}} onClick={() => setNotification(null)}>{notification.type === 'success' ? 'Continue...' : 'Entendido'}</button></div></div>)}
+
+      {notification && (
+        <div className="os-modal-overlay" style={{zIndex: 9999}} onClick={() => setNotification(null)}>
+          <div className="os-modal" style={{textAlign:'center', padding:'40px', maxWidth:'400px', borderRadius:'16px'}} onClick={e => e.stopPropagation()}>
+            <div style={{marginBottom:'20px'}}>
+              {notification.type === 'success' ? <CheckCircle size={64} color="#10b981" strokeWidth={1.5}/> : <AlertTriangle size={64} color="#ef4444" strokeWidth={1.5}/>}
+            </div>
+            <h3 style={{fontSize:'1.8rem', margin:'0 0 10px 0', fontWeight:'800', color:'var(--text-color)'}}>{notification.type === 'success' ? '¡Excelente!' : 'Atención'}</h3>
+            <p style={{marginBottom:'30px', color:'var(--text-muted)', fontSize:'1.05rem', lineHeight:'1.5'}}>{notification.msg}</p>
+            <button className="btn-finish" style={{width:'100%', padding:'16px', fontSize:'1.1rem', fontWeight:'bold', borderRadius:'12px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} onClick={() => setNotification(null)}>{notification.type === 'success' ? 'Continuar' : 'Entendido'}</button>
+          </div>
+        </div>
+      )}
 
       <header className="os-header">
         <div className="os-logo" onClick={goHome}><Home size={20} color="var(--accent-color)"/> FreelanceOS</div>
-        <button 
-          onClick={() => { setIdeaModal(true); setShowIdeaHistory(false); }}
-          style={{
-            background: 'red', 
-            color: 'white', 
-            border: 'none', 
-            padding: '8px 15px', 
-            borderRadius: '20px', 
-            cursor: 'pointer', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            fontWeight: 'bold',
-            fontSize: '0.85rem',
-            marginLeft: 'auto', // Esto empuja el botón a la derecha pero antes de los iconos
-            marginRight: '15px'
-          }}
-        >
-          <Lightbulb className="bulb" size={16} fill="white" /> Any idea?
-        </button>
-        <div style={{display:'flex', gap:'10px'}}></div>
-        <div style={{display:'flex', gap:'10px'}}><button onClick={handleLogout} title="Cerrar Sesión" style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444'}}><LogOut size={20}/></button><button onClick={()=>setView(view==='wizard'?'history':'wizard')} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}><List size={22}/></button><button onClick={toggleTheme} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}>{theme==='dark'?<Sun size={22}/>:<Moon size={22}/>}</button></div>
+        <button onClick={() => { setIdeaModal(true); setShowIdeaHistory(false); }} style={{background: 'red', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', fontSize: '0.85rem', marginLeft: 'auto', marginRight: '15px'}}><Lightbulb className="bulb" size={16} fill="white" /> Any idea?</button>
+        <div style={{display:'flex', gap:'10px'}}>
+            <button onClick={handleLogout} title="Cerrar Sesión" style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444'}}><LogOut size={20}/></button>
+            <button onClick={handleHistoryToggle} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}} title="Ver Historial"><List size={22}/></button>
+            <button onClick={toggleTheme} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}>{theme==='dark'?<Sun size={22}/>:<Moon size={22}/>}</button>
+        </div>
       </header>
 
       <div className="os-layout">
         <div className="os-workspace">
           <div className="os-scroll-area">
             {view === 'wizard' ? renderSteps() : (
-              <div className="fade-in"><h2 className="os-title">Historial</h2>{historyData.map(item => (<div key={item.id} className="history-card"><div><strong style={{fontSize:'1.1rem'}}>{item.clientes?.nombre_contacto}</strong><div style={{color:'#888', fontSize:'0.9rem'}}>{item.clientes?.empresa}</div></div><div style={{display:'flex', gap:'10px'}}><button onClick={()=>descargarPDFHistorial(item)} style={{border:'none', background:'transparent', cursor:'pointer', color:'var(--text-color)'}}><Download/></button><button onClick={()=>borrarItem(item.id)} style={{border:'none', background:'transparent', cursor:'pointer', color:'#ef4444'}}><Trash2/></button></div></div>))}</div>
+              <div className="fade-in">
+                <h2 className="os-title">Historial de Proyectos</h2>
+                <div className="os-grid" style={{gridTemplateColumns:'1fr'}}>
+                  {historyData.map(item => (
+                    <div key={item.id} className="history-card" style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'15px', background:'var(--card-bg)', borderRadius:'10px', border:'1px solid var(--border-color)', marginBottom:'10px'}}>
+                      <div onClick={() => cargarClienteParaEditar(item)} style={{cursor:'pointer', flex:1}} title="Clic para editar este proyecto">
+                        <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                          <strong style={{fontSize:'1.1rem', color:'var(--text-color)'}}>{item.clientes?.nombre_contacto || "Sin Nombre"}</strong>
+                          <span style={{fontSize:'0.75rem', background:'var(--input-bg)', padding:'3px 8px', borderRadius:'12px', color:'var(--text-muted)', border:'1px solid var(--border-color)', display:'flex', alignItems:'center', gap:'4px'}}><Clock size={12}/>{new Date(item.created_at).toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                        </div>
+                        <div style={{color:'var(--text-muted)', fontSize:'0.9rem', marginTop:'4px'}}>{item.clientes?.empresa || "Empresa no registrada"} • {currency === 'USD' ? '$' : 'S/.'} {item.presupuesto_estimado}</div>
+                      </div>
+                      <div style={{display:'flex', gap:'10px', marginLeft:'15px'}}>
+                        <button onClick={(e) => { e.stopPropagation(); descargarPDFHistorial(item); }} title="Descargar Contrato" style={{border:'1px solid var(--border-color)', background:'var(--bg-color)', padding:'8px', borderRadius:'8px', cursor:'pointer', color:'var(--accent-color)'}}><Download size={18}/></button>
+                        <button onClick={(e) => { e.stopPropagation(); solicitarBorradoProyecto(item.id); }} title="Eliminar" style={{border:'1px solid #fee2e2', background:'#fef2f2', padding:'8px', borderRadius:'8px', cursor:'pointer', color:'#ef4444'}}><Trash2 size={18}/></button>
+                      </div>
+                    </div>
+                  ))}
+                  {historyData.length === 0 && <p style={{textAlign:'center', color:'#888', marginTop:'40px'}}>No hay proyectos guardados aún.</p>}
+                </div>
+              </div>
             )}
           </div>
           {view === 'wizard' && <div className="workspace-footer">{step > 1 ? <button className="btn-nav btn-back" onClick={()=>setStep(step-1)}><ArrowLeft size={18}/> Atrás</button> : <div/>}{step < 5 ? <button className="btn-nav btn-next" onClick={()=>setStep(step+1)}>Siguiente <ArrowRight size={18}/></button> : <button className="btn-nav btn-finish" onClick={guardarProyecto}>{loading?'...':'Finalizar'} <Save size={18}/></button>}</div>}
         </div>
+
+        {/* CHAT SIDEBAR LIMPIO (Sin estilos inline conflictivos) */}
         <aside className="os-chat-sidebar">
-          <div className="chat-header-simple"><Star size={16} color="var(--accent-color)"/> Copiloto IA</div>
-          <div className="chat-messages">{Array.isArray(messages) && messages.map((m, i) => (<div key={i} className={`chat-bubble ${m.role==='user'?'user':'ai'}`}><span dangerouslySetInnerHTML={{__html: (m.content || "").replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br/>')}} /></div>))}{isTyping && <div className="chat-bubble ai" style={{fontStyle:'italic', opacity:0.6}}>Escribiendo...</div>}<div ref={messagesEndRef} /></div>
-          <div className="chat-input-area"><input className="os-input" style={{marginBottom:0}} placeholder="Pregunta algo..." value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleChatSubmit()}/><button onClick={handleChatSubmit} disabled={!chatInput.trim()} style={{background:'var(--text-color)', color:'var(--bg-color)', border:'none', borderRadius:'6px', width:'40px', height:'40px', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center'}}><Send size={18}/></button></div>
+          
+          <div className="chat-header-simple">
+            <Star size={16} color="var(--accent-color)"/> 
+            Copiloto IA (CTO)
+          </div>
+          
+          <div className="chat-messages">
+            {messages.map((m, i) => (
+              <div 
+                key={i} 
+                className={`chat-bubble ${m.role==='user'?'user':'ai'}`}
+                style={m.role === 'assistant' ? {
+                  background: 'var(--bg-color)', 
+                  border: '1px solid var(--border-color)',
+                  padding: '0', 
+                  overflow: 'hidden', 
+                  borderRadius: '12px',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+                  maxWidth: '100%', 
+                  alignSelf: 'stretch'
+                } : {
+                   alignSelf: 'flex-end', 
+                   maxWidth: '85%'
+                }}
+              >
+                {/* ... (El contenido de la burbuja sigue igual) ... */}
+                {m.role === 'assistant' && (
+                  <div style={{ background: 'var(--card-bg)', padding: '6px 12px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{fontSize:'0.65rem', textTransform:'uppercase', fontWeight:'bold', color:'var(--text-color)', letterSpacing:'0.5px'}}>Respuesta Generada</span>
+                    <button onClick={() => copyToClipboard(m.content)} style={{ background: 'var(--accent-color)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.7rem', color: 'white', fontWeight: '600', transition: 'all 0.2s' }} title="Copiar contenido"><Copy size={12} /> Copiar</button>
+                  </div>
+                )}
+                <div style={{ padding: '12px 15px', fontSize: '0.9rem', lineHeight: '1.6', whiteSpace: 'pre-wrap', fontFamily: m.role === 'assistant' ? '"Menlo", "Consolas", monospace' : 'inherit', color: 'var(--text-color)', background: 'rgba(0,0,0,0.15)' }} dangerouslySetInnerHTML={{ __html: (m.content || "").replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/^- (.*)/gm, '• $1').replace(/\n/g, '<br/>') }} />
+              </div>
+            ))}
+            
+            {isTyping && (<div style={{padding:'10px', fontSize:'0.8rem', color:'var(--text-muted)', fontStyle:'italic'}}>Escribiendo<span className="typing-dot">.</span><span className="typing-dot">.</span><span className="typing-dot">.</span></div>)}
+            
+            {/* ANCLA PARA AUTO-SCROLL */}
+            <div ref={messagesEndRef} style={{ float: "left", clear: "both" }} />
+          </div>
+
+          <div className="chat-input-area">
+            <div style={{display:'flex', gap:'10px', width: '100%'}}>
+              <input className="os-input" style={{marginBottom:0, flex:1}} placeholder="Pregunta al CTO..." value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleChatSubmit()} />
+              <button onClick={() => handleChatSubmit()} disabled={!chatInput.trim()} style={{ background:'var(--accent-color)', color:'white', border:'none', borderRadius:'8px', width:'42px', height:'42px', cursor:'pointer', display:'flex', justifyContent:'center', alignItems:'center', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}><Send size={18}/></button>
+            </div>
+          </div>
         </aside>
       </div>
       
-      {/* --- MODAL DE IDEAS (ACTUALIZADO) --- */}
+      {/* MODAL IDEAS */}
       {ideaModal && (
-        <div className="os-modal-overlay" onClick={() => setIdeaModal(false)}>
-          <div className="os-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '550px', width: '90%' }}>
-            
-            {/* Header del Modal */}
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'20px'}}>
-              <h3 style={{margin:0, display:'flex', alignItems:'center', gap:'10px'}}>
-                <Lightbulb color="var(--accent-color)"/> {showIdeaHistory ? 'Historial de Ideas' : 'Capturar Idea'}
-              </h3>
-              <button 
-                onClick={() => { setShowIdeaHistory(!showIdeaHistory); setEditingId(null); }}
-                className="btn-ghost"
-                style={{fontSize:'0.8rem', padding:'6px 12px', display:'flex', gap:'6px', alignItems:'center'}}
-              >
-                {showIdeaHistory ? <><Lightbulb size={14}/> Nueva Idea</> : <><Clock size={14}/> Ver Historial</>}
-              </button>
+        <div className="os-modal-overlay" onClick={() => setIdeaModal(false)} style={{backdropFilter: 'blur(5px)'}}>
+          <div className="os-modal fade-in" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px', width: '95%', padding: '0', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 20px 50px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '20px 25px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--input-bg)' }}>
+              <h3 style={{margin:0, display:'flex', alignItems:'center', gap:'12px', fontSize:'1.2rem', color:'var(--text-color)'}}><div style={{background:'rgba(245, 158, 11, 0.15)', padding:'8px', borderRadius:'10px', display:'flex'}}><Lightbulb size={22} color="#f59e0b" /></div>{showIdeaHistory ? 'Banco de Ideas' : 'Capturar Idea'}</h3>
+              <button onClick={() => { setShowIdeaHistory(!showIdeaHistory); setEditingId(null); }} style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '20px', padding: '6px 14px', fontSize: '0.85rem', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s' }}>{showIdeaHistory ? <><Plus size={14}/> Nueva Idea</> : <><Clock size={14}/> Historial</>}</button>
             </div>
-
-            {!showIdeaHistory ? (
-              // --- VISTA: ESCRIBIR NUEVA ---
-              <div className="fade-in">
-                <textarea 
-                  autoFocus
-                  className="os-textarea" 
-                  rows="6"
-                  placeholder="¿Qué tienes en mente? Escríbelo rápido..."
-                  value={ideaText}
-                  onChange={e => setIdeaText(e.target.value)}
-                  style={{fontSize:'1rem', resize:'none'}}
-                />
-                <div style={{marginTop:'15px'}}>
-                   <button className="btn-finish" style={{width:'100%'}} onClick={guardarIdea} disabled={loading}>
-                     {loading ? 'Saving...' : 'Save Idea'}
-                   </button>
+            <div style={{padding: '25px', background: 'var(--card-bg)'}}>
+              {!showIdeaHistory ? (
+                <div className="fade-in">
+                  <label style={{display:'block', marginBottom:'10px', fontSize:'0.9rem', color:'var(--text-muted)', fontWeight:'500'}}>Tu próxima gran idea comienza aquí:</label>
+                  <textarea autoFocus className="os-textarea" rows="5" placeholder="Ej: App para paseadores de perros con GPS..." value={ideaText} onChange={e => setIdeaText(e.target.value)} style={{ fontSize: '1.1rem', resize: 'none', padding: '15px', lineHeight: '1.6', border: '1px solid var(--border-color)', borderRadius: '12px', background: 'var(--bg-color)' }} />
+                  <div style={{marginTop:'20px', display:'flex', gap:'10px'}}><button className="btn-finish" style={{width:'100%', padding:'14px', fontSize:'1rem', display:'flex', justifyContent:'center', gap:'10px'}} onClick={guardarIdea} disabled={loading}>{loading ? 'Guardando...' : <><CheckCircle size={18}/> Guardar Idea</>}</button></div>
                 </div>
-              </div>
-            ) : (
-              // --- VISTA: HISTORIAL (MEJORADO) ---
-              <div className="os-scroll-area" style={{maxHeight:'450px', overflowY:'auto', paddingRight:'5px'}}>
-                {ideasList.length === 0 && (
-                  <div style={{textAlign:'center', padding:'30px', color:'#888', fontStyle:'italic'}}>
-                    No hay ideas guardadas. <br/> ¡Es momento de ser creativo!
-                  </div>
-                )}
-                
-                {ideasList.map(idea => (
-                  <div key={idea.id} style={{
-                    background: 'var(--card-bg)', 
-                    padding:'15px', 
-                    borderRadius:'12px', // Borde redondeado
-                    marginBottom:'15px',
-                    border: '1px solid var(--border-color)', // Cuadro completo en vez de línea izq
-                    transition: 'all 0.2s',
-                    position: 'relative'
-                  }}>
-                    
-                    {/* Modo Edición vs Modo Lectura */}
-                    {editingId === idea.id ? (
-                      // --- FORMULARIO EDICIÓN EN LÍNEA ---
-                      <div className="fade-in">
-                        <textarea 
-                          className="os-textarea"
-                          value={editText}
-                          onChange={e => setEditText(e.target.value)}
-                          rows="3"
-                          style={{marginBottom:'10px', fontSize:'0.9rem'}}
-                        />
-                        <div style={{display:'flex', gap:'10px', justifyContent:'flex-end'}}>
-                          <button onClick={() => setEditingId(null)} style={{background:'transparent', border:'1px solid var(--border-color)', borderRadius:'6px', padding:'5px 10px', cursor:'pointer', display:'flex', alignItems:'center', gap:'5px', fontSize:'0.8rem', color:'var(--text-color)'}}>
-                             <X size={14}/> Cancelar
-                          </button>
-                          <button onClick={() => guardarEdicion(idea.id)} style={{background:'var(--accent-color)', border:'none', borderRadius:'6px', padding:'5px 10px', cursor:'pointer', display:'flex', alignItems:'center', gap:'5px', fontSize:'0.8rem', color:'white'}}>
-                             <Check size={14}/> Guardar
-                          </button>
-                        </div>
+              ) : (
+                <div className="os-scroll-area" style={{maxHeight:'400px', overflowY:'auto', paddingRight:'5px'}}>
+                  {ideasList.length === 0 ? (<div style={{textAlign:'center', padding:'40px 20px', color:'var(--text-muted)'}}><div style={{marginBottom:'15px', opacity:0.3}}><Lightbulb size={40}/></div><p>Aún no hay ideas guardadas.</p></div>) : (
+                    ideasList.map(idea => (
+                      <div key={idea.id} style={{ background: 'var(--input-bg)', padding:'15px', borderRadius:'12px', marginBottom:'12px', border: '1px solid var(--border-color)', position: 'relative' }}>
+                        {editingId === idea.id ? (
+                          <div className="fade-in">
+                            <textarea className="os-textarea" value={editText} onChange={e => setEditText(e.target.value)} rows="3" style={{fontSize:'0.95rem', background:'var(--bg-color)'}} />
+                            <div style={{display:'flex', gap:'10px', justifyContent:'flex-end', marginTop:'10px'}}><button onClick={() => setEditingId(null)} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:'0.85rem'}}>Cancelar</button><button onClick={() => guardarEdicion(idea.id)} style={{background:'var(--accent-color)', color:'white', border:'none', borderRadius:'6px', padding:'5px 12px', cursor:'pointer', fontSize:'0.85rem'}}>Guardar</button></div>
+                          </div>
+                        ) : (
+                          <>
+                            <div style={{fontSize:'1rem', color:'var(--text-color)', lineHeight:'1.5', whiteSpace:'pre-wrap'}}>{idea.content}</div>
+                            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop:'12px', paddingTop:'12px', borderTop:'1px solid rgba(0,0,0,0.05)'}}>
+                              <span style={{fontSize:'0.75rem', color:'var(--text-muted)', display:'flex', alignItems:'center', gap:'5px'}}><Clock size={12}/> {new Date(idea.created_at).toLocaleDateString()}</span>
+                              <div style={{display:'flex', gap:'8px'}}><button onClick={() => empezarEdicion(idea)} style={{background:'transparent', border:'none', cursor:'pointer', padding:'5px'}} title="Editar"><Edit2 size={16} color="var(--text-muted)"/></button><button onClick={() => solicitarBorrado(idea.id)} style={{background:'transparent', border:'none', cursor:'pointer', padding:'5px'}} title="Eliminar"><Trash2 size={16} color="#ef4444"/></button></div>
+                            </div>
+                          </>
+                        )}
                       </div>
-                    ) : (
-                      // --- VISUALIZACIÓN NORMAL ---
-                      <>
-                        <div style={{whiteSpace:'pre-wrap', fontSize:'0.95rem', marginBottom:'12px', color:'var(--text-color)', lineHeight:'1.5'}}>
-                          {idea.content}
-                        </div>
-                        
-                        <div style={{
-                          display:'flex', 
-                          justifyContent:'space-between', 
-                          alignItems:'center', 
-                          borderTop:'1px solid var(--border-color)', 
-                          paddingTop:'10px',
-                          marginTop:'10px'
-                        }}>
-                          <div style={{fontSize:'0.75rem', color:'#888', display:'flex', alignItems:'center', gap:'5px'}}>
-                            <Clock size={12}/> 
-                            {new Date(idea.created_at).toLocaleDateString('es-PE', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}
-                          </div>
-                          
-                          <div style={{display:'flex', gap:'8px'}}>
-                            <button 
-                              onClick={() => empezarEdicion(idea)}
-                              title="Editar"
-                              style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-muted)', padding:'4px'}}
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button 
-                              onClick={() => solicitarBorrado(idea.id)}
-                              title="Eliminar"
-                              style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444', padding:'4px'}}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button 
-              onClick={() => setIdeaModal(false)} 
-              style={{
-                marginTop:'15px', width:'100%', background:'transparent', border:'none', 
-                color:'#888', cursor:'pointer', fontSize:'0.9rem'
-              }}
-            >
-              Cerrar
-            </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+            <div style={{ padding: '15px 25px', background: 'var(--input-bg)', borderTop: '1px solid var(--border-color)', textAlign: 'right' }}>
+              <button onClick={() => setIdeaModal(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600', padding: '8px 16px', borderRadius: '8px' }}>Cerrar</button>
+            </div>
           </div>
         </div>
       )}
 
+      {/* MODAL BORRAR IDEA */}
       {deleteTarget && (
-        <div className="os-modal-overlay" onClick={() => setDeleteTarget(null)} style={{zIndex: 10001}}>
-          <div className="os-modal" onClick={e => e.stopPropagation()} style={{maxWidth:'350px', textAlign:'center', border:'1px solid #ef4444'}}>
-            
-            <div style={{marginBottom:'15px', color:'#ef4444'}}>
-              <AlertTriangle size={40} />
+        <div className="os-modal-overlay" onClick={() => setDeleteTarget(null)} style={{backdropFilter: 'blur(4px)', zIndex: 10001}}>
+          <div className="os-modal fade-in" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', width: '90%', textAlign: 'center', borderRadius: '20px', padding: '30px', border: 'none', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}><div style={{ background: '#fee2e2', borderRadius: '50%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><AlertTriangle size={32} color="#ef4444" strokeWidth={2.5} /></div></div>
+            <h3 style={{ marginTop: 0, fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '10px' }}>¿Eliminar esta idea?</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '30px', lineHeight: '1.5' }}>Esta acción no se puede deshacer.</p>
+            <div style={{display:'flex', gap:'12px'}}>
+              <button onClick={() => setDeleteTarget(null)} style={{ flex: 1, background: 'white', border: '1px solid #e5e7eb', color: '#374151', borderRadius: '10px', padding: '12px', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem' }}>Cancelar</button>
+              <button onClick={confirmarBorrado} style={{ flex: 1, background: '#ef4444', border: '1px solid #ef4444', color: 'white', borderRadius: '10px', padding: '12px', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.3)' }}>Sí, Eliminar</button>
             </div>
-            
-            <h3 style={{marginTop:0, fontSize:'1.1rem'}}>¿Eliminar esta idea?</h3>
-            <p style={{color:'var(--text-muted)', fontSize:'0.9rem', marginBottom:'25px'}}>
-              Esta acción no se puede deshacer. La idea desaparecerá de tu base de datos permanentemente.
-            </p>
-
-            <div style={{display:'flex', gap:'10px'}}>
-              <button 
-                onClick={() => setDeleteTarget(null)} 
-                className="btn-ghost" 
-                style={{flex:1, justifyContent:'center'}}
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={confirmarBorrado} 
-                className="btn-finish" 
-                style={{
-                  flex:1, 
-                  background:'#ef4444', 
-                  borderColor:'#ef4444', 
-                  color:'white',
-                  justifyContent:'center'
-                }}
-              >
-                Sí, Eliminar
-              </button>
-            </div>
-
           </div>
         </div>
       )}
 
+      {/* MODAL BORRAR PROYECTO (HISTORIAL) */}
+      {deleteProjectTarget && (
+        <div className="os-modal-overlay" onClick={() => setDeleteProjectTarget(null)} style={{backdropFilter: 'blur(4px)', zIndex: 10002}}>
+          <div className="os-modal fade-in" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', width: '90%', textAlign: 'center', borderRadius: '20px', padding: '30px', border: 'none', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}><div style={{ background: '#fee2e2', borderRadius: '50%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Trash2 size={32} color="#ef4444" strokeWidth={2.5} /></div></div>
+            <h3 style={{ marginTop: 0, fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '10px' }}>¿Eliminar Proyecto?</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '30px', lineHeight: '1.5' }}>El proyecto y sus datos se borrarán permanentemente del historial.</p>
+            <div style={{display:'flex', gap:'12px'}}>
+              <button onClick={() => setDeleteProjectTarget(null)} style={{ flex: 1, background: 'white', border: '1px solid #e5e7eb', color: '#374151', borderRadius: '10px', padding: '12px', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem' }}>Cancelar</button>
+              <button onClick={confirmarBorradoProyecto} style={{ flex: 1, background: '#ef4444', border: '1px solid #ef4444', color: 'white', borderRadius: '10px', padding: '12px', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.3)' }}>{loading ? '...' : 'Sí, Eliminar'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
-
-    
-
   )
 }

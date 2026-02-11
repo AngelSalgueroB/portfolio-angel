@@ -18,9 +18,9 @@ export const translations = {
     },
     hero: {
       badge: "Disponible para proyectos",
-      title_start: "Resuelvo problemas",
-      title_gradient: "complejos con",
-      title_end: "soluciones digitales.",
+      title_start: "Resuelvo problemas complejos",
+      title_gradient: "con soluciones",
+      title_end: "digitales.",
       desc_start: "Ingeniero de Sistemas enfocado en el desarrollo",
       desc_mid: "y la optimización de procesos. Transformo requerimientos en aplicaciones web automatizadas con una interfaz",
       desc_end: "limpia y funcional.",
