@@ -5,7 +5,7 @@ import {
 // ICONOS
 import { 
   Globe, Terminal, BarChart3, CloudCog, Activity, 
-  CreditCard, Bot, Database, Utensils, Wrench, Library 
+  CreditCard, Bot, Database, Utensils, Wrench, Library,Smartphone, ShoppingCart, Layers, ShieldAlert, BookOpen
 } from 'lucide-react';
 
 export const translations = {
@@ -103,12 +103,67 @@ export const translations = {
       footer_text: "Versión 1.0 — Enero 2026"
     },
     services: [
-      { id: "01", title: "Desarrollo Full Stack", desc: "Arquitectura y construcción de aplicaciones web a medida.", icon: <Globe size={28} />, features: ["React / Next.js", "APIs REST & GraphQL", "Paneles Administrativos"] },
-      { id: "02", title: "Automatización & Scripts", desc: "Bots y scripts que trabajan por ti 24/7.", icon: <Terminal size={28} />, features: ["Web Scraping", "Procesamiento Excel", "Bots Telegram/WhatsApp"] },
-      { id: "03", title: "Ingeniería de Datos", desc: "Dashboards interactivos para toma de decisiones.", icon: <BarChart3 size={28} />, features: ["ETL Pipelines", "Limpieza de Datos", "Power BI / Looker"] },
-      { id: "04", title: "Infraestructura Cloud", desc: "Despliegue y optimización de servidores.", icon: <CloudCog size={28} />, features: ["AWS / Vercel", "CI/CD Pipelines", "Docker"] },
-      { id: "05", title: "Auditoría de Rendimiento", desc: "Diagnóstico profundo de sistemas.", icon: <Activity size={28} />, features: ["SQL vs NoSQL", "Optimización Consultas", "Stress Testing"] }
-    ],
+      { 
+      id: "01", 
+      title: "Desarrollo Web & SaaS", 
+      desc: "Aplicaciones web complejas, CRMs y paneles administrativos a medida.", 
+      icon: <Globe size={28} />, 
+      features: ["React / Next.js", "Gestión de Bases de Datos", "Sistemas Multi-usuario"] 
+    },
+    { 
+      id: "02", 
+      title: "Apps Móviles (iOS/Android)", 
+      desc: "Lleva tu negocio al bolsillo del cliente con una sola base de código.", 
+      icon: <Smartphone size={28} />, 
+      features: ["React Native", "Notificaciones Push", "Modo Offline"] 
+    },
+    { 
+      id: "03", 
+      title: "E-commerce & Pagos", 
+      desc: "Tiendas virtuales escalables con pasarelas de pago integradas.", 
+      icon: <ShoppingCart size={28} />, 
+      features: ["Integración Stripe/Niubiz", "Control de Stock", "Carrito de Compras"] 
+    },
+
+    // --- INGENIERÍA & PROCESOS (TU DIFERENCIAL) ---
+    { 
+      id: "04", 
+      title: "Automatización (BPA)", 
+      desc: "Scripts inteligentes para eliminar tareas manuales repetitivas.", 
+      icon: <Terminal size={28} />, 
+      features: ["Bots de WhatsApp", "Procesamiento Excel/PDF", "Conexión de APIs"] 
+    },
+    { 
+      id: "05", 
+      title: "Arquitectura & Consultoría", 
+      desc: "Diseño de sistemas robustos y escalables (Enfoque TOGAF/ISO).", 
+      icon: <Layers size={28} />, 
+      features: ["Selección de Stack", "Diagramas de Flujo", "Optimización de Costos Cloud"] 
+    },
+    { 
+      id: "06", 
+      title: "Inteligencia de Negocios", 
+      desc: "Transforma datos brutos en tableros para la toma de decisiones.", 
+      icon: <BarChart3 size={28} />, 
+      features: ["Dashboards Power BI", "Reportes Automáticos", "Métricas en Tiempo Real"] 
+    },
+
+    // --- MANTENIMIENTO & SEGURIDAD ---
+    { 
+      id: "07", 
+      title: "Migración & Modernización", 
+      desc: "Actualización de sistemas legados a tecnologías modernas.", 
+      icon: <CloudCog size={28} />, 
+      features: ["De Excel a Web App", "Migración a Nube", "Refactorización de Código"] 
+    },
+    { 
+      id: "08", 
+      title: "Auditoría & Seguridad", 
+      desc: "Revisión técnica para blindar y acelerar tus sistemas.", 
+      icon: <ShieldAlert size={28} />, 
+      features: ["Hacking Ético Básico", "Optimización de Velocidad", "Copias de Seguridad"] 
+    }
+  ],
     projects: [
       { title: "FinanceHub", desc: "Billetera virtual con autenticación segura.", longDesc: "Aplicación completa de finanzas con gráficos interactivos, metas de ahorro y autenticación segura con Supabase.", tech: ["Supabase", "React", "JS"], icon: <CreditCard size={40} />, hasDemo: true },
       { title: "DataCleaner Bot", desc: "Pipeline de automatización de datos.", longDesc: "Bot en Python que procesa Excels masivos, limpia inconsistencias y prepara datos para Power BI.", tech: ["Python", "Pandas", "ETL"], icon: <Bot size={40} />, hasDemo: true },
@@ -213,12 +268,67 @@ export const translations = {
       footer_text: "Version 1.0 — January 2026"
     },
     services: [
-      { id: "01", title: "Full Stack Development", desc: "Architecture and build of custom web applications.", icon: <Globe size={28} />, features: ["React / Next.js", "REST & GraphQL APIs", "Admin Panels"] },
-      { id: "02", title: "Automation & Scripts", desc: "Bots and scripts that work for you 24/7.", icon: <Terminal size={28} />, features: ["Web Scraping", "Excel Processing", "Telegram/WhatsApp Bots"] },
-      { id: "03", title: "Data Engineering", desc: "Interactive dashboards for decision making.", icon: <BarChart3 size={28} />, features: ["ETL Pipelines", "Data Cleaning", "Power BI / Looker"] },
-      { id: "04", title: "Cloud Infrastructure", desc: "Server deployment and optimization.", icon: <CloudCog size={28} />, features: ["AWS / Vercel", "CI/CD Pipelines", "Docker"] },
-      { id: "05", title: "Performance Audit", desc: "Deep system diagnostics.", icon: <Activity size={28} />, features: ["SQL vs NoSQL", "Query Optimization", "Stress Testing"] }
-    ],
+      { 
+      id: "01", 
+      title: "Web & SaaS Development", 
+      desc: "Complex web applications, CRMs, and custom admin panels.", 
+      icon: <Globe size={28} />, 
+      features: ["React / Next.js", "Database Management", "Multi-user Systems"] 
+    },
+    { 
+      id: "02", 
+      title: "Mobile Apps (iOS/Android)", 
+      desc: "Bring your business to your client's pocket with a single codebase.", 
+      icon: <Smartphone size={28} />, 
+      features: ["React Native", "Push Notifications", "Offline Mode"] 
+    },
+    { 
+      id: "03", 
+      title: "E-commerce & Payments", 
+      desc: "Scalable online stores with integrated payment gateways.", 
+      icon: <ShoppingCart size={28} />, 
+      features: ["Stripe/Niubiz Integration", "Stock Control", "Shopping Cart"] 
+    },
+
+    // --- ENGINEERING & PROCESSES (YOUR EDGE) ---
+    { 
+      id: "04", 
+      title: "Automation (BPA)", 
+      desc: "Smart scripts to eliminate repetitive manual tasks.", 
+      icon: <Terminal size={28} />, 
+      features: ["WhatsApp Bots", "Excel/PDF Processing", "API Connection"] 
+    },
+    { 
+      id: "05", 
+      title: "Architecture & Consulting", 
+      desc: "Design of robust and scalable systems (TOGAF/ISO approach).", 
+      icon: <Layers size={28} />, 
+      features: ["Stack Selection", "Flow Diagrams", "Cloud Cost Optimization"] 
+    },
+    { 
+      id: "06", 
+      title: "Business Intelligence", 
+      desc: "Transform raw data into dashboards for decision-making.", 
+      icon: <BarChart3 size={28} />, 
+      features: ["Power BI Dashboards", "Automated Reports", "Real-time Metrics"] 
+    },
+
+    // --- MAINTENANCE & SECURITY ---
+    { 
+      id: "07", 
+      title: "Migration & Modernization", 
+      desc: "Updating legacy systems to modern technologies.", 
+      icon: <CloudCog size={28} />, 
+      features: ["Excel to Web App", "Cloud Migration", "Code Refactoring"] 
+    },
+    { 
+      id: "08", 
+      title: "Audit & Security", 
+      desc: "Technical review to shield and accelerate your systems.", 
+      icon: <ShieldAlert size={28} />, 
+      features: ["Basic Ethical Hacking", "Speed Optimization", "Backups"] 
+    }
+  ],
     projects: [
       { title: "FinanceHub", desc: "Virtual wallet with secure authentication.", longDesc: "Full finance app with interactive charts, savings goals, and secure authentication via Supabase.", tech: ["Supabase", "React", "JS"], icon: <CreditCard size={40} />, hasDemo: true },
       { title: "DataCleaner Bot", desc: "Data automation pipeline.", longDesc: "Python bot that processes massive Excel files, cleans inconsistencies, and prepares data for Power BI.", tech: ["Python", "Pandas", "ETL"], icon: <Bot size={40} />, hasDemo: true },

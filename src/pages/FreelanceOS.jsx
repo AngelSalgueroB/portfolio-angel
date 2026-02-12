@@ -5,7 +5,7 @@ import {
   Home, Send, Star, Lock, Mail, LogOut, Webhook, PenTool,
   TrendingDown, CreditCard, PackageX, Mountain, BarChart3, FileSpreadsheet, 
   Megaphone, Globe, AlertTriangle, Target, ShieldCheck, CheckCircle, XCircle,
-  Database, Cloud, Code, Wrench, Smartphone, Lightbulb, Clock, Trash2, Edit2, Check, X, Copy
+  Database, Cloud, Code, Wrench, Smartphone, Lightbulb, Clock, Trash2, Edit2, Check, X, Copy, Terminal, CodeXml
 } from 'lucide-react'
 import { jsPDF } from "jspdf"
 import autoTable from 'jspdf-autotable'
@@ -134,8 +134,29 @@ export default function FreelanceOS() {
 
   // --- EFECTOS ---
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+    // 1. Verificación inicial al cargar la página
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      // Si el usuario ya estaba logueado, mándalo directo al Wizard
+      if (session) setView('wizard') 
+    })
+
+    // 2. Escuchar cambios en tiempo real (Login / Logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session)
+      
+      if (event === 'SIGNED_IN') {
+        // ¡AQUÍ ESTÁ LA SOLUCIÓN! Al entrar, fuerza la vista Wizard
+        setView('wizard') 
+      }
+      
+      if (event === 'SIGNED_OUT') {
+        // Al salir, fuerza la vista Login (y limpia datos por si acaso)
+        setView('login')
+        setHistoryData([]) 
+      }
+    })
+
     return () => subscription.unsubscribe()
   }, [])
 
@@ -175,7 +196,17 @@ export default function FreelanceOS() {
     if (error) setNotification({ type: 'error', msg: error.message })
     setAuthLoading(false)
   }
-  const handleLogout = async () => { await supabase.auth.signOut(); setSession(null) }
+  const handleLogout = async () => {
+    // 1. Cerrar en Supabase
+    await supabase.auth.signOut();
+    
+    // 2. Limpiar estados locales
+    setSession(null);
+    setHistoryData([]); // Limpiamos el historial visualmente para que no quede "basura"
+    
+    // 3. ¡LO MÁS IMPORTANTE! Forzar el cambio de pantalla a Login
+    setView('login'); 
+  };
 
   // --- FUNCIÓN CHAT IA (V4: HÍBRIDA) ---
   const handleChatSubmit = async (manualPrompt = null) => {
@@ -624,21 +655,73 @@ export default function FreelanceOS() {
       // PÁGINA 4
       doc.addPage(); y = 40;
       doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(...C_ACCENT);
-      doc.text("ACUERDO DE NIVEL DE SERVICIO (SLA) Y TÉRMINOS", 20, y); y += 15;
-      doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(20, 20, 20);
+      doc.text("TÉRMINOS, CONDICIONES Y EXCLUSIÓN DE RESPONSABILIDAD", 20, y); 
+      y += 15;
+      
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(20, 20, 20); // Letra un poco más chica para que entre todo
+      
       const clausulas = [
-          { titulo: "1. PROPIEDAD INTELECTUAL", texto: "La titularidad del código fuente se transfiere tras el pago total (100%)." },
-          { titulo: "2. FORMA DE PAGO", texto: "50% Adelanto, 50% Contra-entrega. Se suspende el servicio si hay impagos." },
-          { titulo: "3. ALCANCE Y CAMBIOS", texto: "Requerimientos adicionales se cotizan por separado." },
-          { titulo: "4. DEPENDENCIAS", texto: "El plazo depende de la entrega oportuna de información por parte del cliente." },
-          { titulo: "5. GARANTÍA", texto: "30 días de garantía para corrección de bugs imputables al desarrollo." },
-          { titulo: "6. CONFIDENCIALIDAD", texto: "Se mantendrá estricta confidencialidad sobre la información del proyecto." }
+          { 
+            titulo: "1. PROPIEDAD INTELECTUAL Y TRANSFERENCIA", 
+            texto: "La titularidad del código fuente y los activos digitales se transfiere al CLIENTE únicamente tras el pago total (100%) del proyecto. El DESARROLLADOR conserva el derecho a reutilizar librerías, scripts y fragmentos de código genérico de su autoría (Background IP) en otros proyectos." 
+          },
+          { 
+            titulo: "2. FORMA DE PAGO Y SUSPENSIÓN", 
+            texto: "50% Adelanto al inicio, 50% Contra-entrega. El incumplimiento de los pagos en las fechas acordadas faculta al DESARROLLADOR a suspender el desarrollo, retener el código o dar de baja el servicio temporalmente hasta la regularización." 
+          },
+          { 
+            titulo: "3. ALCANCE, CAMBIOS Y ADICIONALES", 
+            texto: "El presupuesto cubre estrictamente lo descrito en este documento. Cualquier funcionalidad no listada explícitamente se considera 'fuera de alcance' y será cotizada como un costo adicional. Los cambios estructurales una vez aprobado el diseño tendrán un recargo." 
+          },
+          { 
+            titulo: "4. PLAZOS Y DEPENDENCIAS DEL CLIENTE", 
+            texto: "El plazo de entrega inicia cuando el CLIENTE entrega todo el material necesario (textos, logos, accesos). Retrasos en la entrega de insumos o feedback por parte del CLIENTE desplazarán la fecha final de entrega automáticamente." 
+          },
+          { 
+            titulo: "5. COSTOS DE TERCEROS (HOSTING/APIS/DOMINIOS)", 
+            texto: "Los costos recurrentes de infraestructura (Hosting, Dominios, Bases de Datos, Licencias de Software, APIs pagas como Google Maps/OpenAI) son responsabilidad exclusiva del CLIENTE. El DESARROLLADOR no asume pagos de servicios de terceros." 
+          },
+          { 
+            titulo: "6. PUBLICACIÓN EN TIENDAS (MÓVILES)", 
+            texto: "El CLIENTE abonará directamente a Google ($25) y Apple ($99/año) las tarifas de desarrollador. La App se publicará en la cuenta del CLIENTE. El DESARROLLADOR no garantiza la aprobación de la App si esta viola las políticas de contenido de las tiendas (ej: apuestas, contenido adulto)." 
+          },
+          { 
+            titulo: "7. LIMITACIÓN DE RESPONSABILIDAD (IMPORTANTE)", 
+            texto: "El DESARROLLADOR no será responsable por daños indirectos, lucro cesante, pérdida de datos o interrupción del negocio derivados del uso del software. La responsabilidad máxima del DESARROLLADOR se limita al monto total pagado por el CLIENTE en este proyecto." 
+          },
+          { 
+            titulo: "8. RESPONSABILIDAD SOBRE CONTENIDOS (INDEMNIDAD)", 
+            texto: "El CLIENTE declara ser dueño o tener licencia de todos los textos, imágenes y marcas que entrega para el proyecto. El CLIENTE mantendrá indemne al DESARROLLADOR ante cualquier reclamo de terceros por violación de derechos de autor sobre el material proporcionado." 
+          },
+          { 
+            titulo: "9. GARANTÍA TÉCNICA Y MANTENIMIENTO", 
+            texto: "Se incluye garantía de 30 días post-entrega para errores de código (bugs). Esta garantía NO CUBRE: fallos causados por actualizaciones de terceros (ej: cambio en API de Facebook), mal uso del sistema por el cliente, o intervenciones de otros programadores." 
+          },
+          { 
+            titulo: "10. RELACIÓN INDEPENDIENTE", 
+            texto: "El DESARROLLADOR actúa como contratista independiente y no como empleado. Este contrato no crea una relación de exclusividad; el DESARROLLADOR es libre de prestar servicios a otros clientes simultáneamente." 
+          }
       ];
+
+      // LÓGICA DE RENDERIZADO (Ajustada para que no se salga de la hoja)
       clausulas.forEach(item => {
-          doc.setFont("helvetica", "bold"); doc.text(item.titulo, 20, y); y += 5;
-          doc.setFont("helvetica", "normal"); const splitTexto = doc.splitTextToSize(item.texto, 170);
-          doc.text(splitTexto, 20, y, { align: 'justify', maxWidth: 170 }); y += (splitTexto.length * 5) + 8; 
-          if (y > 260) { doc.addPage(); y = 40; }
+        // Verificar si nos quedamos sin espacio en la hoja (aprox 270mm es el fin)
+        if (y > 270) {
+            doc.addPage();
+            y = 20; // Margen superior nueva página
+        }
+
+        doc.setFont("helvetica", "bold");
+        doc.text(item.titulo, 20, y);
+        y += 5;
+        
+        doc.setFont("helvetica", "normal");
+        // splitTextToSize corta el texto si es muy largo para que no se salga del margen derecho
+        const splitText = doc.splitTextToSize(item.texto, 170); 
+        doc.text(splitText, 20, y);
+        
+        // Calculamos cuánto espacio ocupó el texto para mover Y
+        y += (splitText.length * 4) + 6; 
       });
 
       y += 15;
@@ -647,6 +730,8 @@ export default function FreelanceOS() {
       doc.setDrawColor(100, 100, 100); doc.setLineWidth(0.5);
       doc.line(30, firmaY, 90, firmaY);
       doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(0,0,0);
+
+      
       doc.text("CONFORME CLIENTE", 60, firmaY + 5, { align: 'center' });
       doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100,100,100);
       doc.text(finalData.cliente || "Firma Autorizada", 60, firmaY + 10, { align: 'center' });
@@ -802,8 +887,162 @@ export default function FreelanceOS() {
       </div>}
     </div>
   )
+    
+  // --- RENDERING: LOGIN (DISEÑO "SALGUERO DEV TECH") ---
+  if (!session || view === 'login') {
+    return (
+      <div className="os-login-container" style={{
+        display:'flex', 
+        justifyContent:'center', 
+        alignItems:'center', 
+        height:'100vh', 
+        background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)', // Fondo oscuro profesional
+        color:'white', 
+        position:'relative',
+        overflow: 'hidden'
+      }}>
+        
+        {/* Decoración de Fondo (Círculos sutiles) */}
+        <div style={{position:'absolute', top:'-10%', left:'-10%', width:'500px', height:'500px', background:'rgba(79, 70, 229, 0.15)', borderRadius:'50%', filter:'blur(80px)'}}></div>
+        <div style={{position:'absolute', bottom:'-10%', right:'-10%', width:'400px', height:'400px', background:'rgba(236, 72, 153, 0.1)', borderRadius:'50%', filter:'blur(80px)'}}></div>
 
+        <div className="os-card fade-in" style={{
+          width:'100%', 
+          maxWidth:'420px', 
+          padding:'40px', 
+          background: 'rgba(255, 255, 255, 0.03)', // Efecto Glass oscuro
+          backdropFilter: 'blur(10px)',
+          border:'1px solid rgba(255, 255, 255, 0.1)', 
+          borderRadius:'24px', 
+          boxShadow:'0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          cursor: 'default'
+        }}>
+          
+          {/* Header con estilo de Terminal */}
+          <div style={{marginBottom:'30px', textAlign:'center'}}>
+            <div style={{
+              display:'inline-flex', 
+              alignItems:'center', 
+              justifyContent:'center', 
+              width:'60px', height:'60px', 
+              borderRadius:'16px', 
+              background:'linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)',
+              marginBottom:'20px',
+              boxShadow: '0 10px 20px rgba(79, 70, 229, 0.3)'
+            }}>
+              <CodeXml size={32} color="white" />
+            </div>
+            
+            <h1 style={{fontSize:'1.8rem', margin:'0 0 5px 0', fontWeight:'700', letterSpacing:'-0.5px', fontFamily:'"Menlo", monospace'}}>
+              <span style={{color:'#f8fafc'}}>Freelance</span>
+              <span style={{color:'#818cf8'}}>OS - Salguero Dev~</span>
+              
+            </h1>
+            <div style={{display:'flex', alignItems:'center', justifyContent:'center', gap:'6px', opacity:0.6, fontSize:'0.8rem', fontFamily:'monospace'}}>
+               <div style={{width:'8px', height:'8px', borderRadius:'50%', background:'#10b981', boxShadow:'0 0 5px #10b981'}}></div>
+               SYSTEM STATUS: ONLINE
+            </div>
+          </div>
+
+          <form onSubmit={handleLogin} style={{display:'flex', flexDirection:'column', gap:'20px'}}>
+            
+            <div style={{position:'relative'}}>
+              <div style={{position:'absolute', left:'15px', top:'50%', transform:'translateY(-50%)', color:'#94a3b8'}}><Mail size={18}/></div>
+              <input 
+                className="os-input-dark" // Asegúrate de que esta clase no tenga fondo blanco forzado, o usa style inline abajo
+                type="email" 
+                placeholder="ID de Acceso (Email)" 
+                value={email} 
+                onChange={e => setEmail(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding:'14px 14px 14px 45px', 
+                  fontSize:'0.95rem', 
+                  background:'rgba(0,0,0,0.2)', 
+                  border:'1px solid rgba(255,255,255,0.1)', 
+                  color:'white',
+                  borderRadius:'12px',
+                  outline: 'none',
+                  transition: 'all 0.3s'
+                }}
+                required
+              />
+            </div>
+
+            <div style={{position:'relative'}}>
+              <div style={{position:'absolute', left:'15px', top:'50%', transform:'translateY(-50%)', color:'#94a3b8'}}><Lock size={18}/></div>
+              <input 
+                type="password" 
+                placeholder="Clave de Seguridad" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding:'14px 14px 14px 45px', 
+                  fontSize:'0.95rem', 
+                  background:'rgba(0,0,0,0.2)', 
+                  border:'1px solid rgba(255,255,255,0.1)', 
+                  color:'white',
+                  borderRadius:'12px',
+                  outline: 'none'
+                }}
+                required
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              style={{
+                width:'100%', 
+                padding:'16px', 
+                fontSize:'1rem', 
+                marginTop:'10px', 
+                display:'flex', 
+                justifyContent:'center', 
+                alignItems:'center', 
+                gap:'10px', 
+                cursor:'pointer',
+                background: 'white',
+                color: '#0f172a',
+                border: 'none',
+                borderRadius: '12px',
+                fontWeight: 'bold',
+                transition: 'transform 0.2s',
+              }}
+              disabled={authLoading}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              {authLoading ? 'Autenticando...' : <><ArrowRight size={20}/> Iniciar Sistema</>}
+            </button>
+          </form>
+
+          {/* --- PIE DE PÁGINA TECH --- */}
+          <div style={{marginTop:'40px', paddingTop:'20px', borderTop:'1px solid rgba(255,255,255,0.5)', textAlign:'center'}}>
+            <p style={{fontSize:'0.75rem', color:'#64748b', fontFamily:'monospace', margin:0}}>
+              powered by<br/>
+              <a 
+                href="https://www.salguero-dev.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{color:'#818cf8', fontWeight:'bold', textDecoration:'none', cursor:'pointer', fontSize:'0.9rem', display:'inline-block', marginTop:'5px'}}
+              >
+                {`< Salguero Dev />`}
+              </a>
+            </p>
+          </div>
+
+          {notification && (
+            <div style={{marginTop:'20px', padding:'12px', borderRadius:'10px', background: notification.type==='error'?'rgba(239, 68, 68, 0.2)':'rgba(16, 185, 129, 0.2)', border: notification.type==='error'?'1px solid #ef4444':'1px solid #10b981', color: 'white', fontSize:'0.85rem', textAlign:'center'}}>
+              {notification.msg}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
   return (
+    
     <div className="os-container">
       {modalOpen && <div className="os-modal-overlay" onClick={()=>setModalOpen(null)}><div className="os-modal" onClick={e=>e.stopPropagation()}><h3>Agregar</h3><input autoFocus className="os-input" value={customText} onChange={e=>setCustomText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&saveCustom()}/><button className="btn-finish" style={{width:'100%'}} onClick={saveCustom}>Guardar</button></div></div>}
 
@@ -824,7 +1063,9 @@ export default function FreelanceOS() {
         <div className="os-logo" onClick={goHome}><Home size={20} color="var(--accent-color)"/> FreelanceOS</div>
         <button onClick={() => { setIdeaModal(true); setShowIdeaHistory(false); }} style={{background: 'red', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', fontSize: '0.85rem', marginLeft: 'auto', marginRight: '15px'}}><Lightbulb className="bulb" size={16} fill="white" /> Any idea?</button>
         <div style={{display:'flex', gap:'10px'}}>
+
             <button onClick={handleLogout} title="Cerrar Sesión" style={{background:'transparent', border:'none', cursor:'pointer', color:'#ef4444'}}><LogOut size={20}/></button>
+
             <button onClick={handleHistoryToggle} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}} title="Ver Historial"><List size={22}/></button>
             <button onClick={toggleTheme} style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--text-color)'}}>{theme==='dark'?<Sun size={22}/>:<Moon size={22}/>}</button>
         </div>
@@ -894,7 +1135,25 @@ export default function FreelanceOS() {
                     <button onClick={() => copyToClipboard(m.content)} style={{ background: 'var(--accent-color)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '3px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.7rem', color: 'white', fontWeight: '600', transition: 'all 0.2s' }} title="Copiar contenido"><Copy size={12} /> Copiar</button>
                   </div>
                 )}
-                <div style={{ padding: '12px 15px', fontSize: '0.9rem', lineHeight: '1.6', whiteSpace: 'pre-wrap', fontFamily: m.role === 'assistant' ? '"Menlo", "Consolas", monospace' : 'inherit', color: 'var(--text-color)', background: 'rgba(0,0,0,0.15)' }} dangerouslySetInnerHTML={{ __html: (m.content || "").replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/^- (.*)/gm, '• $1').replace(/\n/g, '<br/>') }} />
+                <div 
+                  style={{
+                    padding: '12px 15px',
+                    fontSize: '0.9rem',
+                    lineHeight: '1.6',
+                    whiteSpace: 'pre-wrap',
+                    // SOLO la IA usa fuente tipo código
+                    fontFamily: m.role === 'assistant' ? '"Menlo", "Consolas", monospace' : 'inherit', 
+                    // El usuario texto blanco (porque su fondo es azul/morado), la IA texto normal
+                    color: m.role === 'user' ? 'var(--text-color)' : 'var(--text-color)', 
+                    // SIN FONDO AQUÍ (El fondo lo da la clase .chat-bubble del padre)
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: (m.content || "")
+                      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') 
+                      .replace(/^- (.*)/gm, '• $1') 
+                      .replace(/\n/g, '<br/>')
+                  }} 
+                />
               </div>
             ))}
             

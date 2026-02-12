@@ -19,7 +19,8 @@ import {
   ArrowRight,
   Activity,
   Palette,
-  Layers, // Nuevo para el carrusel
+  Layers,
+   // Nuevo para el carrusel
 } from "lucide-react";
 
 import {
