@@ -93,31 +93,17 @@ export default function FinanceHubDemo() {
 
 // BUSCA EL RETURN Y REEMPLÁZALO POR ESTE:
 return (
-    <div style={{ 
-      background: '#f3f4f6', 
-      borderRadius: '12px', 
-      overflow: 'hidden', 
-      fontFamily: "'Inter', sans-serif",
-      width: '100%',
-      maxWidth: '100%',
-      // --- CAMBIO CLAVE: ALTURA FIJA REDUCIDA ---
-      height: '340px', 
-      // ------------------------------------------
-      margin: '0 auto',
-      border: '1px solid #e5e7eb',
-      display: 'flex',
-      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
-    }}>
+    <div className="finance-demo-container">
       
       {/* SIDEBAR MÁS ANGOSTA */}
-      <div style={{ width: '45px', background: '#0f0f0f', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 0', gap: '15px', flexShrink: 0 }}>
+      <div className="finance-sidebar">
         <div style={{ width: '28px', height: '28px', background: '#e11d48', borderRadius: '6px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'5px' }}>
             <Wallet color="white" size={14} />
         </div>
         <Home color="#666" size={16} />
         <CreditCard color="#fff" size={16} />
         <PieChart color="#666" size={16} />
-        <div style={{ marginTop: 'auto' }}>
+        <div className="finance-logout">
             <LogOut color="#ef4444" size={16} />
         </div>
       </div>
@@ -128,7 +114,7 @@ return (
         <div style={{ padding: '12px 15px', background: '#fff', borderBottom: '1px solid #e5e7eb', zIndex: 10 }}>
             
             {/* CARDS MÁS PEQUEÑAS */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+            <div className="finance-header-grid">
                 {/* Ingresos */}
                 <div style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                     <div style={{ color: '#64748b', fontSize: '0.65rem', textTransform: 'uppercase' }}>Ingresos</div>

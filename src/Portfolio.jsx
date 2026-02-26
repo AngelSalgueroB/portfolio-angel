@@ -79,7 +79,6 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState("dark");
   const [selectedProject, setSelectedProject] = useState(null);
-  const cursorRef = useRef(null);
 
   // Configuración de Idioma
   const [language, setLanguage] = useState("es");
@@ -108,18 +107,6 @@ function App() {
   useEffect(() => {
     document.documentElement.style.setProperty("--accent", accentColor);
   }, [accentColor]);
-
-  // Efecto Cursor (Círculo que sigue al mouse)
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.left = e.clientX + "px";
-        cursorRef.current.style.top = e.clientY + "px";
-      }
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   // Cerrar menú de colores al hacer clic fuera
   useEffect(() => {
@@ -173,16 +160,23 @@ function App() {
             className="section-wrapper fade-in home-wrapper"
             style={{
               position: "relative",
-              overflow: "hidden",
+              overflow: "visible",
               /* Estos estilos inline aseguran la estructura vertical si falla el CSS */
               display: "flex",
               flexDirection: "column",
-              height: "100vh",
+              height: "auto",
+              backgroundColor: theme === 'dark' ? '#0a0a0a' : '#ffffff', // Fondo base sólido
             }}
           >
-            {/* LUCES DE FONDO */}
-            <div className="hero-glow-blob"></div>
-            <div className="hero-glow-blob secondary"></div>
+            {/* FONDO TÉCNICO (GRID) - Reemplaza a los blobs de luz */}
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 0,
+              backgroundImage: theme === 'dark' 
+                ? "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)"
+                : "linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+              maskImage: "radial-gradient(circle at center, black 40%, transparent 100%)" // Desvanecimiento suave hacia los bordes
+            }}></div>
 
             {/* 2. CONTENIDO CENTRAL (TEXTO + TARJETA) */}
             <div
@@ -204,6 +198,7 @@ function App() {
                     background: `${accentColor}1a`,
                     color: accentColor,
                     border: `1px solid ${accentColor}33`,
+                    borderRadius: "5px",
                   }}
                 >
                   {t.hero.badge}
@@ -218,7 +213,7 @@ function App() {
                   }}
                 >
                   {t.hero.title_start}{" "}
-                  <span className="text-gradient">{t.hero.title_gradient}</span>{" "}
+                  <span style={{ fontWeight: "700" }}>{t.hero.title_gradient}</span>{" "}
                   <span
                     style={{
                       color: "var(--accent)",
@@ -293,35 +288,38 @@ function App() {
                 className="hero-visuals"
                 style={{
                   width: "400px",
-                  height: "400px",
+                  height: "auto",
+                  minHeight: "300px", 
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
+
+              
                 {/* --- TARJETA CON EFECTO TIPEADO (DINÁMICA) --- */}
                 <div
                   className="stats-card"
                   style={{
-                    background: "#1e1e1e",
-                    border: "1px solid #333",
+                    background: theme === 'dark' ? "#1e1e1e" : "#ffffff",
+                    border: `1px solid ${theme === 'dark' ? '#333' : '#e2e8f0'}`,
                     padding: "0",
                     borderRadius: "12px",
                     width: "280px",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
+                    boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)", // Sombra más suave y profesional
                     overflow: "hidden",
                     fontFamily: "'Courier New', Courier, monospace",
-                    animation: "floatCard 6s ease-in-out infinite",
+                    // animation: "floatCard..." ELIMINADO: Estático es más profesional
                   }}
                 >
                   {/* Header Ventana */}
                   <div
                     style={{
-                      background: "#252526",
+                      background: theme === 'dark' ? "#252526" : "#f1f5f9",
                       padding: "10px 15px",
                       display: "flex",
                       gap: "8px",
-                      borderBottom: "1px solid #333",
+                      borderBottom: `1px solid ${theme === 'dark' ? '#333' : '#e2e8f0'}`,
                     }}
                   >
                     <div
@@ -329,7 +327,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: "#ff5f56",
+                        background: theme === 'dark' ? "#ff5f56" : "#cbd5e1", // Colores más sobrios en light mode
                       }}
                     ></div>
                     <div
@@ -337,7 +335,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: "#ffbd2e",
+                        background: theme === 'dark' ? "#ffbd2e" : "#cbd5e1",
                       }}
                     ></div>
                     <div
@@ -345,7 +343,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: "#27c93f",
+                        background: theme === 'dark' ? "#27c93f" : "#cbd5e1",
                       }}
                     ></div>
                   </div>
@@ -356,6 +354,7 @@ function App() {
                       padding: "25px",
                       textAlign: "left",
                       minHeight: "200px",
+                      color: theme === 'dark' ? "#d4d4d4" : "#334155", // Texto legible en ambos temas
                     }}
                   >
                     <Typewriter
@@ -798,8 +797,6 @@ function App() {
 
   return (
     <div className="app-container">
-      <div className="cursor-glow" ref={cursorRef}></div>
-
       {/* Navbar OPTIMIZADO */}
       <nav
         style={{
@@ -1076,25 +1073,22 @@ function App() {
       <footer
         className="footer-simple"
         style={{
-          /* 1. POSICIÓN FIJA (MANDA SOBRE EL CSS) */
-          position: "fixed",  /* <--- ESTO ES LO IMPORTANTE */
-          bottom: 0,
-          left: 0,
-          zIndex: 1000,       /* Para que flote encima de todo */
-          
-          /* 2. DISEÑO Y COLOR */
-          width: "100%",
-          padding: "15px 50px", /* Un poco más delgado para que no estorbe */
-          background: "var(--bg-color)", /* O usa "rgba(10,10,10,0.95)" para transparencia */
-          borderTop: "1px solid var(--border-color, rgba(255,255,255,0.1))",
-          
-          /* 3. ALINEACIÓN */
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "20px",
-        }}
+        position: window.innerWidth <= 768 ? "relative" : "fixed",  // ← condicional
+        bottom: window.innerWidth <= 768 ? "auto" : 0,
+        left: 0,
+        zIndex: 1000,
+        width: "100%",
+        padding: window.innerWidth <= 768 ? "25px 20px" : "15px 50px",
+        background: theme === 'dark' ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
+        borderTop: "1px solid var(--border)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "20px",
+        flexDirection: window.innerWidth <= 768 ? "column" : "row",
+        marginTop: window.innerWidth <= 768 ? "20px" : "0",
+      }}
       >
         <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
           <span>© {new Date().getFullYear()} Angel Salguero</span>

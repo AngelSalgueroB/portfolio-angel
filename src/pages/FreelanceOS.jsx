@@ -318,14 +318,14 @@ export default function FreelanceOS() {
   }
 
   const guardarProyecto = async () => {
-    if (!data.cliente) { setNotification({ type: 'error', msg: "⚠️ Por favor ingresa el nombre del cliente." }); return }
+    if (!data.cliente) { setNotification({ type: 'error', msg: "Por favor ingresa el nombre del cliente." }); return }
     setLoading(true)
     const notas = `MONEDA:${currency}\nOBJETIVO:${data.objetivo}\nSOPORTE:${data.soporte}\nEXTRAS:${data.extras}\nRUC:${data.ruc}\nEMAIL:${data.emailContacto}\nTEL:${data.telefono}\nDIR:${data.direccion}\nPROBLEMAS:${data.problemas}\nSTACK:${data.tecnologias}\nPLAZO:${data.plazo}\nDESC:${data.descripcionProblema}`
     const { data: cl, error: e1 } = await supabase.from('clientes').insert([{ nombre_contacto: data.cliente, empresa: data.empresa, notas }]).select()
     if (e1) { setNotification({ type: 'error', msg: "Error al guardar cliente: " + e1.message }); setLoading(false); return }
     await supabase.from('reuniones').insert([{ cliente_id: cl[0].id, presupuesto_estimado: parseFloat(data.presupuesto)||0 }])
     setLoading(false)
-    setNotification({ type: 'success', msg: "✅ Proyecto guardado exitosamente." })
+    setNotification({ type: 'success', msg: "Proyecto guardado exitosamente." })
     setStep(1)
     setData({...data, cliente:'', empresa:'', ruc:'', emailContacto:'', telefono:'', direccion:'', objetivo:'', soporte:'Ninguno', extras:[], problemas:[], tecnologias:[], descripcionProblema:''})
   }
@@ -809,7 +809,7 @@ export default function FreelanceOS() {
                       {catData.items.map((t, i) => {
                           const icon = t.type === 'Integration' ? <Webhook size={32} color="#1f15da"/> : 
                                        (t.type === 'Payment' ? <CreditCard size={32}/> : 
-                                       (t.logo ? <img src={t.logo} alt={t.label} style={{ width: '32px', height: '32px', objectFit: 'contain', filter: (theme === 'dark' && LOGOS_OSCUROS.some(l => t.label.includes(l))) ? 'brightness(0) invert(1)' : 'none' }} /> : <div style={{fontSize:'1.8rem', marginBottom:'5px'}}>🚀</div>));
+                                       (t.logo ? <img src={t.logo} alt={t.label} style={{ width: '32px', height: '32px', objectFit: 'contain', filter: (theme === 'dark' && LOGOS_OSCUROS.some(l => t.label.includes(l))) ? 'brightness(0) invert(1)' : 'none' }} /> : <Code size={32} style={{marginBottom:'5px'}} />));
                           return (
                             <div key={i} className={`os-card ${data.tecnologias.includes(t.label) ? 'selected' : ''}`} onClick={() => toggleSel('tecnologias', t.label)}>
                               <div className="tech-tooltip">{t.desc}</div>
@@ -827,7 +827,7 @@ export default function FreelanceOS() {
               <div className="os-grid" style={{marginBottom:0}}>
                  {data.tecnologias.filter(x => !ALL_BASE_LABELS.includes(x)).map((custom, i) => (
                     <div key={i} className="os-card selected" onClick={()=>toggleSel('tecnologias', custom)}>
-                       <div style={{fontSize:'1.8rem', marginBottom:'5px'}}>✨</div>
+                       <Star size={32} style={{marginBottom:'5px'}} />
                        <div style={{fontSize:'0.85rem'}}>{custom}</div>
                     </div>
                  ))}
@@ -1013,7 +1013,7 @@ export default function FreelanceOS() {
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              {authLoading ? 'Autenticando...' : <><ArrowRight size={20}/> Iniciar Sistema</>}
+              {authLoading ? 'Autenticando...' : <><ArrowRight size={20}/> Start System</>}
             </button>
           </form>
 
@@ -1023,8 +1023,8 @@ export default function FreelanceOS() {
               powered by<br/>
               <a 
                 href="https://www.salguero-dev.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                target="_blank" // Abrir en nueva pestaña
+                rel="noopener noreferrer"// Evitar que el enlace sea seguido por bots o afecte el SEO
                 style={{color:'#818cf8', fontWeight:'bold', textDecoration:'none', cursor:'pointer', fontSize:'0.9rem', display:'inline-block', marginTop:'5px'}}
               >
                 {`< Salguero Dev />`}

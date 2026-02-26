@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Portfolio from './Portfolio';      // Tu portafolio original
 import FreelanceOS from './pages/FreelanceOS'; // Tu nueva herramienta
-
-
+import PresentationViewer from './components/PresentationViewer'; // Tu presentación
 
 function App() {
   // --- DETECTOR DE "JALAR PARA REFRESCAR" MANUAL ---
@@ -37,14 +36,25 @@ function App() {
       window.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
+
   return (
     <BrowserRouter>
       <Routes>
         {/* Ruta raíz: Muestra tu Portafolio */}
         <Route path="/" element={<Portfolio />} />
         
-        {/* Ruta secreta: Muestra tu Sistema Operativo */}
+        {/* Ruta secreta 1: Muestra tu Sistema Operativo */}
         <Route path="/os" element={<FreelanceOS />} />
+
+        {/* NUEVA RUTA: Presentación de Arquitectura Empresarial (A pantalla completa) */}
+        <Route 
+          path="/presentacionAE" 
+          element={
+            <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
+              <PresentationViewer />
+            </div>
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );
