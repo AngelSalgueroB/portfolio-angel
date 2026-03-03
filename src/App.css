@@ -1,5 +1,5 @@
 /* =========================================
-   APP.CSS - SCROLL ARREGLADO
+   APP.CSS
    ========================================= */
 
 /* --- 1. VARIABLES CSS --- */
@@ -25,16 +25,15 @@
   --nav-bg: rgba(255, 255, 255, 0.95);
 }
 
-/* --- 2. RESET TOTAL --- */
+/* --- 2. RESET --- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* CRÍTICO: Permitir scroll natural */
 html, body {
-  overflow-y: auto !important; /* <--- ESTO ES VITAL */
+  overflow-y: auto !important;
   height: auto !important;
   min-height: 100vh;
   
@@ -47,12 +46,10 @@ body {
   line-height: 1.6;
   width: 100%;
   min-height: 100vh;
-  /* NO pongas overflow: hidden aquí */
 }
 
 #root {
   width: 100%;
-  /* NO pongas height fijo ni overflow hidden */
 }
 
 /* --- 3. NAVEGACIÓN FIJA --- */
@@ -83,17 +80,15 @@ nav {
 
 .logo .dot {
   color: var(--accent);
-  /* Quitamos 'step-end' y usamos la duración que quieras (ej: 1s) */
   animation: blink 1.25s infinite; 
 }
 
-/* FORZAMOS EL CORTE MANUALMENTE */
 @keyframes blink {
   0%, 100% {
-    opacity: 1; /* Visible casi toda la primera mitad */
+    opacity: 1;
   }
   50% {
-    opacity: 0; /* Desaparece en la mitad del ciclo */
+    opacity: 0;
   } 
 }
 
@@ -186,17 +181,16 @@ input:checked + .slider:before {
   display: none;
 }
 
-/* --- 4. CONTENIDO PRINCIPAL (SIN RESTRICCIONES DE SCROLL) --- */
+/* --- 4. MAIN CONTENT --- */
 .app-container {
-  display: flex;           /* Activa modo flexible */
-  flex-direction: column;  /* Ordena verticalmente */
-  min-height: 100vh;       /* OBLIGATORIO: Altura mínima del 100% de la ventana */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .main-content {
   width: 100%;
-  padding-top: 70px; /* Espacio para el Navbar de arriba */  
-  /* IMPORTANTE: Espacio extra abajo igual a la altura del footer */
+  padding-top: 70px;
   padding-bottom: 100px;
 }
 .section-wrapper {
@@ -206,7 +200,7 @@ input:checked + .slider:before {
   margin: 0 auto;
 }
 
-/* --- 5. HOME / HERO --- */
+/* --- 5. HERO --- */
 .home-wrapper {
   min-height: 100vh;
   width: 100%;
@@ -235,13 +229,11 @@ input:checked + .slider:before {
   flex-direction: column;
 }
 
-.badge {
+.hero-status-indicator {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: rgba(225, 29, 72, 0.1);
-  border: 1px solid rgba(225, 29, 72, 0.2);
   border-radius: 100px;
   font-family: var(--mono);
   font-size: 1rem;
@@ -250,13 +242,13 @@ input:checked + .slider:before {
   width: fit-content;
 }
 
-.badge::before {
+.hero-status-indicator::before {
   content: "";
   width: 6px;
   height: 6px;
   background: var(--accent);
-  border-radius: 50%;
-  animation: pulse 1s infinite;
+  border-radius: 35%;
+  animation: pulse 1.25s infinite;
 }
 
 @keyframes pulse {
@@ -311,7 +303,7 @@ h1 .muted {
   flex-wrap: wrap;
 }
 
-.hero-glow-blob {
+.hero-background-glow {
   position: absolute;
   width: 600px;
   height: 600px;
@@ -323,7 +315,7 @@ h1 .muted {
   animation: pulseGlow 8s infinite alternate;
 }
 
-.hero-glow-blob.secondary {
+.hero-background-glow.secondary {
   background: radial-gradient(circle, rgba(225, 29, 72, 0.1) 0%, transparent 70%);
   top: auto;
   bottom: -100px;
@@ -339,7 +331,7 @@ h1 .muted {
   100% { opacity: 0.8; transform: scale(1.1); }
 }
 
-.stats-card {
+.hero-stats-card {
   background:#1e1e1e;
   color:#fff;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -347,6 +339,11 @@ h1 .muted {
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.typewriter-cursor {
+  color: var(--accent);
+  animation: blink 1s infinite; 
 }
 
 .stats {
@@ -375,10 +372,10 @@ h1 .muted {
   letter-spacing: 1px;
 }
 
-/* --- 6. CARRUSEL --- */
+/* --- 6. SKILLS --- */
 .skills-section {
   width: 100%;
-  padding: 5px 0;/*SI NO SE VE BIEN LOS ICONOS, DISMINUIR AQUI*/
+  padding: 5px 0;
   background: transparent;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
@@ -451,7 +448,7 @@ h1 .muted {
   background: linear-gradient(to left, var(--bg), transparent);
 }
 
-/* --- 7. BOTONES --- */
+/* --- 7. BUTTONS --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -492,7 +489,7 @@ h1 .muted {
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* --- 8. SECCIONES --- */
+/* --- 8. SECTIONS --- */
 .section-header {
   margin-bottom: 32px;
 }
@@ -511,7 +508,7 @@ h1 .muted {
   color: var(--text);
 }
 
-/* --- 9. PROYECTOS --- */
+/* --- 9. PROJECTS --- */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -617,7 +614,7 @@ h1 .muted {
   font-weight: bold;
 }
 
-/* --- 10. SERVICIOS --- */
+/* --- 10. SERVICES --- */
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -753,17 +750,17 @@ h1 .muted {
   border-color: var(--accent);
 }
 
-/* --- 11. CONTACTO --- */
+/* --- 11. CONTACT --- */
 .cta-container {
   text-align: center;
   max-width: 600px;
   margin: 0 auto;
-  padding-top: 40px;
+  padding-top: 20px;
 }
 
 .cta-title {
   font-size: 2.5rem;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   color: var(--accent);
 }
 
@@ -913,7 +910,7 @@ h1 .muted {
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: var(--bg); /* O usa var(--nav-bg) si quieres efecto vidrio */
+  background: var(--bg);
   border-top: 1px solid var(--border);
   padding: 15px 50px;
   display: flex;
@@ -941,10 +938,104 @@ h1 .muted {
     0 10px 20px -10px color-mix(in srgb, var(--accent), transparent 40%),
     0 0 15px color-mix(in srgb, var(--accent), transparent 80%);
 }
+/* --- 15. ESTILOS DEL FORMULARIO DE CONTACTO --- */
+.contact-form {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form h3 {
+  margin-bottom: 20px;
+  color: var(--text);
+  font-size: 1.5rem;
+}
+
+.contact-phone-box {
+  
+  border: 1px dashed var(--accent);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.contact-phone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.contact-phone-link:hover {
+  color: var(--accent);
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font);
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);  
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.submit-btn:hover {
+  filter: brightness(1.1);
+
+}
 
 /* --- 14. RESPONSIVE --- */
-
-/* Fuera del media query - base */
 .hero-visuals {
   width: 400px;
   height: auto !important;
@@ -988,7 +1079,7 @@ h1 .muted {
     margin-top: 20px;
   }
 
-  .hero-glow-blob {
+  .hero-background-glow {
     width: 300px;
     height: 300px;
     opacity: 0.4;
@@ -1001,9 +1092,9 @@ h1 .muted {
 
 @media (max-width: 768px) {
 
-  /* ---- NAV MÓVIL ---- */
+  /* Mobile Navigation */
   .menu-toggle {
-    display: block;           /* Muestra la hamburguesa */
+    display: block;
     background: none;
     border: none;
     color: var(--text);
@@ -1018,7 +1109,6 @@ h1 .muted {
     margin-right: 15px;
   }
 
-  /* Menú desplegable oculto por defecto */
   .nav-links {
     display: none;
     position: fixed;
@@ -1035,7 +1125,6 @@ h1 .muted {
     z-index: 999;
   }
 
-  /* Cuando está activo (JS añade clase .active) */
   .nav-links.active {
     display: flex;
   }
@@ -1047,9 +1136,9 @@ h1 .muted {
     font-size: 1rem;
   }
 
-  /* ---- FOOTER: sacar de fixed en móvil ---- */
+  /* Mobile Footer */
   .footer-simple {
-    position: relative !important;  /* Ya NO fixed en móvil */
+    position: relative !important;
     bottom: auto;
     flex-direction: column;
     text-align: center;
@@ -1058,12 +1147,11 @@ h1 .muted {
     margin-top: 40px;
   }
 
-  /* Quitar el padding-bottom extra que reservaba espacio al footer fixed */
   .main-content {
     padding-bottom: 20px;
   }
 
-  /* ---- HERO ---- */
+  /* Hero Section */
   .home-wrapper {
     padding-top: 80px;
     overflow-x: hidden;
@@ -1093,16 +1181,14 @@ h1 .muted {
     align-items: flex-start;
   }
 
-  .stats-card {
+  .hero-stats-card {
     width: 100% !important;
   }
 
-  /* Botones del hero-text-group: ocultar */
   .hero-buttons {
     display: none !important;
   }
 
-  /* Botones móvil debajo de la card */
   .hero-buttons-mobile {
     order: 3;
     display: flex !important;
@@ -1119,7 +1205,7 @@ h1 .muted {
     overflow-wrap: break-word;
   }
 
-  .badge {
+  .hero-status-indicator {
     font-size: 0.85rem;
   }
 
@@ -1135,16 +1221,14 @@ h1 .muted {
     gap: 10px;
     padding-right: 40px;
   }
-  /* CRÍTICO: home-wrapper no debe cortar el contenido */
   .home-wrapper {
-    min-height: auto;        /* Ya no fuerza 100vh en móvil */
+    min-height: auto;
     height: auto;
-    overflow: visible;       /* Permite ver todo el contenido */
+    overflow: visible;
     justify-content: flex-start;
     padding-top: 80px;
   }
 
-  /* El hero-content tampoco debe cortar */
   .hero-content {
     display: flex !important;
     flex-direction: column !important;
@@ -1153,16 +1237,14 @@ h1 .muted {
     gap: 24px;
     width: 100%;
     max-width: 100% !important;
-    overflow: visible !important;  /* Sin cortes */
+    overflow: visible !important;
   }
 
-  /* skills-section visible */
   .skills-section {
-    overflow: hidden;   /* Solo oculta los lados para el fade effect */
+    overflow: hidden;
     width: 100%;
   }
 
-  /* Footer fuera de fixed */
   .footer-simple {
     position: relative !important;
     bottom: auto;
@@ -1178,13 +1260,13 @@ h1 .muted {
     overflow: visible;
   }
   .demo-container {
-    flex-direction: column;     /* Apilar verticalmente */
-    height: auto !important;    /* Altura automática para que crezca */
+    flex-direction: column;
+    height: auto !important;
     min-height: 500px;
   }
 
   .demo-sidebar {
-    width: 100% !important;     /* Ancho completo */
+    width: 100% !important;
     height: auto;
     border-right: none !important;
     border-bottom: 1px solid #e2e8f0;
@@ -1214,7 +1296,7 @@ h1 .muted {
 }
 
 
-/* --- ESTILOS RESPONSIVOS PARA DEMOS (AutomationTools y otros) --- */
+/* --- RESPONSIVE DEMO STYLES --- */
 .demo-container {
   background: #ffffff;
   border-radius: 12px;
@@ -1222,7 +1304,7 @@ h1 .muted {
   font-family: 'Inter', sans-serif;
   width: 100%;
   max-width: 100%;
-  height: 340px; /* Altura fija en escritorio */
+  height: 340px;
   margin: 0 auto;
   display: flex;
   border: 1px solid #e2e8f0;

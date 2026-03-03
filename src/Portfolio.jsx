@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
-// IMPORTAMOS EL DICCIONARIO DE IDIOMAS
 import { translations } from "./translations";
 import Typewriter from "typewriter-effect";
 
 import {
   Mail,
-  FileText, // Icono para el CV
-  Layout, // Nuevo para el carrusel
+  FileText,
+  Layout,
   Server,
   Database,
   Code,
@@ -20,7 +19,6 @@ import {
   Activity,
   Palette,
   Layers,
-   // Nuevo para el carrusel
 } from "lucide-react";
 
 import {
@@ -31,9 +29,9 @@ import {
   FaTwitter,
   FaYoutube,
   FaEnvelope,
+  FaWhatsapp
 } from "react-icons/fa";
 
-// IMPORTACIÓN DE DEMOS
 import DataCleanerDemo from "./components/DataCleanerDemo";
 import FinanceHubDemo from "./components/FinanceHubDemo";
 import SqlNoSqlDemo from "./components/SqlNoSqlDemo";
@@ -41,7 +39,6 @@ import GastroAppDemo from "./components/GastroAppDemo";
 import AutomationToolsDemo from "./components/AutomationToolsDemo";
 import UniVaultDemo from "./components/UniVaultDemo";
 
-// --- DATA: LISTA DE TECNOLOGÍAS PARA EL CARRUSEL ---
 const TECH_STACK = [
   { name: "React", icon: <Code size={30} /> },
   { name: "Node.js", icon: <Server size={30} /> },
@@ -53,7 +50,6 @@ const TECH_STACK = [
   { name: "DevOps", icon: <Layers size={30} /> },
 ];
 
-// --- DEFINICIÓN DE TEMAS DE COLOR ---
 const COLOR_THEMES = [
   { id: "red", color: "#e11d48", name: "Rojo" },
   { id: "green", color: "#10b981", name: "Esmeralda" },
@@ -70,8 +66,6 @@ const COLOR_THEMES = [
 ];
 
 function App() {
-  // 1. ESTADOS PRINCIPALES
-  // Usamos localStorage para recordar la sección al recargar (Pull to Refresh)
   const [activeSection, setActiveSection] = useState(() => {
     return localStorage.getItem("myPortfolioSection") || "home";
   });
@@ -80,35 +74,29 @@ function App() {
   const [theme, setTheme] = useState("dark");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Configuración de Idioma
   const [language, setLanguage] = useState("es");
   const t = translations[language];
 
-  // Configuración de Color
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [accentColor, setAccentColor] = useState("#e11d48");
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null);
 
-  // --- EFECTOS (Side Effects) ---
-
-  // Guardar sección activa
   useEffect(() => {
     localStorage.setItem("myPortfolioSection", activeSection);
-    // Scroll arriba al cambiar sección
     window.scrollTo(0, 0);
   }, [activeSection]);
 
-  // Aplicar Tema Oscuro/Claro
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // Aplicar Color de Acento
   useEffect(() => {
     document.documentElement.style.setProperty("--accent", accentColor);
   }, [accentColor]);
 
-  // Cerrar menú de colores al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -122,7 +110,6 @@ function App() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [themeMenuRef]);
 
-  // Pull to Refresh Manual (Opcional, si el nativo falla)
   useEffect(() => {
     let touchStartY = 0;
     const handleTouchStart = (e) => {
@@ -132,7 +119,6 @@ function App() {
       const touchEndY = e.changedTouches[0].clientY;
       const distance = touchEndY - touchStartY;
       if (window.scrollY === 0 && distance > 150) {
-        // Vibración suave en móviles
         if (navigator.vibrate) navigator.vibrate(50);
         window.location.reload();
       }
@@ -149,51 +135,82 @@ function App() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  // --- RENDERIZADO DE CONTENIDO PRINCIPAL ---
+  /*Crear la función de envío (AJAX)*/
+  const handleContactSubmit = async (e) => {
+    e.preventDefault(); 
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.target);
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/lafprintsource@gmail.com", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        setShowSuccessModal(true); 
+        e.target.reset(); 
+        
+        // --- AQUÍ ESTÁ LA MAGIA ---
+        // Desplaza la página suavemente hacia la parte superior
+        window.scrollTo({ top: 0, behavior: "smooth" }); 
+        
+      } else {
+        alert("Hubo un problema al enviar el mensaje. Por favor intenta de nuevo.");
+      }
+    } catch (error) {
+      console.error("Error enviando el formulario:", error);
+      alert("Error de conexión. Revisa tu internet y vuelve a intentar.");
+    } finally {
+      setIsSubmitting(false); 
+    }
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case "home":
         return (
-          /* 1. CONTENEDOR PRINCIPAL (HOME WRAPPER) */
-          /* Importante: Ya no usamos el fragmento <> </>, todo va dentro de este div */
           <div
             className="section-wrapper fade-in home-wrapper"
             style={{
               position: "relative",
               overflow: "visible",
-              /* Estos estilos inline aseguran la estructura vertical si falla el CSS */
               display: "flex",
               flexDirection: "column",
               height: "auto",
-              backgroundColor: theme === 'dark' ? '#0a0a0a' : '#ffffff', // Fondo base sólido
+              backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
             }}
           >
-            {/* FONDO TÉCNICO (GRID) - Reemplaza a los blobs de luz */}
-            <div style={{
-              position: "absolute", inset: 0, zIndex: 0,
-              backgroundImage: theme === 'dark' 
-                ? "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)"
-                : "linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-              maskImage: "radial-gradient(circle at center, black 40%, transparent 100%)" // Desvanecimiento suave hacia los bordes
-            }}></div>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 0,
+                backgroundImage:
+                  theme === "dark"
+                    ? "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)"
+                    : "linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)",
+                backgroundSize: "40px 40px",
+                maskImage:
+                  "radial-gradient(circle at center, black 40%, transparent 100%)",
+              }}
+            ></div>
 
-            {/* 2. CONTENIDO CENTRAL (TEXTO + TARJETA) */}
             <div
               className="hero-content"
               style={{
                 position: "relative",
-                zIndex: 1 /* Asegura que esté encima de los blobs */,
-                flex: 1 /* Esto hace que ocupe todo el espacio disponible */,
+                zIndex: 1,
+                flex: 1,
                 display: "flex",
                 alignItems: "flex-start",
                 justifyContent: "center",
               }}
             >
-              {/* BLOQUE IZQUIERDO: Texto */}
               <div className="hero-text-group">
                 <div
-                  className="badge"
+                  className="hero-status-indicator"
                   style={{
                     background: `${accentColor}1a`,
                     color: accentColor,
@@ -213,7 +230,9 @@ function App() {
                   }}
                 >
                   {t.hero.title_start}{" "}
-                  <span style={{ fontWeight: "700" }}>{t.hero.title_gradient}</span>{" "}
+                  <span style={{ fontWeight: "700" }}>
+                    {t.hero.title_gradient}
+                  </span>{" "}
                   <span
                     style={{
                       color: "var(--accent)",
@@ -264,7 +283,6 @@ function App() {
                     {t.hero.btn_secondary}
                   </button>
 
-                  {/* BOTÓN DESCARGAR CV */}
                   <a
                     href="/CV_Angel_Salguero.pdf"
                     download="CV_Angel_Salguero.pdf"
@@ -283,43 +301,37 @@ function App() {
                 </div>
               </div>
 
-              {/* BLOQUE DERECHO: Visuales (Editor de Código) */}
               <div
                 className="hero-visuals"
                 style={{
                   width: "400px",
                   height: "auto",
-                  minHeight: "300px", 
+                  minHeight: "300px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-
-              
-                {/* --- TARJETA CON EFECTO TIPEADO (DINÁMICA) --- */}
                 <div
-                  className="stats-card"
+                  className="hero-stats-card"
                   style={{
-                    background: theme === 'dark' ? "#1e1e1e" : "#ffffff",
-                    border: `1px solid ${theme === 'dark' ? '#333' : '#e2e8f0'}`,
+                    background: theme === "dark" ? "#1e1e1e" : "#ffffff",
+                    border: `1px solid ${theme === "dark" ? "#333" : "#e2e8f0"}`,
                     padding: "0",
                     borderRadius: "12px",
                     width: "280px",
-                    boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)", // Sombra más suave y profesional
+                    boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)",
                     overflow: "hidden",
                     fontFamily: "'Courier New', Courier, monospace",
-                    // animation: "floatCard..." ELIMINADO: Estático es más profesional
                   }}
                 >
-                  {/* Header Ventana */}
                   <div
                     style={{
-                      background: theme === 'dark' ? "#252526" : "#f1f5f9",
+                      background: theme === "dark" ? "#252526" : "#f1f5f9",
                       padding: "10px 15px",
                       display: "flex",
                       gap: "8px",
-                      borderBottom: `1px solid ${theme === 'dark' ? '#333' : '#e2e8f0'}`,
+                      borderBottom: `1px solid ${theme === "dark" ? "#333" : "#e2e8f0"}`,
                     }}
                   >
                     <div
@@ -327,7 +339,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: theme === 'dark' ? "#ff5f56" : "#cbd5e1", // Colores más sobrios en light mode
+                        background: theme === "dark" ? "#ff5f56" : "#cbd5e1",
                       }}
                     ></div>
                     <div
@@ -335,7 +347,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: theme === 'dark' ? "#ffbd2e" : "#cbd5e1",
+                        background: theme === "dark" ? "#ffbd2e" : "#cbd5e1",
                       }}
                     ></div>
                     <div
@@ -343,54 +355,45 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: theme === 'dark' ? "#27c93f" : "#cbd5e1",
+                        background: theme === "dark" ? "#27c93f" : "#cbd5e1",
                       }}
                     ></div>
                   </div>
 
-                  {/* Contenido Animado */}
                   <div
                     style={{
                       padding: "25px",
                       textAlign: "left",
                       minHeight: "200px",
-                      color: theme === 'dark' ? "#d4d4d4" : "#334155", // Texto legible en ambos temas
+                      color: theme === "dark" ? "#d4d4d4" : "#334155",
                     }}
                   >
                     <Typewriter
-                      key={
-                        language + accentColor
-                      } /* <--- TRUCO: Reinicia si cambia idioma O color */
+                      key={language + accentColor}
                       onInit={(typewriter) => {
                         typewriter
-                          .changeDelay(40)
+                          .changeDelay(80)
 
-                          /* LÍNEA 1: Años Experiencia */
-                          // COMENTARIO CON TU COLOR (accentColor)
                           .typeString(
                             `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.exp}</span><br/>`,
                           )
-                          .pauseFor(300)
+                          .pauseFor(1000)
                           .typeString(
                             '<span style="color: #569cd6;">const</span> <span style="color: #9cdcfe;">exp</span> <span style="color: #d4d4d4;">+=</span> <span style="color: #b5cea8; font-weight: bold;">3;</span><br/><br/>',
                           )
 
-                          /* LÍNEA 2: Proyectos */
-                          // COMENTARIO CON TU COLOR (accentColor)
                           .typeString(
                             `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.projects}</span><br/>`,
                           )
-                          .pauseFor(300)
+                          .pauseFor(1000)
                           .typeString(
                             '<span style="color: #c586c0;">let</span> <span style="color: #9cdcfe;">done</span> <span style="color: #d4d4d4;">=</span> <span style="color: #b5cea8; font-weight: bold;">15;</span><br/><br/>',
                           )
 
-                          /* LÍNEA 3: Clientes */
-                          // COMENTARIO CON TU COLOR (accentColor)
                           .typeString(
                             `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.clients}</span><br/>`,
                           )
-                          .pauseFor(300)
+                          .pauseFor(1000)
                           .typeString(
                             '<span style="color: #9cdcfe;">status</span> <span style="color: #d4d4d4;">:</span> <span style="color: #ce9178; font-weight: bold;">"100%"</span>',
                           )
@@ -401,7 +404,8 @@ function App() {
                         autoStart: true,
                         loop: false,
                         cursor: "_",
-                        delay: 40,
+                        cursorClassName: "typewriter-cursor",
+                        delay: 40, // Adjust typing speed here
                       }}
                     />
                   </div>
@@ -409,14 +413,12 @@ function App() {
               </div>
             </div>
 
-            {/* 3. CARRUSEL DE SKILLS (AHORA DENTRO DEL HOME WRAPPER) */}
             <div className="skills-section">
               <h3 style={{ opacity: 0.6, marginBottom: "15px" }}>
                 {t.hero.tech_stack}
               </h3>
 
               <div className="skills-track">
-                {/* VUELTA 1 */}
                 {TECH_STACK.map((tech, index) => (
                   <div key={`skill-${index}`} className="skill-item">
                     {tech.icon}
@@ -424,7 +426,6 @@ function App() {
                   </div>
                 ))}
 
-                {/* VUELTA 2 (Efecto Infinito) */}
                 {TECH_STACK.map((tech, index) => (
                   <div key={`skill-dup-${index}`} className="skill-item">
                     {tech.icon}
@@ -448,7 +449,6 @@ function App() {
                 {t.section_titles.projects_subtitle}
               </p>
             </div>
-            {/* GRID DE PROYECTOS */}
             <div className="projects-grid">
               {t.projects.map((project, i) => (
                 <div
@@ -530,6 +530,8 @@ function App() {
           </div>
         );
 
+      // Sustituye el bloque anterior de `case "contact":` con esto:
+
       case "contact":
         return (
           <div className="section-wrapper fade-in">
@@ -543,11 +545,98 @@ function App() {
               <a
                 href="mailto:lafprintsource@gmail.com"
                 className="btn btn-primary"
-                style={{ marginBottom: "2rem" }}
+                style={{ marginBottom: "3rem", display: "inline-flex" }}
               >
                 {t.section_titles.contact_btn}
               </a>
+
+              <div className="contact-form">
+                <div className="contact-phone-box">
+                  <p style={{ margin: "0 0 5px 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                    {t.section_titles.contact_phone}
+                  </p>
+                  <a 
+                    href="https://wa.me/51974699157" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="contact-phone-link"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none" }}
+                  >
+                    <FaWhatsapp size={26} style={{ color: "var(--accent)" }} /> 
+                    <span style={{ color: "var(--text)", fontWeight: "bold", fontSize: "1.4rem" }}>
+                      +51 974 699 157
+                    </span>
+                  </a>
+                </div>
+
+                <h3 style={{ borderBottom: "1px solid var(--border)", paddingBottom: "15px", marginTop: "20px" }}>
+                  {language === "es" ? "O escríbeme directamente aquí" : "Or write me directly here"}
+                </h3>
+
+                {/* AQUÍ ESTÁ EL CAMBIO PRINCIPAL DEL FORMULARIO */}
+                <form onSubmit={handleContactSubmit}>
+                  {/* Ya no necesitamos _next ni _captcha porque lo manejamos por AJAX */}
+                  <input type="hidden" name="_subject" value="Nuevo mensaje desde mi Portafolio Web!" />
+                  
+                  {/* ... (Todos tus form-groups se mantienen igual) ... */}
+                  <div className="form-group">
+                    <label htmlFor="name">{t.section_titles.contact_form_name}</label>
+                    <input type="text" id="name" name="name" className="form-control" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="email">{t.section_titles.contact_form_email}</label>
+                    <input type="email" id="email" name="email" className="form-control" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="subject">{t.section_titles.contact_form_subject}</label>
+                    <input type="text" id="subject" name="subject" className="form-control" required />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="message">{t.section_titles.contact_form_message}</label>
+                    <textarea id="message" name="message" className="form-control" required></textarea>
+                  </div>
+
+                  {/* El botón cambia su texto si está cargando */}
+                  <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                    {isSubmitting ? (language === "es" ? "Enviando..." : "Sending...") : t.section_titles.contact_form_send} 
+                    {!isSubmitting && <ArrowRight size={18} />}
+                  </button>
+                </form>
+
+              </div>
             </div>
+
+            {/* === MODAL DE ÉXITO === */}
+            {showSuccessModal && (
+              <div className="modal-overlay" style={{ zIndex: 3000 }} onClick={() => setShowSuccessModal(false)}>
+                <div 
+                  className="modal-content fade-in" 
+                  style={{ 
+
+                    padding: "40px", 
+                    textAlign: "center", 
+                    maxWidth: "400px",
+                    marginTop: "-500px",
+                  }} 
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h2 style={{ marginBottom: "5px", color: "var(--text)" }}>
+                    {t.section_titles.contact_success_title}
+                  </h2>
+                  <p style={{ color: "var(--text-muted)", marginBottom: "30px", fontSize: "1rem" }}>
+                    {t.section_titles.contact_success_desc}
+                  </p>
+                  <button 
+                    className="btn btn-primary" 
+                    style={{ width: "100%", justifyContent: "center" }}
+                    onClick={() => setShowSuccessModal(false)}
+                  >
+                    {t.section_titles.contact_success_btn}
+                  </button>
+                </div>
+              </div>
+            )}
+            
           </div>
         );
 
@@ -563,7 +652,6 @@ function App() {
                 '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
             }}
           >
-            {/* Header Política */}
             <div
               className="section-header"
               style={{ textAlign: "center", marginBottom: "70px" }}
@@ -605,7 +693,6 @@ function App() {
               </p>
             </div>
 
-            {/* CONTENIDO DINÁMICO */}
             <div
               className="privacy-content"
               style={{
@@ -615,7 +702,6 @@ function App() {
                 opacity: 0.95,
               }}
             >
-              {/* 1. RESPONSABLE */}
               <h3
                 style={{
                   fontSize: "1.8rem",
@@ -643,7 +729,6 @@ function App() {
                 ))}
               </ul>
 
-              {/* 2. DATOS */}
               <h3
                 style={{
                   fontSize: "1.8rem",
@@ -682,7 +767,6 @@ function App() {
                 ))}
               </div>
 
-              {/* 3. TERCEROS */}
               <h3
                 style={{
                   fontSize: "1.8rem",
@@ -705,7 +789,6 @@ function App() {
                 {t.privacy.sections.third_parties.note}
               </p>
 
-              {/* 4. DERECHOS */}
               <h3
                 style={{
                   fontSize: "1.8rem",
@@ -742,7 +825,6 @@ function App() {
                 ))}
               </ul>
 
-              {/* 5 & 6. COOKIES Y RETENCIÓN */}
               <h3
                 style={{
                   fontSize: "1.8rem",
@@ -797,7 +879,6 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Navbar OPTIMIZADO */}
       <nav
         style={{
           display: "flex",
@@ -806,14 +887,11 @@ function App() {
           padding: "20px 50px",
         }}
       >
-        {/* 1. LOGO (Izquierda) */}
         <div className="logo" onClick={() => setActiveSection("home")}>
           as<span className="dot">_</span>
         </div>
 
-        {/* CONTENEDOR DERECHO */}
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-          {/* 2. ENLACES DE NAVEGACIÓN (Centro-Derecha) */}
           <div className={`nav-links ${menuOpen ? "active" : ""}`}>
             <button
               className={`nav-btn ${activeSection === "home" ? "active" : ""}`}
@@ -853,9 +931,7 @@ function App() {
             </button>
           </div>
 
-          {/* 3. CONTROLES (Idioma + Tema + Color) */}
           <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-            {/* BOTÓN IDIOMA */}
             <button
               onClick={() =>
                 setLanguage((prev) => (prev === "es" ? "en" : "es"))
@@ -879,7 +955,6 @@ function App() {
               {language === "es" ? "ES" : "EN"}
             </button>
 
-            {/* SELECTOR DE TEMA DE COLOR */}
             <div style={{ position: "relative" }} ref={themeMenuRef}>
               <button
                 onClick={() => setShowThemeMenu(!showThemeMenu)}
@@ -897,7 +972,6 @@ function App() {
                 <Palette size={20} style={{ color: accentColor }} />
               </button>
 
-              {/* MODAL FLOTANTE (POPOVER) */}
               {showThemeMenu && (
                 <div
                   className="theme-menu fade-in"
@@ -972,7 +1046,6 @@ function App() {
               )}
             </div>
 
-            {/* SWITCH TEMA (Sol/Luna) */}
             <label className="switch">
               <input
                 type="checkbox"
@@ -982,7 +1055,6 @@ function App() {
               <span className="slider"></span>
             </label>
 
-            {/* HAMBURGUESA (Solo Móvil) */}
             <button
               className="menu-toggle"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -995,7 +1067,6 @@ function App() {
 
       <main className="main-content">{renderContent()}</main>
 
-      {/* MODAL (POPUP) INTELIGENTE */}
       {selectedProject && (
         <div className="modal-overlay" onClick={() => setSelectedProject(null)}>
           <div
@@ -1021,7 +1092,6 @@ function App() {
               <div className="project-icon">{selectedProject.icon}</div>
             </div>
 
-            {/* DEMOS LOGIC */}
             <div style={{ margin: "0 -20px 25px -20px" }}>
               {(() => {
                 switch (selectedProject.title) {
@@ -1069,26 +1139,26 @@ function App() {
         </div>
       )}
 
-      {/* --- FOOTER --- */}
       <footer
         className="footer-simple"
         style={{
-        position: window.innerWidth <= 768 ? "relative" : "fixed",  // ← condicional
-        bottom: window.innerWidth <= 768 ? "auto" : 0,
-        left: 0,
-        zIndex: 1000,
-        width: "100%",
-        padding: window.innerWidth <= 768 ? "25px 20px" : "15px 50px",
-        background: theme === 'dark' ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
-        borderTop: "1px solid var(--border)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "20px",
-        flexDirection: window.innerWidth <= 768 ? "column" : "row",
-        marginTop: window.innerWidth <= 768 ? "20px" : "0",
-      }}
+          position: window.innerWidth <= 768 ? "relative" : "fixed",
+          bottom: window.innerWidth <= 768 ? "auto" : 0,
+          left: 0,
+          zIndex: 1000,
+          width: "100%",
+          padding: window.innerWidth <= 768 ? "25px 20px" : "15px 50px",
+          background:
+            theme === "dark" ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
+          borderTop: "1px solid var(--border)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "20px",
+          flexDirection: window.innerWidth <= 768 ? "column" : "row",
+          marginTop: window.innerWidth <= 768 ? "20px" : "0",
+        }}
       >
         <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
           <span>© {new Date().getFullYear()} Angel Salguero</span>
@@ -1119,9 +1189,7 @@ function App() {
         <div style={{ display: "flex", gap: "10px" }}>
           {[
             {
-              icon: FaLinkedin,
-              link: "https://www.linkedin.com/in/angel-salguero-47b53535a/",
-            },
+              icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
             { icon: FaGithub, link: "https://github.com/AngelSalgueroB" },
             { icon: FaFacebook, link: "https://facebook.com/" },
             { icon: FaInstagram, link: "https://instagram.com/" },
