@@ -384,7 +384,7 @@ h1 .muted {
 
 .skills-section h3 {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--accent);
   font-size: 0.9rem;
   letter-spacing: 2px;
   text-transform: uppercase;

@@ -71,7 +71,7 @@ function App() {
   });
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [language, setLanguage] = useState("es");
@@ -414,7 +414,7 @@ function App() {
             </div>
 
             <div className="skills-section">
-              <h3 style={{ opacity: 0.6, marginBottom: "15px" }}>
+              <h3 style={{ opacity: 0.6, marginBottom: "50px" }}>
                 {t.hero.tech_stack}
               </h3>
 
@@ -467,7 +467,7 @@ function App() {
                     ))}
                   </div>
                   <p>{project.desc}</p>
-                  <span className="learn-more">Ver más +</span>
+                  <span className="learn-more">{t.section_titles.projects_learn_more}</span>
                 </div>
               ))}
             </div>
@@ -1108,6 +1108,39 @@ function App() {
                   case "UniVault":
                     return <UniVaultDemo />;
                   default:
+                    // === NUEVA LÓGICA PARA ENLACES EXTERNOS ===
+                    if (selectedProject.externalUrl) {
+                      return (
+                        <div style={{ 
+                          textAlign: "center", 
+                          padding: "60px 20px",
+                          background: "var(--card-bg)",
+                          borderTop: "1px solid var(--border-color)",
+                          borderBottom: "1px solid var(--border-color)",
+                        }}>
+                          <Globe size={50} style={{ color: "var(--accent)", marginBottom: "15px" }} />
+                          <h3 style={{ marginBottom: "10px" }}>
+                            {language === "es" ? "Proyecto interactivo externo" : "External interactive project"}
+                          </h3>
+                          <p style={{ color: "var(--text-muted)", marginBottom: "25px", maxWidth: "400px", margin: "0 auto 25px" }}>
+                            {language === "es" 
+                              ? "Este proyecto está alojado en su propio dominio. Haz clic en el botón para explorar la demo en vivo." 
+                              : "This project is hosted on its own domain. Click the button below to explore the live demo."}
+                          </p>
+                          <a 
+                            href={selectedProject.externalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-primary"
+                            style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+                          >
+                            {language === "es" ? "Ver Demo en Vivo" : "View Live Demo"} <ArrowRight size={16} />
+                          </a>
+                        </div>
+                      );
+                    }
+                    
+                    // === FALLBACK PARA PROYECTOS SIN DEMO ===
                     return (
                       <div className="modal-image-container">
                         <img
@@ -1130,9 +1163,9 @@ function App() {
                 ))}
               </div>
               <p className="modal-desc">
-                {selectedProject.desc} <br />
-                <br />{" "}
-                {selectedProject.longDesc || "Description available via demo."}
+              {selectedProject.desc} <br />
+              <br />{" "}
+              {selectedProject.longDesc || t.section_titles.projects_no_desc}
               </p>
             </div>
           </div>
@@ -1148,48 +1181,70 @@ function App() {
           zIndex: 1000,
           width: "100%",
           padding: window.innerWidth <= 768 ? "25px 20px" : "15px 50px",
-          background:
-            theme === "dark" ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
+          background: theme === "dark" ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
           borderTop: "1px solid var(--border)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "20px",
           flexDirection: window.innerWidth <= 768 ? "column" : "row",
+          gap: window.innerWidth <= 768 ? "20px" : "0", 
           marginTop: window.innerWidth <= 768 ? "20px" : "0",
         }}
       >
-        <div style={{ color: "#888", fontSize: "0.9rem", fontWeight: "500" }}>
-          <span>© {new Date().getFullYear()} Angel Salguero</span>
+        {/* 1. SECCIÓN IZQUIERDA (Copyright) */}
+        <div style={{ 
+          flex: 1, 
+          display: "flex", 
+          justifyContent: window.innerWidth <= 768 ? "center" : "flex-start",
+          color: "#888", 
+          fontSize: "0.9rem", 
+          fontWeight: "500",
+          width: window.innerWidth <= 768 ? "100%" : "auto"
+        }}>
+          {/* Aproveché para cambiar a "Salguero Dev" como acordamos */}
+          <span>© {new Date().getFullYear()} Salguero Dev</span>
         </div>
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setActiveSection("privacy");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#888",
-            fontSize: "0.9rem",
-            textDecoration: "none",
-            cursor: "pointer",
-            transition: "color 0.2s",
-            fontFamily: "inherit",
-          }}
-          onMouseEnter={(e) => (e.target.style.color = "var(--accent)")}
-          onMouseLeave={(e) => (e.target.style.color = "#888")}
-        >
-          {t.footer.privacy}
-        </button>
+        {/* 2. SECCIÓN CENTRAL (Política de Privacidad) */}
+        <div style={{ 
+          flex: 1, 
+          display: "flex", 
+          justifyContent: "center",
+          width: window.innerWidth <= 768 ? "100%" : "auto"
+        }}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveSection("privacy");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#888",
+              fontSize: "0.9rem",
+              textDecoration: "none",
+              cursor: "pointer",
+              transition: "color 0.2s",
+              fontFamily: "inherit",
+            }}
+            onMouseEnter={(e) => (e.target.style.color = "var(--accent)")}
+            onMouseLeave={(e) => (e.target.style.color = "#888")}
+          >
+            {t.footer.privacy}
+          </button>
+        </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
+        {/* 3. SECCIÓN DERECHA (Redes Sociales) */}
+        <div style={{ 
+          flex: 1, 
+          display: "flex", 
+          justifyContent: window.innerWidth <= 768 ? "center" : "flex-end", 
+          gap: "10px",
+          width: window.innerWidth <= 768 ? "100%" : "auto"
+        }}>
           {[
-            {
-              icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
+            { icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
             { icon: FaGithub, link: "https://github.com/AngelSalgueroB" },
             { icon: FaFacebook, link: "https://facebook.com/" },
             { icon: FaInstagram, link: "https://instagram.com/" },
