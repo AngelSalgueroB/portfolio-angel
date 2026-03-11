@@ -197,7 +197,7 @@
         tech: ["Bootstrap", "JS"], 
         icon: <Layout size={40} />, 
         hasDemo: true, 
-        externalUrl: "https://www.bootstrap.sample.com" 
+        externalUrl: "https://bootstrap.salguero-dev.com/" 
       }
       ]
     },
@@ -388,7 +388,7 @@
         tech: ["Bootstrap", "JS"], 
         icon: <Layout size={40} />, 
         hasDemo: true, 
-        externalUrl: "https://www.bootstrap.sample.com" 
+        externalUrl: "https://bootstrap.salguero-dev.com/" 
       },
 
       ]
