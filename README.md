@@ -22,5 +22,5 @@ git add .
 # 2. Guarda los cambios con un mensaje
 git commit -m "fix:  "
 
-# 3. Ahora sí, empuja los cambios a la nube
+# 3. push changes
 git push

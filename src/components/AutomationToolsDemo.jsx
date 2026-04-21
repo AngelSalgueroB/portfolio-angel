@@ -114,7 +114,7 @@ export default function AutomationToolsDemo() {
       >
         <div
           style={{
-            padding: "15px",
+            padding: "5px",
             fontWeight: "bold",
             fontSize: "0.85rem",
             color: "#475569",

@@ -29,10 +29,14 @@
         btn_secondary: "Contactar",
         tech_stack: "Tecnologías que domino",
         stats: {
-          exp: "// Años Experiencia",
-          projects: "// Proyectos Reales",
-          clients: "// Clientes Satisfechos"
-        }
+        cmd: "salguero-dev --status",
+        expLabel: "[OK] Experiencia: ",
+        expValue: "3+ años",
+        projLabel: "[OK] Proyectos: ",
+        projValue: "15 desplegados",
+        clientLabel: "[OK] Sistemas online: ",
+        clientValue: "100%"
+      }
       },
       section_titles: {
         projects_label: "01 — PROYECTOS",
@@ -220,10 +224,14 @@
         btn_secondary: "Get in Touch",
         tech_stack: "Technologies I Master",
         stats: {
-          exp: "// Years Experience",
-          projects: "// Real Projects",
-          clients: "// Happy Clients"
-        }
+        cmd: "salguero-dev --status",
+        expLabel: "[OK] Experience: ",
+        expValue: "3+ years",
+        projLabel: "[OK] Projects: ",
+        projValue: "15 deployed",
+        clientLabel: "[OK] Systems online: ",
+        clientValue: "100%"
+      }
       },
       section_titles: {
         projects_label: "01 — PROJECTS",

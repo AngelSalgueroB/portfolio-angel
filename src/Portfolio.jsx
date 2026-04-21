@@ -29,7 +29,7 @@ import {
   FaTwitter,
   FaYoutube,
   FaEnvelope,
-  FaWhatsapp
+  FaWhatsapp,
 } from "react-icons/fa";
 
 import DataCleanerDemo from "./components/DataCleanerDemo";
@@ -66,9 +66,7 @@ const COLOR_THEMES = [
 ];
 
 function App() {
-  const [activeSection, setActiveSection] = useState(() => {
-    return localStorage.getItem("myPortfolioSection") || "home";
-  });
+  const [activeSection, setActiveSection] = useState("home");
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -80,12 +78,16 @@ function App() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [accentColor, setAccentColor] = useState("#e11d48");
+  const [accentColor, setAccentColor] = useState(() => {
+    // Escoge un índice al azar basado en la cantidad de colores disponibles
+    const randomIndex = Math.floor(Math.random() * COLOR_THEMES.length);
+    // Retorna el código hex de ese color aleatorio
+    return COLOR_THEMES[randomIndex].color;
+  });
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const themeMenuRef = useRef(null);
 
   useEffect(() => {
-    localStorage.setItem("myPortfolioSection", activeSection);
     window.scrollTo(0, 0);
   }, [activeSection]);
 
@@ -137,33 +139,37 @@ function App() {
 
   /*Crear la función de envío (AJAX)*/
   const handleContactSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setIsSubmitting(true);
 
     const formData = new FormData(e.target);
 
     try {
-      const response = await fetch("https://formsubmit.co/ajax/lafprintsource@gmail.com", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "https://formsubmit.co/ajax/lafprintsource@gmail.com",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       if (response.ok) {
-        setShowSuccessModal(true); 
-        e.target.reset(); 
-        
+        setShowSuccessModal(true);
+        e.target.reset();
+
         // --- AQUÍ ESTÁ LA MAGIA ---
         // Desplaza la página suavemente hacia la parte superior
-        window.scrollTo({ top: 0, behavior: "smooth" }); 
-        
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
-        alert("Hubo un problema al enviar el mensaje. Por favor intenta de nuevo.");
+        alert(
+          "Hubo un problema al enviar el mensaje. Por favor intenta de nuevo.",
+        );
       }
     } catch (error) {
       console.error("Error enviando el formulario:", error);
       alert("Error de conexión. Revisa tu internet y vuelve a intentar.");
     } finally {
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -315,23 +321,25 @@ function App() {
                 <div
                   className="hero-stats-card"
                   style={{
-                    background: theme === "dark" ? "#1e1e1e" : "#ffffff",
-                    border: `1px solid ${theme === "dark" ? "#333" : "#e2e8f0"}`,
+                    background:
+                      "#101010" /* Fondo oscuro fijo para look profesional */,
+                    border: `1px solid ${theme === "dark" ? "#2a2a2a" : "#ccc"}`,
                     padding: "0",
                     borderRadius: "12px",
-                    width: "280px",
-                    boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)",
+                    width: "350px",
+                    boxShadow:
+                      "0 20px 40px -10px rgba(0, 0, 0, 0.4)" /* Sombra más pronunciada */,
                     overflow: "hidden",
                     fontFamily: "'Courier New', Courier, monospace",
                   }}
                 >
                   <div
                     style={{
-                      background: theme === "dark" ? "#252526" : "#f1f5f9",
+                      background: "#1a1a1a" /* Cabecera oscura fija */,
                       padding: "10px 15px",
                       display: "flex",
                       gap: "8px",
-                      borderBottom: `1px solid ${theme === "dark" ? "#333" : "#e2e8f0"}`,
+                      borderBottom: `1px solid ${theme === "dark" ? "#2a2a2a" : "#ccc"}`,
                     }}
                   >
                     <div
@@ -339,7 +347,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: theme === "dark" ? "#ff5f56" : "#cbd5e1",
+                        background: "#ff5f56",
                       }}
                     ></div>
                     <div
@@ -347,7 +355,7 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: theme === "dark" ? "#ffbd2e" : "#cbd5e1",
+                        background: "#ffbd2e",
                       }}
                     ></div>
                     <div
@@ -355,57 +363,68 @@ function App() {
                         width: "10px",
                         height: "10px",
                         borderRadius: "50%",
-                        background: theme === "dark" ? "#27c93f" : "#cbd5e1",
+                        background: "#27c93f",
                       }}
                     ></div>
                   </div>
 
                   <div
+                    className="stats-code"
                     style={{
-                      padding: "25px",
+                      padding: "20px",
                       textAlign: "left",
-                      minHeight: "200px",
-                      color: theme === "dark" ? "#d4d4d4" : "#334155",
+                      minHeight: "180px" /* Altura reducida */,
+                      color: "#d4d4d4" /* Color base oscuro fijo */,
+                      fontFamily:
+                        "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace" /* Fuente profesional */,
+                      fontSize: "1rem" /* Tamaño reducido al Workspace */,
+                      lineHeight: "1.6",
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
                     <Typewriter
                       key={language + accentColor}
                       onInit={(typewriter) => {
                         typewriter
-                          .changeDelay(80)
+                          .changeDelay(30)
 
+                          // Prompt y comando (usa el cmd de la traducción)
                           .typeString(
-                            `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.exp}</span><br/>`,
+                            `<span style="color: ${accentColor}; font-weight: bold;">root@portfolio:~$</span> <span style="color: #9cdcfe;">${t.hero.stats.cmd}</span><br/><br/>`,
                           )
-                          .pauseFor(1000)
-                          .typeString(
-                            '<span style="color: #569cd6;">const</span> <span style="color: #9cdcfe;">exp</span> <span style="color: #d4d4d4;">+=</span> <span style="color: #b5cea8; font-weight: bold;">3;</span><br/><br/>',
-                          )
+                          .pauseFor(1800)
 
+                          // Línea 1: Experiencia
                           .typeString(
-                            `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.projects}</span><br/>`,
+                            `<span style="color: #a1a1aa;">${t.hero.stats.expLabel}</span><span style="color: ${accentColor};">${t.hero.stats.expValue}</span><br/>`,
                           )
-                          .pauseFor(1000)
-                          .typeString(
-                            '<span style="color: #c586c0;">let</span> <span style="color: #9cdcfe;">done</span> <span style="color: #d4d4d4;">=</span> <span style="color: #b5cea8; font-weight: bold;">15;</span><br/><br/>',
-                          )
+                          .pauseFor(1300)
 
+                          // Línea 2: Proyectos
                           .typeString(
-                            `<span style="color: ${accentColor}; font-weight: bold; font-size: 0.8rem;">${t.hero.stats.clients}</span><br/>`,
+                            `<span style="color: #a1a1aa;">${t.hero.stats.projLabel}</span><span style="color: ${accentColor};">${t.hero.stats.projValue}</span><br/>`,
                           )
-                          .pauseFor(1000)
-                          .typeString(
-                            '<span style="color: #9cdcfe;">status</span> <span style="color: #d4d4d4;">:</span> <span style="color: #ce9178; font-weight: bold;">"100%"</span>',
-                          )
+                          .pauseFor(1300)
 
+                          // Línea 3: Sistemas
+                          .typeString(
+                            `<span style="color: #a1a1aa;">${t.hero.stats.clientLabel}</span><span style="color: ${accentColor};">${t.hero.stats.clientValue}</span><br/><br/>`,
+                          )
+                          .pauseFor(1300)
+
+                          // Prompt final
+                          .typeString(
+                            `<span style="color: ${accentColor}; font-weight: bold;">root@portfolio:~$</span> `,
+                          )
                           .start();
                       }}
                       options={{
                         autoStart: true,
                         loop: false,
-                        cursor: "_",
+                        cursor: "█",
                         cursorClassName: "typewriter-cursor",
-                        delay: 40, // Adjust typing speed here
+                        delay: 40,
                       }}
                     />
                   </div>
@@ -467,7 +486,9 @@ function App() {
                     ))}
                   </div>
                   <p>{project.desc}</p>
-                  <span className="learn-more">{t.section_titles.projects_learn_more}</span>
+                  <span className="learn-more">
+                    {t.section_titles.projects_learn_more}
+                  </span>
                 </div>
               ))}
             </div>
@@ -552,82 +573,158 @@ function App() {
 
               <div className="contact-form">
                 <div className="contact-phone-box">
-                  <p style={{ margin: "0 0 5px 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                  <p
+                    style={{
+                      margin: "0 0 5px 0",
+                      color: "var(--text-muted)",
+                      fontSize: "0.9rem",
+                    }}
+                  >
                     {t.section_titles.contact_phone}
                   </p>
-                  <a 
-                    href="https://wa.me/51974699157" 
-                    target="_blank" 
+                  <a
+                    href="https://wa.me/51974699157"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="contact-phone-link"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "10px", textDecoration: "none" }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      textDecoration: "none",
+                    }}
                   >
-                    <FaWhatsapp size={26} style={{ color: "var(--accent)" }} /> 
-                    <span style={{ color: "var(--text)", fontWeight: "bold", fontSize: "1.4rem" }}>
+                    <FaWhatsapp size={26} style={{ color: "var(--accent)" }} />
+                    <span
+                      style={{
+                        color: "var(--text)",
+                        fontWeight: "bold",
+                        fontSize: "1.4rem",
+                      }}
+                    >
                       +51 974 699 157
                     </span>
                   </a>
                 </div>
 
-                <h3 style={{ borderBottom: "1px solid var(--border)", paddingBottom: "15px", marginTop: "20px" }}>
-                  {language === "es" ? "O escríbeme directamente aquí" : "Or write me directly here"}
+                <h3
+                  style={{
+                    borderBottom: "1px solid var(--border)",
+                    paddingBottom: "15px",
+                    marginTop: "20px",
+                  }}
+                >
+                  {language === "es"
+                    ? "O escríbeme directamente aquí"
+                    : "Or write me directly here"}
                 </h3>
 
                 {/* AQUÍ ESTÁ EL CAMBIO PRINCIPAL DEL FORMULARIO */}
                 <form onSubmit={handleContactSubmit}>
                   {/* Ya no necesitamos _next ni _captcha porque lo manejamos por AJAX */}
-                  <input type="hidden" name="_subject" value="Nuevo mensaje desde mi Portafolio Web!" />
-                  
+                  <input
+                    type="hidden"
+                    name="_subject"
+                    value="Nuevo mensaje desde mi Portafolio Web!"
+                  />
+
                   {/* ... (Todos tus form-groups se mantienen igual) ... */}
                   <div className="form-group">
-                    <label htmlFor="name">{t.section_titles.contact_form_name}</label>
-                    <input type="text" id="name" name="name" className="form-control" required />
+                    <label htmlFor="name">
+                      {t.section_titles.contact_form_name}
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className="form-control"
+                      required
+                    />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="email">{t.section_titles.contact_form_email}</label>
-                    <input type="email" id="email" name="email" className="form-control" required />
+                    <label htmlFor="email">
+                      {t.section_titles.contact_form_email}
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="form-control"
+                      required
+                    />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="subject">{t.section_titles.contact_form_subject}</label>
-                    <input type="text" id="subject" name="subject" className="form-control" required />
+                    <label htmlFor="subject">
+                      {t.section_titles.contact_form_subject}
+                    </label>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      className="form-control"
+                      required
+                    />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="message">{t.section_titles.contact_form_message}</label>
-                    <textarea id="message" name="message" className="form-control" required></textarea>
+                    <label htmlFor="message">
+                      {t.section_titles.contact_form_message}
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      className="form-control"
+                      required
+                    ></textarea>
                   </div>
 
                   {/* El botón cambia su texto si está cargando */}
-                  <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                    {isSubmitting ? (language === "es" ? "Enviando..." : "Sending...") : t.section_titles.contact_form_send} 
+                  <button
+                    type="submit"
+                    className="submit-btn"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? language === "es"
+                        ? "Enviando..."
+                        : "Sending..."
+                      : t.section_titles.contact_form_send}
                     {!isSubmitting && <ArrowRight size={18} />}
                   </button>
                 </form>
-
               </div>
             </div>
 
             {/* === MODAL DE ÉXITO === */}
             {showSuccessModal && (
-              <div className="modal-overlay" style={{ zIndex: 3000 }} onClick={() => setShowSuccessModal(false)}>
-                <div 
-                  className="modal-content fade-in" 
-                  style={{ 
-
-                    padding: "40px", 
-                    textAlign: "center", 
+              <div
+                className="modal-overlay"
+                style={{ zIndex: 3000 }}
+                onClick={() => setShowSuccessModal(false)}
+              >
+                <div
+                  className="modal-content fade-in"
+                  style={{
+                    padding: "40px",
+                    textAlign: "center",
                     maxWidth: "400px",
                     marginTop: "-500px",
-                  }} 
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <h2 style={{ marginBottom: "5px", color: "var(--text)" }}>
                     {t.section_titles.contact_success_title}
                   </h2>
-                  <p style={{ color: "var(--text-muted)", marginBottom: "30px", fontSize: "1rem" }}>
+                  <p
+                    style={{
+                      color: "var(--text-muted)",
+                      marginBottom: "30px",
+                      fontSize: "1rem",
+                    }}
+                  >
                     {t.section_titles.contact_success_desc}
                   </p>
-                  <button 
-                    className="btn btn-primary" 
+                  <button
+                    className="btn btn-primary"
                     style={{ width: "100%", justifyContent: "center" }}
                     onClick={() => setShowSuccessModal(false)}
                   >
@@ -636,7 +733,6 @@ function App() {
                 </div>
               </div>
             )}
-            
           </div>
         );
 
@@ -1075,7 +1171,7 @@ function App() {
             style={{
               maxWidth: "1200px",
               width: "95%",
-              maxHeight: "110vh",
+              maxHeight: "90vh",
               overflowY: "auto",
               padding: "50px",
             }}
@@ -1111,35 +1207,59 @@ function App() {
                     // === NUEVA LÓGICA PARA ENLACES EXTERNOS ===
                     if (selectedProject.externalUrl) {
                       return (
-                        <div style={{ 
-                          textAlign: "center", 
-                          padding: "60px 20px",
-                          background: "var(--card-bg)",
-                          borderTop: "1px solid var(--border-color)",
-                          borderBottom: "1px solid var(--border-color)",
-                        }}>
-                          <Globe size={50} style={{ color: "var(--accent)", marginBottom: "15px" }} />
+                        <div
+                          style={{
+                            textAlign: "center",
+                            padding: "60px 20px",
+                            background: "var(--card-bg)",
+                            borderTop: "1px solid var(--border-color)",
+                            borderBottom: "1px solid var(--border-color)",
+                          }}
+                        >
+                          <Globe
+                            size={50}
+                            style={{
+                              color: "var(--accent)",
+                              marginBottom: "15px",
+                            }}
+                          />
                           <h3 style={{ marginBottom: "10px" }}>
-                            {language === "es" ? "Proyecto interactivo externo" : "External interactive project"}
+                            {language === "es"
+                              ? "Proyecto interactivo externo"
+                              : "External interactive project"}
                           </h3>
-                          <p style={{ color: "var(--text-muted)", marginBottom: "25px", maxWidth: "400px", margin: "0 auto 25px" }}>
-                            {language === "es" 
-                              ? "Este proyecto está alojado en su propio dominio. Haz clic en el botón para explorar la demo en vivo." 
+                          <p
+                            style={{
+                              color: "var(--text-muted)",
+                              marginBottom: "25px",
+                              maxWidth: "400px",
+                              margin: "0 auto 25px",
+                            }}
+                          >
+                            {language === "es"
+                              ? "Este proyecto está alojado en su propio dominio. Haz clic en el botón para explorar la demo en vivo."
                               : "This project is hosted on its own domain. Click the button below to explore the live demo."}
                           </p>
-                          <a 
+                          <a
                             href={selectedProject.externalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn btn-primary"
-                            style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "8px",
+                            }}
                           >
-                            {language === "es" ? "Ver Demo en Vivo" : "View Live Demo"} <ArrowRight size={16} />
+                            {language === "es"
+                              ? "Ver Demo en Vivo"
+                              : "View Live Demo"}{" "}
+                            <ArrowRight size={16} />
                           </a>
                         </div>
                       );
                     }
-                    
+
                     // === FALLBACK PARA PROYECTOS SIN DEMO ===
                     return (
                       <div className="modal-image-container">
@@ -1163,9 +1283,9 @@ function App() {
                 ))}
               </div>
               <p className="modal-desc">
-              {selectedProject.desc} <br />
-              <br />{" "}
-              {selectedProject.longDesc || t.section_titles.projects_no_desc}
+                {selectedProject.desc} <br />
+                <br />{" "}
+                {selectedProject.longDesc || t.section_titles.projects_no_desc}
               </p>
             </div>
           </div>
@@ -1181,37 +1301,42 @@ function App() {
           zIndex: 1000,
           width: "100%",
           padding: window.innerWidth <= 768 ? "25px 20px" : "15px 50px",
-          background: theme === "dark" ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
+          background:
+            theme === "dark" ? "rgba(10,10,10,0.98)" : "rgba(255,255,255,0.98)",
           borderTop: "1px solid var(--border)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexDirection: window.innerWidth <= 768 ? "column" : "row",
-          gap: window.innerWidth <= 768 ? "20px" : "0", 
+          gap: window.innerWidth <= 768 ? "20px" : "0",
           marginTop: window.innerWidth <= 768 ? "20px" : "0",
         }}
       >
         {/* 1. SECCIÓN IZQUIERDA (Copyright) */}
-        <div style={{ 
-          flex: 1, 
-          display: "flex", 
-          justifyContent: window.innerWidth <= 768 ? "center" : "flex-start",
-          color: "#888", 
-          fontSize: "0.9rem", 
-          fontWeight: "500",
-          width: window.innerWidth <= 768 ? "100%" : "auto"
-        }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: window.innerWidth <= 768 ? "center" : "flex-start",
+            color: "#888",
+            fontSize: "0.9rem",
+            fontWeight: "500",
+            width: window.innerWidth <= 768 ? "100%" : "auto",
+          }}
+        >
           {/* Aproveché para cambiar a "Salguero Dev" como acordamos */}
           <span>© {new Date().getFullYear()} Salguero Dev</span>
         </div>
 
         {/* 2. SECCIÓN CENTRAL (Política de Privacidad) */}
-        <div style={{ 
-          flex: 1, 
-          display: "flex", 
-          justifyContent: "center",
-          width: window.innerWidth <= 768 ? "100%" : "auto"
-        }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            width: window.innerWidth <= 768 ? "100%" : "auto",
+          }}
+        >
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -1236,15 +1361,20 @@ function App() {
         </div>
 
         {/* 3. SECCIÓN DERECHA (Redes Sociales) */}
-        <div style={{ 
-          flex: 1, 
-          display: "flex", 
-          justifyContent: window.innerWidth <= 768 ? "center" : "flex-end", 
-          gap: "10px",
-          width: window.innerWidth <= 768 ? "100%" : "auto"
-        }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: window.innerWidth <= 768 ? "center" : "flex-end",
+            gap: "10px",
+            width: window.innerWidth <= 768 ? "100%" : "auto",
+          }}
+        >
           {[
-            { icon: FaLinkedin, link: "https://www.linkedin.com/in/angel-salguero-47b53535a/" },
+            {
+              icon: FaLinkedin,
+              link: "https://www.linkedin.com/in/angel-salguero-47b53535a/",
+            },
             { icon: FaGithub, link: "https://github.com/AngelSalgueroB" },
             { icon: FaFacebook, link: "https://facebook.com/" },
             { icon: FaInstagram, link: "https://instagram.com/" },
