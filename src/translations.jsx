@@ -6,7 +6,7 @@
   // ICONOS
   import { 
     Globe, Terminal, BarChart3, CloudCog, Activity, 
-    CreditCard, Bot, Database, Utensils, Wrench, Library,Smartphone, ShoppingCart, Layers, ShieldAlert, BookOpen, Palette, Layout
+    CreditCard, Bot, Database, Utensils, Wrench, Library,Smartphone, ShoppingCart, Layers, ShieldAlert, BookOpen, Palette, Layout, Map, Store
   } from 'lucide-react';
 
   export const translations = {
@@ -18,25 +18,25 @@
         contact: "Contacto"
       },
       hero: {
-        badge: "Disponible para proyectos",
-        title_start: "Resuelvo problemas complejos",
-        title_gradient: "con soluciones",
-        title_end: "digitales.",
-        desc_start: "Ingeniero de Sistemas enfocado en el desarrollo",
-        desc_mid: "y la optimización de procesos. Transformo requerimientos en aplicaciones web automatizadas con una interfaz",
-        desc_end: "limpia y funcional.",
+        badge: "Disponible para nuevos proyectos",
+        title_start: "Ingeniero de",
+        title_gradient: "Software",
+        title_end: "Full Stack.",
+        desc_start: "Especializado en el desarrollo de",
+        desc_mid: "aplicaciones web escalables y la automatización de procesos empresariales. Entrego código limpio y",
+        desc_end: "soluciones técnicas robustas.",
         btn_primary: "Ver Portafolio",
         btn_secondary: "Contactar",
-        tech_stack: "Tecnologías que domino",
+        tech_stack: "Stack Tecnológico",
         stats: {
-        cmd: "salguero-dev --status",
-        expLabel: "[OK] Experiencia: ",
-        expValue: "3+ años",
-        projLabel: "[OK] Proyectos: ",
-        projValue: "15 desplegados",
-        clientLabel: "[OK] Sistemas online: ",
-        clientValue: "100%"
-      }
+          cmd: "salguero-dev --status",
+          expLabel: "[OK] Experiencia: ",
+          expValue: "3+ años",
+          projLabel: "[OK] Proyectos: ",
+          projValue: "15+ desplegados",
+          clientLabel: "[OK] Core systems: ",
+          clientValue: "Operativos"
+        }
       },
       section_titles: {
         projects_label: "01 — PROYECTOS",
@@ -75,7 +75,7 @@
           responsible: {
             title: "1. Responsable del Tratamiento",
             text: "El responsable de los datos recogidos en este sitio web es:",
-            items: ["Titular: Angel Salguero", "Actividad: Desarrollo de Software", "Contacto: lafprintsource@gmail.com"]
+            items: ["Titular: Angel Salguero", "Actividad: Desarrollo de Software", "Contacto: ssdev.code@gmail.com"]
           },
           data: {
             title: "2. Qué datos recopilo y para qué",
@@ -122,60 +122,44 @@
         { 
           id: "01", 
           title: "Desarrollo Web & SaaS", 
-          desc: "Aplicaciones web complejas, CRMs y paneles administrativos a medida.", 
+          desc: "Construcción de plataformas en la nube, CRMs y paneles de administración de alto rendimiento.", 
           icon: <Globe size={28} />, 
-          features: ["React / Next.js", "Gestión de Bases de Datos", "Sistemas Multi-usuario"] 
+          features: ["React / Next.js", "Arquitectura escalable", "Dashboards interactivos"] 
         },
         { 
           id: "02", 
-          title: "Apps Móviles (iOS/Android)", 
-          desc: "Lleva tu negocio al bolsillo del cliente con una sola base de código.", 
+          title: "Apps Móviles & Geolocalización", 
+          desc: "Aplicaciones multiplataforma con capacidades de rastreo GPS y sincronización en tiempo real.", 
           icon: <Smartphone size={28} />, 
-          features: ["React Native", "Notificaciones Push", "Modo Offline"] 
+          features: ["React Native", "WebSockets / Supabase", "Integración de Mapas"] 
         },
         { 
           id: "03", 
-          title: "E-commerce & Pagos", 
-          desc: "Tiendas virtuales escalables con pasarelas de pago integradas.", 
+          title: "E-Commerce & Pagos", 
+          desc: "Desarrollo de tiendas virtuales seguras con logística, carritos dinámicos y control de inventario.", 
           icon: <ShoppingCart size={28} />, 
-          features: ["Integración Stripe/Niubiz", "Control de Stock", "Carrito de Compras"] 
+          features: ["Pasarelas (Stripe/Niubiz)", "Gestión de Stock", "Flujos de Checkout"] 
         },
-        // --- INGENIERÍA & PROCESOS (TU DIFERENCIAL) ---
         { 
           id: "04", 
-          title: "Automatización (BPA)", 
-          desc: "Scripts inteligentes para eliminar tareas manuales repetitivas.", 
+          title: "Automatización de Datos (RPA)", 
+          desc: "Scripts avanzados y pipelines para eliminar trabajo manual, procesar datos masivos y conectar sistemas.", 
           icon: <Terminal size={28} />, 
-          features: ["Bots de WhatsApp", "Procesamiento Excel/PDF", "Conexión de APIs"] 
+          features: ["Python / Node.js", "Procesamiento Excel/CSV", "Conexión de APIs REST"] 
         },
         { 
           id: "05", 
-          title: "Arquitectura & Consultoría", 
-          desc: "Diseño de sistemas robustos y escalables (Enfoque TOGAF/ISO).", 
-          icon: <Layers size={28} />, 
-          features: ["Selección de Stack", "Diagramas de Flujo", "Optimización de Costos Cloud"] 
+          title: "Arquitectura Cloud & Backend", 
+          desc: "Diseño e implementación de bases de datos relacionales y servicios sin servidor (Serverless).", 
+          icon: <Database size={28} />, 
+          features: ["PostgreSQL / SQL", "Firebase / Supabase", "Modelado de Datos"] 
         },
         { 
           id: "06", 
-          title: "Inteligencia de Negocios", 
-          desc: "Transforma datos brutos en tableros para la toma de decisiones.", 
-          icon: <BarChart3 size={28} />, 
-          features: ["Dashboards Power BI", "Reportes Automáticos", "Métricas en Tiempo Real"] 
-        },
-        // --- MANTENIMIENTO & SEGURIDAD ---
-        { 
-          id: "07", 
-          title: "Migración & Modernización", 
-          desc: "Actualización de sistemas legados a tecnologías modernas.", 
-          icon: <CloudCog size={28} />, 
-          features: ["De Excel a Web App", "Migración a Nube", "Refactorización de Código"] 
-        },
-        { 
-          id: "08", 
-          title: "Auditoría & Seguridad", 
-          desc: "Revisión técnica para blindar y acelerar tus sistemas.", 
-          icon: <ShieldAlert size={28} />, 
-          features: ["Hacking Ético Básico", "Optimización de Velocidad", "Copias de Seguridad"] 
+          title: "Modernización de Sistemas", 
+          desc: "Migración de procesos operativos obsoletos (ej. macros en Excel) a aplicaciones web centralizadas.", 
+          icon: <Layers size={28} />, 
+          features: ["Refactorización de código", "Migración a la nube", "Digitalización"] 
         }
       ],
       projects: [
@@ -202,7 +186,24 @@
         icon: <Layout size={40} />, 
         hasDemo: true, 
         externalUrl: "https://bootstrap.salguero-dev.com/" 
-      }
+      },
+      { 
+          title: "MotoTracker App", 
+          desc: "Aplicación móvil tipo Uber para mototaxis.", 
+          longDesc: "Plataforma móvil con interfaces separadas para pasajeros y conductores. Cuenta con rastreo GPS en tiempo real, gestión de rutas, cálculo de precios y panel administrador de flotas conectado a un backend robusto con Supabase.", 
+          tech: ["React Native", "Supabase", "Maps API"], 
+          icon: <Map size={40} />, 
+          hasDemo: true 
+        },
+        { 
+          title: "Retail E-Commerce", 
+          desc: "Tienda virtual escalable multicategoría.", 
+          longDesc: "Plataforma e-commerce completa al estilo retail (Saga/Ripley). Incluye carrito de compras dinámico, pasarela de pagos segura, control de inventario y panel logístico de despachos.", 
+          tech: ["Next.js", "Stripe", "PostgreSQL"], 
+          icon: <Store size={40} />, 
+          hasDemo: true 
+        },
+
       ]
     },
     en: {
@@ -213,25 +214,25 @@
         contact: "Contact"
       },
       hero: {
-        badge: "Available for projects",
-        title_start: "I solve complex",
-        title_gradient: "problems with",
-        title_end: "digital solutions.",
-        desc_start: "Systems Engineer focused on",
-        desc_mid: "development and process optimization. I transform requirements into automated web apps with a",
-        desc_end: "clean and functional UI.",
+        badge: "Available for new projects",
+        title_start: "Full Stack",
+        title_gradient: "Software",
+        title_end: "Engineer.",
+        desc_start: "Systems Engineer specialized in building",
+        desc_mid: "scalable web applications and automating business workflows. I deliver clean code and",
+        desc_end: "robust technical solutions.",
         btn_primary: "View Portfolio",
         btn_secondary: "Get in Touch",
-        tech_stack: "Technologies I Master",
+        tech_stack: "Tech Stack",
         stats: {
-        cmd: "salguero-dev --status",
-        expLabel: "[OK] Experience: ",
-        expValue: "3+ years",
-        projLabel: "[OK] Projects: ",
-        projValue: "15 deployed",
-        clientLabel: "[OK] Systems online: ",
-        clientValue: "100%"
-      }
+          cmd: "salguero-dev --status",
+          expLabel: "[OK] Experience: ",
+          expValue: "3+ years",
+          projLabel: "[OK] Projects: ",
+          projValue: "15+ deployed",
+          clientLabel: "[OK] Core systems: ",
+          clientValue: "Operational"
+        }
       },
       section_titles: {
         projects_label: "01 — PROJECTS",
@@ -270,7 +271,7 @@
           responsible: {
             title: "1. Data Controller",
             text: "The party responsible for data collected on this website is:",
-            items: ["Owner: Angel Salguero", "Activity: Software Development", "Contact: lafprintsource@gmail.com"]
+            items: ["Owner: Angel Salguero", "Activity: Software Development", "Contact: ssdev.code@gmail.com"]
           },
           data: {
             title: "2. Data Collected & Purpose",
@@ -317,60 +318,44 @@
         { 
           id: "01", 
           title: "Web & SaaS Development", 
-          desc: "Complex web applications, CRMs, and custom admin panels.", 
+          desc: "Building high-performance cloud platforms, custom CRMs, and administrative dashboards.", 
           icon: <Globe size={28} />, 
-          features: ["React / Next.js", "Database Management", "Multi-user Systems"] 
+          features: ["React / Next.js", "Scalable Architecture", "Interactive Dashboards"] 
         },
         { 
           id: "02", 
-          title: "Mobile Apps (iOS/Android)", 
-          desc: "Bring your business to your client's pocket with a single codebase.", 
+          title: "Mobile Apps & Geolocation", 
+          desc: "Cross-platform applications with live GPS tracking and real-time data synchronization.", 
           icon: <Smartphone size={28} />, 
-          features: ["React Native", "Push Notifications", "Offline Mode"] 
+          features: ["React Native", "WebSockets / Supabase", "Maps Integration"] 
         },
         { 
           id: "03", 
-          title: "E-commerce & Payments", 
-          desc: "Scalable online stores with integrated payment gateways.", 
+          title: "E-Commerce & Payments", 
+          desc: "Development of secure virtual stores with integrated logistics, dynamic carts, and inventory control.", 
           icon: <ShoppingCart size={28} />, 
-          features: ["Stripe/Niubiz Integration", "Stock Control", "Shopping Cart"] 
+          features: ["Payment Gateways (Stripe)", "Stock Management", "Checkout Flows"] 
         },
-        // --- ENGINEERING & PROCESSES (YOUR EDGE) ---
         { 
           id: "04", 
-          title: "Automation (BPA)", 
-          desc: "Smart scripts to eliminate repetitive manual tasks.", 
+          title: "Data Automation (RPA)", 
+          desc: "Advanced scripts and pipelines to eliminate manual work, process massive datasets, and connect systems.", 
           icon: <Terminal size={28} />, 
-          features: ["WhatsApp Bots", "Excel/PDF Processing", "API Connection"] 
+          features: ["Python / Node.js", "Excel/CSV Processing", "REST API Integration"] 
         },
         { 
           id: "05", 
-          title: "Architecture & Consulting", 
-          desc: "Design of robust and scalable systems (TOGAF/ISO approach).", 
-          icon: <Layers size={28} />, 
-          features: ["Stack Selection", "Flow Diagrams", "Cloud Cost Optimization"] 
+          title: "Cloud Architecture & Backend", 
+          desc: "Design and implementation of relational databases and Serverless backend services.", 
+          icon: <Database size={28} />, 
+          features: ["PostgreSQL / SQL", "Firebase / Supabase", "Data Modeling"] 
         },
         { 
           id: "06", 
-          title: "Business Intelligence", 
-          desc: "Transform raw data into dashboards for decision-making.", 
-          icon: <BarChart3 size={28} />, 
-          features: ["Power BI Dashboards", "Automated Reports", "Real-time Metrics"] 
-        },
-        // --- MAINTENANCE & SECURITY ---
-        { 
-          id: "07", 
-          title: "Migration & Modernization", 
-          desc: "Updating legacy systems to modern technologies.", 
-          icon: <CloudCog size={28} />, 
-          features: ["Excel to Web App", "Cloud Migration", "Code Refactoring"] 
-        },
-        { 
-          id: "08", 
-          title: "Audit & Security", 
-          desc: "Technical review to shield and accelerate your systems.", 
-          icon: <ShieldAlert size={28} />, 
-          features: ["Basic Ethical Hacking", "Speed Optimization", "Backups"] 
+          title: "System Modernization", 
+          desc: "Migration of legacy operational processes (e.g., Excel macros) into centralized, modern web applications.", 
+          icon: <Layers size={28} />, 
+          features: ["Code Refactoring", "Cloud Migration", "Digital Transformation"] 
         }
       ],
       projects: [
@@ -398,7 +383,22 @@
         hasDemo: true, 
         externalUrl: "https://bootstrap.salguero-dev.com/" 
       },
-
+      { 
+          title: "MotoTracker App", 
+          desc: "Uber-like mobile application for mototaxis.", 
+          longDesc: "Mobile platform with separate interfaces for passengers and drivers. Features real-time GPS tracking, route management, price calculation, and a fleet admin dashboard powered by Supabase.", 
+          tech: ["React Native", "Supabase", "Maps API"], 
+          icon: <Map size={40} />, 
+          hasDemo: true 
+        },
+        { 
+          title: "Retail E-Commerce", 
+          desc: "Scalable multi-category virtual store.", 
+          longDesc: "Full e-commerce platform retail style. Includes a dynamic shopping cart, secure payment gateway, inventory control, and a logistics dashboard for order fulfillment.", 
+          tech: ["Next.js", "Stripe", "PostgreSQL"], 
+          icon: <Store size={40} />, 
+          hasDemo: true 
+        },
       ]
     }
   };

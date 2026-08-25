@@ -38,6 +38,8 @@ import SqlNoSqlDemo from "./components/SqlNoSqlDemo";
 import GastroAppDemo from "./components/GastroAppDemo";
 import AutomationToolsDemo from "./components/AutomationToolsDemo";
 import UniVaultDemo from "./components/UniVaultDemo";
+import MotoTaxiDemo from "./components/MotoTaxiDemo";
+import EcommerceDemo from "./components/EcommerceDemo";
 
 const TECH_STACK = [
   { name: "React", icon: <Code size={30} /> },
@@ -69,10 +71,10 @@ function App() {
   const [activeSection, setActiveSection] = useState("home");
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const [language, setLanguage] = useState("es");
+  const [language, setLanguage] = useState("en");
   const t = translations[language];
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -146,7 +148,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://formsubmit.co/ajax/lafprintsource@gmail.com",
+        "https://formsubmit.co/ajax/ssdev.code@gmail.com",
         {
           method: "POST",
           body: formData,
@@ -199,7 +201,7 @@ function App() {
                     : "linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)",
                 backgroundSize: "40px 40px",
                 maskImage:
-                  "radial-gradient(circle at center, black 40%, transparent 100%)",
+                  "radial-gradient(circle at center, black 40%, transparent 100%)", 
               }}
             ></div>
 
@@ -218,10 +220,16 @@ function App() {
                 <div
                   className="hero-status-indicator"
                   style={{
-                    background: `${accentColor}1a`,
+                    display: "inline-flex",
+                    background: `${accentColor}15`,
                     color: accentColor,
-                    border: `1px solid ${accentColor}33`,
-                    borderRadius: "5px",
+                    border: `1px solid ${accentColor}40`,
+                    borderRadius: "6px",
+                    padding: "6px 12px",
+                    fontSize: "0.85rem",
+                    fontWeight: "600",
+                    marginBottom: "20px",
+                    letterSpacing: "0.5px",
                   }}
                 >
                   {t.hero.badge}
@@ -229,22 +237,19 @@ function App() {
 
                 <h1
                   style={{
-                    fontSize: "3.5rem",
-                    lineHeight: "1.3",
+                    fontSize: "clamp(2.5rem, 5vw, 4rem)",
+                    lineHeight: "1.1",
+                    fontWeight: "800",
+                    letterSpacing: "-0.02em",
                     marginBottom: "20px",
                     color: "var(--text)",
                   }}
                 >
                   {t.hero.title_start}{" "}
-                  <span style={{ fontWeight: "700" }}>
+                  <span style={{ color: "var(--accent)" }}>
                     {t.hero.title_gradient}
                   </span>{" "}
-                  <span
-                    style={{
-                      color: "var(--accent)",
-                      fontWeight: "800",
-                    }}
-                  >
+                  <span>
                     {t.hero.title_end}
                   </span>
                 </h1>
@@ -252,15 +257,17 @@ function App() {
                 <p
                   className="hero-desc"
                   style={{
-                    fontSize: "1.1rem",
-                    maxWidth: "500px",
-                    color: "#94a3b8",
+                    fontSize: "1.125rem",
+                    lineHeight: "1.7",
+                    maxWidth: "540px",
+                    color: "var(--text-muted)",
+                    marginBottom: "30px",
                   }}
                 >
                   {t.hero.desc_start}{" "}
-                  <span style={{ fontWeight: "bold" }}>Full Stack</span>{" "}
+                  <strong style={{ color: "var(--text)" }}>Full Stack</strong>{" "}
                   {t.hero.desc_mid}{" "}
-                  <span style={{ fontWeight: "bold" }}>(UI/UX)</span>{" "}
+                  <strong style={{ color: "var(--text)" }}>(UI/UX)</strong>{" "}
                   {t.hero.desc_end}
                 </p>
 
@@ -387,31 +394,31 @@ function App() {
                       key={language + accentColor}
                       onInit={(typewriter) => {
                         typewriter
-                          .changeDelay(30)
+                          .changeDelay(20) // Velocidad de tipeo más rápida
 
-                          // Prompt y comando (usa el cmd de la traducción)
+                          // Prompt y comando
                           .typeString(
                             `<span style="color: ${accentColor}; font-weight: bold;">root@portfolio:~$</span> <span style="color: #9cdcfe;">${t.hero.stats.cmd}</span><br/><br/>`,
                           )
-                          .pauseFor(1800)
+                          .pauseFor(400) // Antes era 1800
 
                           // Línea 1: Experiencia
                           .typeString(
                             `<span style="color: #a1a1aa;">${t.hero.stats.expLabel}</span><span style="color: ${accentColor};">${t.hero.stats.expValue}</span><br/>`,
                           )
-                          .pauseFor(1300)
+                          .pauseFor(150) // Antes era 1300
 
                           // Línea 2: Proyectos
                           .typeString(
                             `<span style="color: #a1a1aa;">${t.hero.stats.projLabel}</span><span style="color: ${accentColor};">${t.hero.stats.projValue}</span><br/>`,
                           )
-                          .pauseFor(1300)
+                          .pauseFor(150) // Antes era 1300
 
                           // Línea 3: Sistemas
                           .typeString(
                             `<span style="color: #a1a1aa;">${t.hero.stats.clientLabel}</span><span style="color: ${accentColor};">${t.hero.stats.clientValue}</span><br/><br/>`,
                           )
-                          .pauseFor(1300)
+                          .pauseFor(200)
 
                           // Prompt final
                           .typeString(
@@ -424,7 +431,7 @@ function App() {
                         loop: false,
                         cursor: "█",
                         cursorClassName: "typewriter-cursor",
-                        delay: 40,
+                        delay: 20,
                       }}
                     />
                   </div>
@@ -564,7 +571,7 @@ function App() {
               </p>
 
               <a
-                href="mailto:lafprintsource@gmail.com"
+                href="mailto:ssdev.code@gmail.com"
                 className="btn btn-primary"
                 style={{ marginBottom: "3rem", display: "inline-flex" }}
               >
@@ -988,43 +995,37 @@ function App() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-          <div className={`nav-links ${menuOpen ? "active" : ""}`}>
-            <button
-              className={`nav-btn ${activeSection === "home" ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection("home");
-                setMenuOpen(false);
-              }}
-            >
-              {t.nav.home}
-            </button>
-            <button
-              className={`nav-btn ${activeSection === "projects" ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection("projects");
-                setMenuOpen(false);
-              }}
-            >
-              {t.nav.projects}
-            </button>
-            <button
-              className={`nav-btn ${activeSection === "services" ? "active" : ""}`}
-              onClick={() => {
-                setActiveSection("services");
-                setMenuOpen(false);
-              }}
-            >
-              {t.nav.services}
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                setActiveSection("contact");
-                setMenuOpen(false);
-              }}
-            >
-              {t.nav.contact}
-            </button>
+          <div className={`nav-links ${menuOpen ? "active" : ""}`} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            {['home', 'projects', 'services', 'contact'].map((item) => (
+              <button
+                key={item}
+                className={`nav-btn ${activeSection === item ? "active" : ""}`}
+                onClick={() => {
+                  setActiveSection(item);
+                  setMenuOpen(false);
+                }}
+                style={{
+                  background: "transparent", // Fondo transparente siempre
+                  border: "none",
+                  padding: "8px 16px",
+                  fontSize: "1.1rem", // Texto más grande
+                  fontWeight: "600", // Más grosor para presencia
+                  fontFamily: "system-ui, -apple-system, sans-serif", // Tipografía moderna y limpia
+                  color: activeSection === item ? accentColor : "var(--text-muted)", // Toma el color elegido solo si está activo
+                  border: activeSection === item ? `2px solid ${accentColor}` : "2px solid transparent", // Indicador sutil de página activa
+                  cursor: "pointer",
+                  transition: "all 0.2s ease"
+                }}
+                onMouseEnter={(e) => {
+                  if (activeSection !== item) e.target.style.color = "var(--text)"; // Hover para encender el texto
+                }}
+                onMouseLeave={(e) => {
+                  if (activeSection !== item) e.target.style.color = "var(--text-muted)"; // Quitar hover
+                }}
+              >
+                {t.nav[item]}
+              </button>
+            ))}
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
@@ -1203,6 +1204,10 @@ function App() {
                     return <AutomationToolsDemo />;
                   case "UniVault":
                     return <UniVaultDemo />;
+                  case "MotoTracker App":
+                  return <MotoTaxiDemo />;
+                  case "Retail E-Commerce":
+                  return <EcommerceDemo />;
                   default:
                     // === NUEVA LÓGICA PARA ENLACES EXTERNOS ===
                     if (selectedProject.externalUrl) {
@@ -1380,7 +1385,7 @@ function App() {
             { icon: FaInstagram, link: "https://instagram.com/" },
             { icon: FaTwitter, link: "https://twitter.com/" },
             { icon: FaYoutube, link: "https://youtube.com/" },
-            { icon: FaEnvelope, link: "mailto:lafprintsource@gmail.com" },
+            { icon: FaEnvelope, link: "mailto:ssdev.code@gmail.com" },
           ].map((item, index) => (
             <a
               key={index}
