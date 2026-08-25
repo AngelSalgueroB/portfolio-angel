@@ -1,26 +1,34 @@
-# React + Vite
+# 👨‍💻 Angel Salguero - Full Stack Software Engineer Portfolio - SS-Dev
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Source code for my professional interactive web portfolio.
 
-Currently, two official plugins are available:
+This project serves as my interactive showcase, designed to demonstrate technical skills directly through live simulations, clean UI (inspired by command-line interfaces and control panels), and optimized performance.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Key Features
 
-## React Compiler
+* **Bilingual System (EN/ES):** Native internationalization managed through a centralized translation object.
+* **Integrated Project Simulations:** Interactive demos (GPS Fleet Tracking, Retail E-Commerce, POS Systems) rendered dynamically in modals, avoiding external routing.
+* **Dynamic Theming:** Dark Mode by default with a customizable accent color selector that injects semantic variables into the DOM.
+* **Reactive Terminal:** Realistic command-line animation for presenting metrics and technical experience.
+* **AJAX Contact Form:** Direct email submission without page redirects using FormSubmit.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+* **Core:** React, Vite
+* **Styling:** CSS3 (Flexbox/Grid, CSS Variables)
+* **Icons & Assets:** Lucide React, React Icons
+* **Animations:** Typewriter-effect
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ⚙️ Local Development
 
-github:
-# 1. Prepara todos los archivos modificados
-git add .
+To run this project locally, follow these steps:
 
-# 2. Guarda los cambios con un mensaje
-git commit -m "fix:  "
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/AngelSalgueroB/portfolio-angel.git](https://github.com/AngelSalgueroB/portfolio-angel.git)
+   cd portfolio-angel
 
-# 3. push changes
-git push
+Contact & Links
+Live Demo: https://www.salguero-dev.com/
+
+LinkedIn: https://www.linkedin.com/in/angel-salguero-47b53535a/
